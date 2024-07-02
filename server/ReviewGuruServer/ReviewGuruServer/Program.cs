@@ -1,6 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using ReviewGuruServer.Database;
-using ReviewGuruServer.Mapping;
+
 
 namespace ReviewGuruServer
 {
@@ -12,9 +10,7 @@ namespace ReviewGuruServer
 
             // Add services to the container.
             builder.Services.AddControllers();
-            builder.Services.AddDbContext<ReviewGuruDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-            builder.Services.AddAutoMapper(typeof(MappingProfile));
+           
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

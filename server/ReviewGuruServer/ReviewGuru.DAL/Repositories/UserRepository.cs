@@ -1,6 +1,6 @@
-﻿using ReviewGuruServer.Repositories.IRepositories;
+﻿using ReviewGuru.DAL.Repositories.IRepositories;
 
-namespace ReviewGuruServer.Repositories
+namespace ReviewGuru.DAL.Repositories
 {
     public class UserRepository : IUserRepository
     {

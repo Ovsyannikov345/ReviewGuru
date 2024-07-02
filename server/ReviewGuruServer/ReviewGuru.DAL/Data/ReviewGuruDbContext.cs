@@ -1,17 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ReviewGuru.DAL.Entities.Models;
 
-namespace ReviewGuruServer.Database
+namespace ReviewGuru.DAL.Data
 {
     public class ReviewGuruDbContext : DbContext
     {
-        public ReviewGuruDbContext()
-        {
-        }
-
-        public ReviewGuruDbContext(DbContextOptions<ReviewGuruDbContext> options)
-        : base(options)
-        {
-            Database.Migrate();
-        }
+        public ReviewGuruDbContext(DbContextOptions<ReviewGuruDbContext> options) : base(options) { }
+        public DbSet<Author> Author { get; set; }
+        public DbSet<Media> Media { get; set; }
     }
 }
