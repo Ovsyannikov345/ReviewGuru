@@ -13,13 +13,13 @@ namespace ReviewGuru.DAL.Entities.Models
         public int UserId { get; set; }
 
         [Required]
-        public string login { get; set; } = "";
+        public string Login { get; set; } = "";
 
         [Required]
-        public string password { get; set; } = "";
+        public string Password { get; set; } = "";
 
         [Required]
-        public string email { get; set; } = "";
+        public string Email { get; set; } = "";
 
         public DateTime DateOfBirth { get; set; }
     }
