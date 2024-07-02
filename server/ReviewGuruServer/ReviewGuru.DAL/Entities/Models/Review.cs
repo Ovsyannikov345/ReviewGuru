@@ -11,13 +11,18 @@ namespace ReviewGuru.DAL.Entities.Models
     {
         [Required]
         public int ReviewId { get; set; }
+
         [Required]
         public int UserId { get; set; }
+
         [Required]
         public int MediaId { get; set; }
+
         [Required]
         public int Rating { get; set; }
-        public string UserReview { get; set; }
+
+        public string UserReview { get; set; } = "";
+
         [Required]
         public DateTime DateOfCreation { get; set; }
     }

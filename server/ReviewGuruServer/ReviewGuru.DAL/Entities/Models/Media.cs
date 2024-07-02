@@ -11,9 +11,11 @@ namespace ReviewGuru.DAL.Entities.Models
     {
         [Required]
         public int MediaId { get; set; }
+
         [Required]
-        public string MediaType { get; set; }
+        public string MediaType { get; set; } = "";
+
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
     }
 }
