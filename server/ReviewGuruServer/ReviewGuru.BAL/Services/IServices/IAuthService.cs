@@ -13,6 +13,6 @@ namespace ReviewGuru.BLL.Services.IServices
 
         Task<TokenDto> RegisterAsync(RegisterDto userData);
 
-        Task<bool> LogoutAsync(string refreshToken);
+        Task LogoutAsync(string refreshToken);
     }
 }
