@@ -15,6 +15,6 @@ namespace ReviewGuru.BLL.Services.IServices
 
         Task<TokenDto> CreateTokensAsync(User user);
 
-        Task<TokenDto> RefreshTokensAsync(User user);
+        Task<TokenDto> RefreshTokensAsync(TokenDto tokens);
     }
 }
