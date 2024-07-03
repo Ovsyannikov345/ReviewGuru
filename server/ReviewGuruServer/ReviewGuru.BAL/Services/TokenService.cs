@@ -122,6 +122,18 @@ namespace ReviewGuru.BLL.Services
             return token;
         }
 
+        public async Task<int> RemoveRefreshTokenAsync(string refreshToken)
+        {
+            var token = await _refreshTokenRepository.GetAsync(t => t.Token == refreshToken);
+
+            if (token == null)
+            {
+                throw new NotFoundException("Provided refresh token is not found");
+            }
+
+            return await _refreshTokenRepository.DeleteAsync(token);
+        }
+
         private List<Claim> GetClaims(User user)
         {
             var claims = new List<Claim>()
