@@ -11,10 +11,10 @@ namespace ReviewGuru.BLL.Services.IServices
 {
     public interface ITokenService
     {
-        string GenerateToken(IEnumerable<Claim> claims);
+        string GenerateToken(IEnumerable<Claim> claims, DateTime expirationDate, string secretKey);
 
-        Task<TokenDto> CreateTokenAsync(User user);
+        Task<TokenDto> CreateTokensAsync(User user);
 
-        Task<TokenDto> RefreshTokenAsync(User user);
+        Task<TokenDto> RefreshTokensAsync(User user);
     }
 }
