@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -18,6 +18,7 @@ namespace ReviewGuru.DAL.Repositories.IRepositories
         Task<TDTO> UpdateAsync(TDTO entity, CancellationToken cancellationToken = default);
 
         Task<int> DeleteAsync(TDTO entity, CancellationToken cancellationToken = default);
+
     }
 
 }

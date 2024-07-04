@@ -6,5 +6,8 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.DTOs
 {
-    public record RegisterDto(string Login, string Password, string Email, DateTime? DateOfBirth);
+    public record RefreshTokensDto
+    {
+        public string RefreshToken { get; set; } = "";
+    }
 }

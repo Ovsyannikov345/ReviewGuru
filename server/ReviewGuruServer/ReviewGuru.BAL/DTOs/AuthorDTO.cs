@@ -1,6 +1,7 @@
 ﻿using ReviewGuru.BLL.Services;
 using ReviewGuru.BLL.Services.IServices;
 using System;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,4 +15,5 @@ namespace ReviewGuru.BLL.DTOs
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
     }
+
 }
