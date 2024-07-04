@@ -3,6 +3,7 @@ using BCrypt.Net;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services.IServices;
 using ReviewGuru.BLL.Utilities.Exceptions;
+using ReviewGuru.BLL.Utilities.Validators;
 using ReviewGuru.DAL.Entities.Models;
 using ReviewGuru.DAL.Repositories.IRepositories;
 using System;
@@ -14,13 +15,15 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services
 {
-    public class AuthService(IUserRepository userRepository, ITokenService tokenService, IMapper mapper) : IAuthService
+    public class AuthService(IUserRepository userRepository, ITokenService tokenService, IMapper mapper, RegistrationValidator registrationValidator) : IAuthService
     {
         private readonly IUserRepository _userRepository = userRepository;
 
         private readonly ITokenService _tokenService = tokenService;
 
         private readonly IMapper _mapper = mapper;
+
+        private readonly RegistrationValidator _registrationValidator = registrationValidator;
 
         public async Task<TokenDto> LoginAsync(LoginDto authData)
         {
@@ -46,14 +49,25 @@ namespace ReviewGuru.BLL.Services
 
         public async Task<TokenDto> RegisterAsync(RegisterDto userData)
         {
+            var validationResult = await _registrationValidator.ValidateAsync(userData);
+
+            if (!validationResult.IsValid)
+            {
+                throw new BadRequestException($"Registration error. {validationResult.Errors[0].ErrorMessage}");
+            }
+
             User user = _mapper.Map<User>(userData);
 
-            if (await IsLoginAvailable(user.Login))
+            bool isLoginAvailable = await IsLoginAvailable(user.Login);
+
+            if (!isLoginAvailable)
             {
                 throw new BadRequestException("Login is taken");
             }
 
-            if (await IsEmailAvailable(user.Email))
+            bool isEmailAvailable = await IsEmailAvailable(user.Email);
+
+            if (!isEmailAvailable)
             {
                 throw new BadRequestException("Email is taken");
             }
