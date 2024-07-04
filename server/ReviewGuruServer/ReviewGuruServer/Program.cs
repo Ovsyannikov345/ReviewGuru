@@ -11,12 +11,21 @@ namespace ReviewGuruServer
 
             // Add services to the container.
             services.AddControllers();
-            services.AddIdentityDbContext(builder.Configuration);
-
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
+            services.AddIdentityDbContext(builder.Configuration);
+            services.AddAuthenticationBearer(builder.Configuration);
+            services.AddMapper();
+            services.AddBusinessLogicServices();
+            services.AddDataAccessRepositories();
+            services.AddAutoValidation();
+            services.AddAuthorization();
+            services.AddCorsPolicy(builder.Configuration);
+
             var app = builder.Build();
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -25,11 +34,14 @@ namespace ReviewGuruServer
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("CorsPolicy");
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapControllers();
+            app.MapControllers()
+               .RequireAuthorization();
 
             app.Run();
         }
