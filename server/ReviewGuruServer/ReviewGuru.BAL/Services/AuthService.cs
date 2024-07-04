@@ -39,9 +39,9 @@ namespace ReviewGuru.BLL.Services
             return await _tokenService.CreateTokensAsync(user);
         }
 
-        public async Task LogoutAsync(string refreshToken)
+        public async Task LogoutAsync(LogoutDto logoutData)
         {
-            await _tokenService.RemoveRefreshTokenAsync(refreshToken);
+            await _tokenService.RemoveRefreshTokenAsync(logoutData.RefreshToken);
         }
 
         public async Task<TokenDto> RegisterAsync(RegisterDto userData)
