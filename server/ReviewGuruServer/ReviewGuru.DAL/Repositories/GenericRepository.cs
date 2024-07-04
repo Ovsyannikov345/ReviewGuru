@@ -19,13 +19,11 @@ namespace ReviewGuru.DAL.Repositories
             _context = context;
         }
 
-
         public async Task<TDTO?> GetAsync(Expression<Func<TDTO, bool>> filter, CancellationToken cancellationToken = default)
 
         {
             return await _context.Set<TDTO>().AsNoTracking().FirstOrDefaultAsync(filter);
         }
-
 
         public async Task<List<TDTO>> GetListAsync(int pageNumber, int pageSize, Expression<Func<TDTO, bool>>? filter = null, CancellationToken cancellationToken = default)
 
@@ -34,7 +32,6 @@ namespace ReviewGuru.DAL.Repositories
 
             return await entities.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
         }
-
 
         public async Task<TDTO> AddAsync(TDTO entity, CancellationToken cancellationToken = default)
 
@@ -45,7 +42,6 @@ namespace ReviewGuru.DAL.Repositories
             return entity;
         }
 
-
         public async Task<TDTO> UpdateAsync(TDTO entity, CancellationToken cancellationToken = default)
 
         {
@@ -54,7 +50,6 @@ namespace ReviewGuru.DAL.Repositories
 
             return entity;
         }
-
 
         public async Task<int> DeleteAsync(TDTO entity, CancellationToken cancellationToken = default)
 
