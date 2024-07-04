@@ -6,6 +6,10 @@ namespace ReviewGuru.DAL.Repositories
 {
     public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        public UserRepository(ReviewGuruDbContext context) : base(context) { }
+        private readonly ReviewGuruDbContext _context;
+        public UserRepository(ReviewGuruDbContext context) : base(context) 
+        { 
+            _context = context;
+        }
     }
 }
