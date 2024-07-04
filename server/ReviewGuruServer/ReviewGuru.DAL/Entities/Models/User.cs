@@ -21,6 +21,6 @@ namespace ReviewGuru.DAL.Entities.Models
         [Required]
         public string Email { get; set; } = "";
 
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
     }
 }

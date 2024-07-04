@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services.IServices
 {
-
-    public interface IAuthorService : IGenericService<AuthorDTO>
+    public interface IReviewService : IGenericService<ReviewDTO>
     {
+
     }
 }

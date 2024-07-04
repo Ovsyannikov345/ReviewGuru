@@ -21,7 +21,7 @@ namespace ReviewGuru.DAL.Entities.Models
         [Required]
         public int Rating { get; set; }
 
-        public string UserReview { get; set; } = "";
+        public string? UserReview { get; set; } = "";
 
         [Required]
         public DateTime DateOfCreation { get; set; }
