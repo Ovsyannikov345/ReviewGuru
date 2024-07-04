@@ -2,5 +2,5 @@
 
 namespace ReviewGuru.API.Utilities.Responses
 {
-    public record ExceptionResponse(HttpStatusCode StatusCode, string Message)
+    public record ExceptionResponse(HttpStatusCode StatusCode, string Message);
 }

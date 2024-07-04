@@ -50,11 +50,11 @@ namespace ReviewGuru.BLL.Services
             return new TokenDto(accessToken, refreshToken);
         }
 
-        public async Task<TokenDto> RefreshTokensAsync(TokenDto tokens)
+        public async Task<TokenDto> RefreshTokensAsync(RefreshTokensDto refreshData)
         {
             ValidateJwtConfigData();
 
-            var refreshToken = await _refreshTokenRepository.GetAsync(token => token.Token == tokens.RefreshToken);
+            var refreshToken = await _refreshTokenRepository.GetAsync(token => token.Token == refreshData.RefreshToken);
 
             if (refreshToken == null)
             {
@@ -68,7 +68,9 @@ namespace ReviewGuru.BLL.Services
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:RefreshSecretKey"]!)),
                 ValidateIssuer = true,
+                ValidIssuer = _configuration["Jwt:Issuer"],
                 ValidateAudience = true,
+                ValidAudience = _configuration["Jwt:Audience"],
                 ValidateLifetime = true,
             };
 
