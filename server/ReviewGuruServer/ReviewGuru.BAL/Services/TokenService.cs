@@ -68,7 +68,9 @@ namespace ReviewGuru.BLL.Services
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:RefreshSecretKey"]!)),
                 ValidateIssuer = true,
+                ValidIssuer = _configuration["Jwt:Issuer"],
                 ValidateAudience = true,
+                ValidAudience = _configuration["Jwt:Audience"],
                 ValidateLifetime = true,
             };
 
