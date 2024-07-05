@@ -1,5 +1,6 @@
 ﻿using ReviewGuru.BLL.Services.IServices;
 using System;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,4 +14,5 @@ namespace ReviewGuru.BLL.DTOs
         public string MediaType { get; set; }
         public string Name { get; set; }
     }
+
 }

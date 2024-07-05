@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services
 {
-
     public class GenericService<TDTO>(IGenericRepository<TDTO> genericRepository) :  IGenericService<TDTO> where TDTO : class, IEntity, new ()
     {
         private readonly IGenericRepository<TDTO> _genericRepository = genericRepository;
@@ -30,12 +29,10 @@ namespace ReviewGuru.BLL.Services
         public async Task<TDTO> UpdateAsync(TDTO dto, CancellationToken cancellationToken = default)
         {
             var entity = await _genericRepository.GetAsync(x => x.Id == dto.Id, cancellationToken: cancellationToken);
-
             if (entity is null)
             {
                 //throw new NotFoundException("Entity not found");
             }
-
             var updatedEntity = await _genericRepository.UpdateAsync(dto, cancellationToken: cancellationToken);
             return updatedEntity;
         }
@@ -49,9 +46,5 @@ namespace ReviewGuru.BLL.Services
             }
             await _genericRepository.DeleteAsync(entityToDelete, cancellationToken: cancellationToken);
         }
-
     }
-
-
-    
 }

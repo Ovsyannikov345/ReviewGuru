@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ReviewGuru.DAL.Data;
@@ -11,9 +12,11 @@ using ReviewGuru.DAL.Data;
 namespace ReviewGuru.DAL.Migrations
 {
     [DbContext(typeof(ReviewGuruDbContext))]
-    partial class ReviewGuruDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240703114643_Create-Refresh-Tokens-Table")]
+    partial class CreateRefreshTokensTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,10 +75,10 @@ namespace ReviewGuru.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MediaAuthorId"));
 
-                    b.Property<int?>("AuthorId")
+                    b.Property<int>("AuthorId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("MediaId")
+                    b.Property<int>("MediaId")
                         .HasColumnType("integer");
 
                     b.HasKey("MediaAuthorId");
@@ -121,6 +124,7 @@ namespace ReviewGuru.DAL.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("UserReview")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("ReviewId");
@@ -136,7 +140,7 @@ namespace ReviewGuru.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
 
-                    b.Property<DateTime?>("DateOfBirth")
+                    b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
