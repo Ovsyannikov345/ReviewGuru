@@ -1,4 +1,5 @@
 ﻿using ReviewGuru.BLL.Services.IServices;
+using ReviewGuru.BLL.Utilities.Exceptions;
 using ReviewGuru.DAL.Repositories;
 using ReviewGuru.DAL.Repositories.IRepositories;
 using System;
@@ -31,7 +32,7 @@ namespace ReviewGuru.BLL.Services
             var entity = await _genericRepository.GetAsync(x => x.Id == dto.Id, cancellationToken: cancellationToken);
             if (entity is null)
             {
-                //throw new NotFoundException("Entity not found");
+                throw new NotFoundException("Entity not found");
             }
             var updatedEntity = await _genericRepository.UpdateAsync(dto, cancellationToken: cancellationToken);
             return updatedEntity;
@@ -42,7 +43,7 @@ namespace ReviewGuru.BLL.Services
             var entityToDelete = await _genericRepository.GetAsync(x => x.Id == id, cancellationToken: cancellationToken);
             if (entityToDelete is null)
             {
-                //throw new NotFoundException("Entity not found");
+                throw new NotFoundException("Entity not found");
             }
             await _genericRepository.DeleteAsync(entityToDelete, cancellationToken: cancellationToken);
         }
