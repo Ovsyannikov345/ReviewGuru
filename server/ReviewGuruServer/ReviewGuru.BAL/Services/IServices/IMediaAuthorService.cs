@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services.IServices
 {
-    public interface IMediaAuthorService : IGenericService<MediaAurtorDTO>
+    public interface IMediaAuthorService : IGenericService<MediaAuthorDTO>
     {
     }
 }

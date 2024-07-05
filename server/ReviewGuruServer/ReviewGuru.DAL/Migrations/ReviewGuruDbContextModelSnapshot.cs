@@ -40,7 +40,7 @@ namespace ReviewGuru.DAL.Migrations
 
                     b.HasKey("AuthorId");
 
-                    b.ToTable("Authors");
+                    b.ToTable("Authors", (string)null);
                 });
 
             modelBuilder.Entity("ReviewGuru.DAL.Entities.Models.Media", b =>
@@ -61,7 +61,7 @@ namespace ReviewGuru.DAL.Migrations
 
                     b.HasKey("MediaId");
 
-                    b.ToTable("Media");
+                    b.ToTable("Media", (string)null);
                 });
 
             modelBuilder.Entity("ReviewGuru.DAL.Entities.Models.MediaAuthor", b =>
@@ -80,24 +80,7 @@ namespace ReviewGuru.DAL.Migrations
 
                     b.HasKey("MediaAuthorId");
 
-                    b.ToTable("MediaAuthor");
-                });
-
-            modelBuilder.Entity("ReviewGuru.DAL.Entities.Models.RefreshToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("MediaAuthor", (string)null);
                 });
 
             modelBuilder.Entity("ReviewGuru.DAL.Entities.Models.Review", b =>
@@ -125,7 +108,7 @@ namespace ReviewGuru.DAL.Migrations
 
                     b.HasKey("ReviewId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("ReviewGuru.DAL.Entities.Models.User", b =>
@@ -153,7 +136,7 @@ namespace ReviewGuru.DAL.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 #pragma warning restore 612, 618
         }

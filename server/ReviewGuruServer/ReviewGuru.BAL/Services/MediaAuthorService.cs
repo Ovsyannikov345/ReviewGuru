@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services
 {
-    public class MediaAuthorService(IGenericRepository<MediaAurtorDTO> genericRepository) : GenericService<MediaAurtorDTO>(genericRepository), IMediaAuthorService
+    public class MediaAuthorService(IGenericRepository<MediaAuthorDTO> genericRepository) : GenericService<MediaAuthorDTO>(genericRepository), IMediaAuthorService
     {
     }
 }

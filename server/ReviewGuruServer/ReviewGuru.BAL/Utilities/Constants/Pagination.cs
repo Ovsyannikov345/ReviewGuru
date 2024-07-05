@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ReviewGuru.BLL.Utilities.Constants
+{
+    public class Pagination
+    {
+
+        public const int PageNumber = 1;
+        public const int PageSize = 10;
+    }
+}
