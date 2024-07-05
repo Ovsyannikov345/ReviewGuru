@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using ReviewGuru.BLL.DTOs;
@@ -78,6 +78,8 @@ namespace ReviewGuru.BLL.Services
 
             if (!validationResult.IsValid)
             {
+                await _refreshTokenRepository.DeleteAsync(refreshToken);
+
                 throw new ForbiddenException("Provided refresh token is invalid");
             }
 
