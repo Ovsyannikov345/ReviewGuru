@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using ReviewGuru.BLL.DTOs;
@@ -70,7 +70,7 @@ namespace ReviewGuru.BLL.Services
                 ValidateIssuer = true,
                 ValidIssuer = _configuration["Jwt:Issuer"],
                 ValidateAudience = true,
-                ValidAudience = _configuration["Jwt:Audience"],
+                ValidAudiences = _configuration.GetSection("Jwt:Audiences").Get<string[]>(),
                 ValidateLifetime = true,
             };
 
@@ -113,7 +113,7 @@ namespace ReviewGuru.BLL.Services
                 Subject = new ClaimsIdentity(claims),
                 Expires = expirationDate,
                 Issuer = _configuration["Jwt:Issuer"],
-                Audience = _configuration["Jwt:Audience"],
+                Audience = _configuration.GetSection("Jwt:Audiences:0").Value,
                 SigningCredentials = credentials
             };
 

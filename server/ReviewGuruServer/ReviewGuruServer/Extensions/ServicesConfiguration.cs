@@ -13,6 +13,7 @@ using ReviewGuru.BLL.Services;
 using ReviewGuru.DAL.Repositories.IRepositories;
 using ReviewGuru.DAL.Repositories;
 using ReviewGuru.BLL.Utilities.Validators;
+using Microsoft.Extensions.Configuration;
 
 
 namespace ReviewGuru.API.Extensions
@@ -38,7 +39,7 @@ namespace ReviewGuru.API.Extensions
                     ValidateIssuer = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidateAudience = true,
-                    ValidAudience = configuration["Jwt:Audience"],
+                    ValidAudiences = configuration.GetSection("Jwt:Audiences").Get<string[]>(),
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:AccessSecretKey"]!))
