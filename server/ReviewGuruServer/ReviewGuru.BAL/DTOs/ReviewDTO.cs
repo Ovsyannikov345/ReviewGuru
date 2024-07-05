@@ -17,7 +17,5 @@ namespace ReviewGuru.BLL.DTOs
         public DateTime DateOfCreation { get; set; } = DateTime.Now;
         public DateTime? DateOfLastModification { get; private set; }
         public DateTime? DateOfDeleting { get; private set; }
-
-
     }
 }
