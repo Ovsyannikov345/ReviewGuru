@@ -15,10 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\ReviewGuru.BAL\ReviewGuru.BLL.csproj" />
     <ProjectReference Include="..\ReviewGuru.DAL\ReviewGuru.DAL.csproj" />
   </ItemGroup>
 
