@@ -48,4 +48,29 @@ const sendLogoutRequest = async () => {
     }
 };
 
-export { sendLoginRequest, sendLogoutRequest };
+const sendRegisterRequest = async (userData) => {
+    try {
+        const response = await host.post("/Auth/register", userData, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+        });
+
+        return response;
+    } catch (error) {
+        if (error.response) {
+            if (!error.response.data.statusCode) {
+                error.response.data = {
+                    statusCode: error.response.status,
+                    message: "Service is currently unavailable",
+                };
+            }
+
+            return error.response;
+        } else if (error.request) {
+            return { data: { statusCode: 500, message: "Service is currently unavailable" } };
+        } else {
+            return { data: { statusCode: 400, message: "Error while creating request" } };
+        }
+    }
+};
+
+export { sendLoginRequest, sendLogoutRequest, sendRegisterRequest };
