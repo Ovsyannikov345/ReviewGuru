@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, AppBar, Toolbar, Grid, Menu, IconButton, Tooltip, MenuItem, ListItemIcon } from "@mui/material";
+import { Box, AppBar, Toolbar, Grid, Menu, IconButton, Tooltip, MenuItem, ListItemIcon, Snackbar, Alert } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -9,8 +9,35 @@ import EditIcon from "@mui/icons-material/Edit";
 import PasswordIcon from "@mui/icons-material/Password";
 import LoginIcon from "@mui/icons-material/Login";
 import Logo from "../images/logo-black.png";
+import { sendLogoutRequest } from "../api/authApi";
 
 const NavBar = () => {
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [success, setSuccess] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
+
+    const displayError = (message) => {
+        closeSnackbar();
+        setErrorMessage(message);
+        setError(true);
+    };
+
+    const displaySuccess = (message) => {
+        closeSnackbar();
+        setSuccessMessage(message);
+        setSuccess(true);
+    };
+
+    const closeSnackbar = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setSuccess(false);
+        setError(false);
+    };
+
     const [accessToken, setAccessToken] = useState(localStorage.getItem("accessToken"));
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -34,6 +61,23 @@ const NavBar = () => {
         };
     }, []);
 
+    const logout = async () => {
+        const response = await sendLogoutRequest();
+
+        if (!response || response.data.statusCode >= 400) {
+            if (response) {
+                displayError(response.data.message);
+            }
+
+            return;
+        }
+
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        displaySuccess("Logged out");
+        navigate("/catalogue");
+    };
+
     return (
         <>
             <Box>
@@ -51,7 +95,7 @@ const NavBar = () => {
                                 <Grid container gap={"10px"}>
                                     {accessToken ? (
                                         <>
-                                            <Tooltip title="Действия">
+                                            <Tooltip title="Actions">
                                                 <IconButton
                                                     size="large"
                                                     color="inherit"
@@ -62,23 +106,23 @@ const NavBar = () => {
                                                     <AccountCircleIcon fontSize="large" />
                                                 </IconButton>
                                             </Tooltip>
-                                            <Tooltip title="Избранное">
+                                            <Tooltip title="Favorites">
                                                 <IconButton size="large" color="inherit">
                                                     <FavoriteBorderIcon fontSize="large" />
                                                 </IconButton>
                                             </Tooltip>
-                                            <Tooltip title="Выход">
-                                                <IconButton size="large" color="inherit">
+                                            <Tooltip title="Log out">
+                                                <IconButton size="large" color="inherit" onClick={logout}>
                                                     <LogoutIcon fontSize="large" />
                                                 </IconButton>
                                             </Tooltip>
                                         </>
                                     ) : (
-                                        <Tooltip title="Авторизоваться">
+                                        <Tooltip title="Log in">
                                             <IconButton
                                                 size="large"
                                                 color="inherit"
-                                                onClick={(event) => {
+                                                onClick={() => {
                                                     navigate("/login");
                                                 }}
                                             >
@@ -104,21 +148,31 @@ const NavBar = () => {
                     <ListItemIcon>
                         <RateReviewIcon fontSize="small" />
                     </ListItemIcon>
-                    Мои отзывы
+                    My reviews
                 </MenuItem>
                 <MenuItem key={2}>
                     <ListItemIcon>
                         <EditIcon fontSize="small" />
                     </ListItemIcon>
-                    Редактировать профиль
+                    Edit profile
                 </MenuItem>
                 <MenuItem key={3}>
                     <ListItemIcon>
                         <PasswordIcon fontSize="small" />
                     </ListItemIcon>
-                    Сменить пароль
+                    Change password
                 </MenuItem>
             </Menu>
+            <Snackbar open={error} autoHideDuration={6000} onClose={closeSnackbar}>
+                <Alert onClose={closeSnackbar} severity="error" sx={{ width: "100%" }}>
+                    {errorMessage}
+                </Alert>
+            </Snackbar>
+            <Snackbar open={success} autoHideDuration={6000} onClose={closeSnackbar}>
+                <Alert onClose={closeSnackbar} severity="success" sx={{ width: "100%" }}>
+                    {successMessage}
+                </Alert>
+            </Snackbar>
         </>
     );
 };
