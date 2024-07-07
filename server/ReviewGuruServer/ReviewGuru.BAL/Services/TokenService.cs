@@ -25,8 +25,6 @@ namespace ReviewGuru.BLL.Services
 
         public async Task<TokenDto> CreateTokensAsync(User user)
         {
-            ValidateJwtConfigData();
-
             var claims = GetClaims(user);
 
             var accessToken = GenerateToken(claims,
@@ -52,8 +50,6 @@ namespace ReviewGuru.BLL.Services
 
         public async Task<TokenDto> RefreshTokensAsync(RefreshTokensDto refreshData)
         {
-            ValidateJwtConfigData();
-
             var refreshToken = await _refreshTokenRepository.GetAsync(token => token.Token == refreshData.RefreshToken);
 
             if (refreshToken == null)
@@ -147,29 +143,6 @@ namespace ReviewGuru.BLL.Services
             };
 
             return claims;
-        }
-
-        private void ValidateJwtConfigData()
-        {
-            if (_configuration["Jwt:AccessSecretKey"] == null)
-            {
-                throw new InternalServerErrorException("Access secret key not defined");
-            }
-
-            if (_configuration["Jwt:RefreshSecretKey"] == null)
-            {
-                throw new InternalServerErrorException("Refresh secret key not defined");
-            }
-
-            if (_configuration["Jwt:AccessMinutesExpire"] == null || !int.TryParse(_configuration["Jwt:AccessMinutesExpire"], out _))
-            {
-                throw new InternalServerErrorException("Access token expiration not defined");
-            }
-
-            if (_configuration["Jwt:RefreshDaysExpire"] == null || !int.TryParse(_configuration["Jwt:RefreshDaysExpire"], out _))
-            {
-                throw new InternalServerErrorException("Refresh token expiration not defined");
-            }
         }
     }
 }
