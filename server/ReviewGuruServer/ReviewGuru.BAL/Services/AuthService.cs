@@ -2,6 +2,8 @@
 using BCrypt.Net;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services.IServices;
+using ReviewGuru.BLL.Utilities.Constants;
+using ReviewGuru.BLL.Utilities.EmailSender;
 using ReviewGuru.BLL.Utilities.Exceptions;
 using ReviewGuru.BLL.Utilities.Validators;
 using ReviewGuru.DAL.Entities.Models;
@@ -15,13 +17,20 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services
 {
-    public class AuthService(IUserRepository userRepository, ITokenService tokenService, IMapper mapper, RegistrationValidator registrationValidator) : IAuthService
+    public class AuthService(
+        IUserRepository userRepository,
+        ITokenService tokenService,
+        IMapper mapper,
+        IEmailSender emailSender,
+        RegistrationValidator registrationValidator) : IAuthService
     {
         private readonly IUserRepository _userRepository = userRepository;
 
         private readonly ITokenService _tokenService = tokenService;
 
         private readonly IMapper _mapper = mapper;
+
+        private readonly IEmailSender _emailSender = emailSender;
 
         private readonly RegistrationValidator _registrationValidator = registrationValidator;
 
@@ -75,6 +84,16 @@ namespace ReviewGuru.BLL.Services
             user.Password = BCrypt.Net.BCrypt.HashPassword(userData.Password);
 
             User createdUser = await _userRepository.AddAsync(user);
+
+            try
+            {
+                await _emailSender.SendEmailAsync(createdUser.Email, "Thank you for joining our media review service!", EmailMessages.WelcomeMessage);
+            }
+            catch (Exception)
+            {
+                await _userRepository.DeleteAsync(createdUser);
+                throw;
+            }
 
             return await _tokenService.CreateTokensAsync(createdUser);
         }

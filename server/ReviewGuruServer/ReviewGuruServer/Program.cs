@@ -22,6 +22,7 @@ namespace ReviewGuruServer
             services.AddAutoValidation();
             services.AddAuthorization();
             services.AddCorsPolicy(builder.Configuration);
+            services.AddEmailSender();
 
             var app = builder.Build();
 
