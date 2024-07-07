@@ -36,5 +36,14 @@ namespace ReviewGuru.API.Controllers
 
             return Ok();
         }
+
+        [HttpPost("verify")]
+        [AllowAnonymous]
+        public async Task<IActionResult> VerifyUserAsync(VerifyAccountDto verificationData)
+        {
+            await _authService.VerifyUserAsync(verificationData);
+
+            return Ok();
+        }
     }
 }
