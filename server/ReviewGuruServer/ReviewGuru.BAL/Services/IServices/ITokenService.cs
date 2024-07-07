@@ -1,4 +1,5 @@
-﻿using ReviewGuru.BLL.DTOs;
+﻿using Microsoft.IdentityModel.Tokens;
+using ReviewGuru.BLL.DTOs;
 using ReviewGuru.DAL.Entities.Models;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,15 @@ namespace ReviewGuru.BLL.Services.IServices
 {
     public interface ITokenService
     {
-        string GenerateToken(IEnumerable<Claim> claims, DateTime expirationDate, string secretKey);
+        public string GenerateToken(IEnumerable<Claim> claims, DateTime expirationDate, string secretKey);
 
-        Task<TokenDto> CreateTokensAsync(User user);
+        public Task<TokenDto> CreateTokensAsync(User user);
 
-        Task<TokenDto> RefreshTokensAsync(RefreshTokensDto refreshData);
+        public Task<TokenDto> RefreshTokensAsync(RefreshTokensDto refreshData);
+
+        public string GenerateVerificationToken(User user);
+
+        public Task<TokenValidationResult> ValidateVerificationTokenAsync(string verificationToken);
 
         public Task<int> RemoveRefreshTokenAsync(string refreshToken);
     }

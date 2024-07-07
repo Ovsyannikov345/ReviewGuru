@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using ReviewGuru.BLL.DTOs;
@@ -120,6 +121,40 @@ namespace ReviewGuru.BLL.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return token;
+        }
+
+        public string GenerateVerificationToken(User user)
+        {
+            var claims = GetClaims(user);
+
+            return GenerateToken(claims,
+                DateTime.Now.AddHours(int.Parse(_configuration["Jwt:VerificationHoursExpire"]!)),
+                _configuration["Jwt:VerificationSecretKey"]!);
+        }
+
+        public async Task<TokenValidationResult> ValidateVerificationTokenAsync(string verificationToken)
+        {
+            var tokenHandler = new JsonWebTokenHandler();
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:VerificationSecretKey"]!)),
+                ValidateIssuer = true,
+                ValidIssuer = _configuration["Jwt:Issuer"],
+                ValidateAudience = true,
+                ValidAudiences = _configuration.GetSection("Jwt:Audiences").Get<string[]>(),
+                ValidateLifetime = true,
+            };
+
+            TokenValidationResult validationResult = await tokenHandler.ValidateTokenAsync(verificationToken, tokenValidationParameters);
+
+            if (!validationResult.IsValid)
+            {
+                throw new ForbiddenException("Provided validation token is invalid");
+            }
+
+            return validationResult;
         }
 
         public async Task<int> RemoveRefreshTokenAsync(string refreshToken)

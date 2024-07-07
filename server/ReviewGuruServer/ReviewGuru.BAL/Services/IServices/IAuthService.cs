@@ -14,5 +14,7 @@ namespace ReviewGuru.BLL.Services.IServices
         Task<TokenDto> RegisterAsync(RegisterDto userData);
 
         Task LogoutAsync(LogoutDto logoutData);
+
+        Task VerifyUserAsync(VerifyAccountDto verificationData);
     }
 }
