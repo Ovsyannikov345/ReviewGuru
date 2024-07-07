@@ -70,7 +70,7 @@ namespace ReviewGuru.BLL.Services
                 ValidateIssuer = true,
                 ValidIssuer = _configuration["Jwt:Issuer"],
                 ValidateAudience = true,
-                ValidAudience = _configuration["Jwt:Audience"],
+                ValidAudiences = _configuration.GetSection("Jwt:Audiences").Get<string[]>(),
                 ValidateLifetime = true,
             };
 
@@ -78,6 +78,8 @@ namespace ReviewGuru.BLL.Services
 
             if (!validationResult.IsValid)
             {
+                await _refreshTokenRepository.DeleteAsync(refreshToken);
+
                 throw new ForbiddenException("Provided refresh token is invalid");
             }
 
@@ -113,7 +115,7 @@ namespace ReviewGuru.BLL.Services
                 Subject = new ClaimsIdentity(claims),
                 Expires = expirationDate,
                 Issuer = _configuration["Jwt:Issuer"],
-                Audience = _configuration["Jwt:Audience"],
+                Audience = _configuration.GetSection("Jwt:Audiences:0").Value,
                 SigningCredentials = credentials
             };
 
