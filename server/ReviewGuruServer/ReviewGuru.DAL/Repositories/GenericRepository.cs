@@ -26,27 +26,24 @@ namespace ReviewGuru.DAL.Repositories
         }
 
         public async Task<List<TEntity>> GetListAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default)
-
         {
             var entities = filter == null ? _context.Set<TEntity>() : _context.Set<TEntity>().Where(filter);
 
-            return await entities.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            return await entities.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
         }
 
         public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
-
         {
-            await _context.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            await _context.AddAsync(entity, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return entity;
         }
 
         public async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
-
         {
             _context.Update(entity);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return entity;
         }
@@ -56,7 +53,7 @@ namespace ReviewGuru.DAL.Repositories
         {
             _context.Remove(entity);
 
-            return await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

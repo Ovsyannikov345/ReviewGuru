@@ -1,8 +1,9 @@
-import { CATALOGUE_ROUTE, LOGIN_ROUTE, PRODUCT_ROUTE, REGISTER_ROUTE } from "../utils/consts";
+import { CATALOGUE_ROUTE, LOGIN_ROUTE, PRODUCT_ROUTE, REGISTER_ROUTE, VERIFICATION_ROUTE } from "../utils/consts";
 import LoginPage from "./../pages/LoginPage";
 import RegistrationPage from "./../pages/RegistrationPage";
 import CataloguePage from "./../pages/CataloguePage";
 import ProductPage from "./../pages/ProductPage";
+import EmailVerificationPage from "../pages/EmailVerificationPage";
 
 export const publicRoutes = [
     {
@@ -20,5 +21,9 @@ export const publicRoutes = [
     {
         path: PRODUCT_ROUTE,
         Component: ProductPage,
+    },
+    {
+        path: VERIFICATION_ROUTE,
+        Component: EmailVerificationPage,
     },
 ];

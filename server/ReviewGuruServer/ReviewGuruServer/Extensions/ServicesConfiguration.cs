@@ -13,6 +13,9 @@ using ReviewGuru.BLL.Services;
 using ReviewGuru.DAL.Repositories.IRepositories;
 using ReviewGuru.DAL.Repositories;
 using ReviewGuru.BLL.Utilities.Validators;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using ReviewGuru.BLL.Utilities.EmailSender;
 
 
 namespace ReviewGuru.API.Extensions
@@ -38,7 +41,7 @@ namespace ReviewGuru.API.Extensions
                     ValidateIssuer = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidateAudience = true,
-                    ValidAudience = configuration["Jwt:Audience"],
+                    ValidAudiences = configuration.GetSection("Jwt:Audiences").Get<string[]>(),
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:AccessSecretKey"]!))
@@ -99,6 +102,11 @@ namespace ReviewGuru.API.Extensions
         public static void AddAutoValidation(this IServiceCollection services)
         {
             services.AddValidatorsFromAssemblyContaining<RegistrationValidator>();
+        }
+
+        public static void AddEmailSender(this IServiceCollection services)
+        {
+            services.AddTransient<ReviewGuru.BLL.Utilities.EmailSender.IEmailSender, EmailSender>();
         }
     }
 }
