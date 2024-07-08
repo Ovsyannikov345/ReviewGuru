@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.DTOs
 {
-    public record ReviewDTO : IEntity
+    public record ReviewDTO
     {
-        public int Id { get; private init; }
+        public int ReviewId { get; init; }
         public int UserId { get;  init; }
         public int MediaId { get; init; }
         public int Rating { get; init; }
-        public string UserReview { get; init; }
+        public string UserReview { get; init; } = string.Empty;
         public DateTime DateOfCreation { get; init; } = DateTime.Now;
         public DateTime? DateOfLastModification { get; private init; }
         public DateTime? DateOfDeleting { get; private init; }

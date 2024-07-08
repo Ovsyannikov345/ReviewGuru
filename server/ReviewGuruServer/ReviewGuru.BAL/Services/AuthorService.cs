@@ -12,15 +12,8 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services
 {
-    public class AuthorService(IGenericRepository<AuthorDTO> genericRepository, IMapper mapper, IAuthorRepository authorRepository) : GenericService<AuthorDTO>(genericRepository, mapper), IAuthorService
+    public class AuthorService(IGenericRepository<Author> genericRepository, IMapper mapper, IAuthorRepository authorRepository) : GenericService<AuthorDTO, Author>(genericRepository, mapper), IAuthorService
     {
-        private readonly IAuthorRepository _authorRepository = authorRepository;
-        private readonly IMapper _mapper = mapper;
-        public new async Task<AuthorDTO> CreateAsync(AuthorDTO authorDTO, CancellationToken cancellationToken = default)
-        {
-            var createdAuthor = await _authorRepository.AddAsync(_mapper.Map<Author>(authorDTO), cancellationToken: cancellationToken);
-
-            return _mapper.Map<AuthorDTO>(createdAuthor);
-        }
+       
     }
 }

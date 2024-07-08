@@ -70,9 +70,10 @@ namespace ReviewGuru.API.Extensions
             services.AddSingleton(mapper);
         }
 
+
         public static void AddBusinessLogicServices(this IServiceCollection services)
         {
-            services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
+            services.AddScoped(typeof(IGenericService<,>), typeof(GenericService<,>));
 
             services.AddScoped<ITokenService, TokenService>()
                     .AddScoped<IAuthService, AuthService>()

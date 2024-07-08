@@ -9,7 +9,7 @@ namespace ReviewGuru.DAL.Entities.Models
 {
     public class Author
     {
-        [Required]
+        [Key]
         public int AuthorId { get; set; }
 
         [Required]

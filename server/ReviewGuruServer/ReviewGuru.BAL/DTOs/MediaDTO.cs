@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.DTOs
 {
-    public record MediaDTO : IEntity
+    public record MediaDTO
     {
-        public int Id { get; private init; }
+        public int MediaId { get;  init; }
         public string MediaType { get; init; }
         public string Name { get; init; }
     }

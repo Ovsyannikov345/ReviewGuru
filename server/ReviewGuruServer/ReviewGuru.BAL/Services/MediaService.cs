@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services.IServices;
+using ReviewGuru.DAL.Entities.Models;
 using ReviewGuru.DAL.Repositories.IRepositories;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services
 {
-    public class MediaService(IGenericRepository<MediaDTO> genericRepository, IMapper mapper) : GenericService<MediaDTO>(genericRepository, mapper), IMediaService
+    public class MediaService(IGenericRepository<Media> genericRepository, IMapper mapper) : GenericService<MediaDTO, Media>(genericRepository, mapper), IMediaService
     {
     }
 }

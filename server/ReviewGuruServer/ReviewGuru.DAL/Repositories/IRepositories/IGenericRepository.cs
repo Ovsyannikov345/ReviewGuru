@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.DAL.Repositories.IRepositories
 {
-    public interface IGenericRepository<TDTO> where TDTO : class, new()
+    public interface IGenericRepository<TEntity> where TEntity : class, new()
     { 
-        Task<TDTO?> GetAsync(Expression<Func<TDTO, bool>> filter, CancellationToken cancellationToken = default);
+        Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default);
 
-        Task<List<TDTO>> GetListAsync(int pageNumber, int pageSize, Expression<Func<TDTO, bool>>? filter = null, CancellationToken cancellationToken = default);
+        Task<List<TEntity>> GetListAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default);
 
-        Task<TDTO> AddAsync(TDTO entity, CancellationToken cancellationToken = default);
+        Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default);
 
-        Task<TDTO> UpdateAsync(TDTO entity, CancellationToken cancellationToken = default);
+        Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
 
-        Task<int> DeleteAsync(TDTO entity, CancellationToken cancellationToken = default);
+        Task<int> DeleteAsync(TEntity entity, CancellationToken cancellationToken = default);
 
     }
 
