@@ -10,9 +10,9 @@ namespace ReviewGuru.BLL.DTOs
 {
     public record MediaDTO : IEntity
     {
-        public int Id { get; private set; }
-        public string MediaType { get; set; }
-        public string Name { get; set; }
+        public int Id { get; private init; }
+        public string MediaType { get; init; }
+        public string Name { get; init; }
     }
 
 }

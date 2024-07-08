@@ -72,14 +72,27 @@ namespace ReviewGuru.API.Extensions
 
         public static void AddBusinessLogicServices(this IServiceCollection services)
         {
+            services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
+
             services.AddScoped<ITokenService, TokenService>()
-                    .AddScoped<IAuthService, AuthService>();
+                    .AddScoped<IAuthService, AuthService>()
+                    .AddScoped<IAuthorService, AuthorService>()
+                    .AddScoped<IMediaAuthorService, MediaAuthorService>()
+                    .AddScoped<IMediaService, MediaService>()
+                    .AddScoped<IReviewService, ReviewService>()
+                    .AddScoped<IUserService, UserService>();
         }
 
         public static void AddDataAccessRepositories(this IServiceCollection services)
         {
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>()
-                    .AddScoped<IUserRepository, UserRepository>();
+                    .AddScoped<IUserRepository, UserRepository>()
+                    .AddScoped<IAuthorRepository, AuthorRepository>()
+                    .AddScoped<IMediaAuthorRepository, MediaAuthorRepository>()
+                    .AddScoped<IMediaRepository, MediaRepository>()
+                    .AddScoped<IReviewRepository, ReviewRepository>();
         }
 
         public static void AddAutoValidation(this IServiceCollection services)

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services.IServices;
 using ReviewGuru.BLL.Utilities.Constants;
@@ -14,14 +15,13 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services
 {
-    public class RevievService(IGenericRepository<ReviewDTO> genericRepository) : GenericService<ReviewDTO>(genericRepository), IReviewService
+    public class ReviewService(IGenericRepository<ReviewDTO> genericRepository, IMapper mapper) : GenericService<ReviewDTO>(genericRepository, mapper), IReviewService
     {
         private readonly IGenericRepository<ReviewDTO> _genericRepository = genericRepository;
-        public async Task<List<ReviewDTO>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        public new async Task<List<ReviewDTO>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
         {
             var entities = await _genericRepository.GetListAsync(pageNumber, pageSize, cancellationToken: cancellationToken);
 
-            // Filter out the entities that have a non-null DateOfDeleting
             var filteredEntities = entities.Where(x => x.DateOfDeleting == null).ToList();
 
             return filteredEntities;
