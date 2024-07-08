@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using ReviewGuru.BLL.DTOs;
@@ -23,10 +24,8 @@ namespace ReviewGuru.BLL.Services
 
         private readonly IRefreshTokenRepository _refreshTokenRepository = refreshTokenRepository;
 
-        public async Task<TokenDto> CreateTokensAsync(User user)
+        public async Task<TokenDto> CreateTokensAsync(User user, CancellationToken cancellationToken = default)
         {
-            ValidateJwtConfigData();
-
             var claims = GetClaims(user);
 
             var accessToken = GenerateToken(claims,
@@ -39,7 +38,7 @@ namespace ReviewGuru.BLL.Services
 
             try
             {
-                await _refreshTokenRepository.AddAsync(new RefreshToken() { Token = refreshToken });
+                await _refreshTokenRepository.AddAsync(new RefreshToken() { Token = refreshToken }, cancellationToken);
             }
             catch (Exception)
             {
@@ -50,11 +49,9 @@ namespace ReviewGuru.BLL.Services
             return new TokenDto(accessToken, refreshToken);
         }
 
-        public async Task<TokenDto> RefreshTokensAsync(RefreshTokensDto refreshData)
+        public async Task<TokenDto> RefreshTokensAsync(RefreshTokensDto refreshData, CancellationToken cancellationToken = default)
         {
-            ValidateJwtConfigData();
-
-            var refreshToken = await _refreshTokenRepository.GetAsync(token => token.Token == refreshData.RefreshToken);
+            var refreshToken = await _refreshTokenRepository.GetAsync(token => token.Token == refreshData.RefreshToken, cancellationToken);
 
             if (refreshToken == null)
             {
@@ -78,7 +75,7 @@ namespace ReviewGuru.BLL.Services
 
             if (!validationResult.IsValid)
             {
-                await _refreshTokenRepository.DeleteAsync(refreshToken);
+                await _refreshTokenRepository.DeleteAsync(refreshToken, cancellationToken);
 
                 throw new ForbiddenException("Provided refresh token is invalid");
             }
@@ -93,8 +90,8 @@ namespace ReviewGuru.BLL.Services
 
             try
             {
-                await _refreshTokenRepository.DeleteAsync(refreshToken);
-                await _refreshTokenRepository.AddAsync(new RefreshToken() { Token = newRefreshToken });
+                await _refreshTokenRepository.DeleteAsync(refreshToken, cancellationToken);
+                await _refreshTokenRepository.AddAsync(new RefreshToken() { Token = newRefreshToken }, cancellationToken);
             }
             catch (Exception)
             {
@@ -126,16 +123,50 @@ namespace ReviewGuru.BLL.Services
             return token;
         }
 
-        public async Task<int> RemoveRefreshTokenAsync(string refreshToken)
+        public string GenerateVerificationToken(User user)
         {
-            var token = await _refreshTokenRepository.GetAsync(t => t.Token == refreshToken);
+            var claims = GetClaims(user);
+
+            return GenerateToken(claims,
+                DateTime.Now.AddHours(int.Parse(_configuration["Jwt:VerificationHoursExpire"]!)),
+                _configuration["Jwt:VerificationSecretKey"]!);
+        }
+
+        public async Task<TokenValidationResult> ValidateVerificationTokenAsync(string verificationToken, CancellationToken cancellationToken = default)
+        {
+            var tokenHandler = new JsonWebTokenHandler();
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:VerificationSecretKey"]!)),
+                ValidateIssuer = true,
+                ValidIssuer = _configuration["Jwt:Issuer"],
+                ValidateAudience = true,
+                ValidAudiences = _configuration.GetSection("Jwt:Audiences").Get<string[]>(),
+                ValidateLifetime = true,
+            };
+
+            TokenValidationResult validationResult = await tokenHandler.ValidateTokenAsync(verificationToken, tokenValidationParameters);
+
+            if (!validationResult.IsValid)
+            {
+                throw new ForbiddenException("Provided validation token is invalid");
+            }
+
+            return validationResult;
+        }
+
+        public async Task<int> RemoveRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+        {
+            var token = await _refreshTokenRepository.GetAsync(t => t.Token == refreshToken, cancellationToken);
 
             if (token == null)
             {
                 throw new NotFoundException("Provided refresh token is not found");
             }
 
-            return await _refreshTokenRepository.DeleteAsync(token);
+            return await _refreshTokenRepository.DeleteAsync(token, cancellationToken);
         }
 
         private List<Claim> GetClaims(User user)
@@ -147,29 +178,6 @@ namespace ReviewGuru.BLL.Services
             };
 
             return claims;
-        }
-
-        private void ValidateJwtConfigData()
-        {
-            if (_configuration["Jwt:AccessSecretKey"] == null)
-            {
-                throw new InternalServerErrorException("Access secret key not defined");
-            }
-
-            if (_configuration["Jwt:RefreshSecretKey"] == null)
-            {
-                throw new InternalServerErrorException("Refresh secret key not defined");
-            }
-
-            if (_configuration["Jwt:AccessMinutesExpire"] == null || !int.TryParse(_configuration["Jwt:AccessMinutesExpire"], out _))
-            {
-                throw new InternalServerErrorException("Access token expiration not defined");
-            }
-
-            if (_configuration["Jwt:RefreshDaysExpire"] == null || !int.TryParse(_configuration["Jwt:RefreshDaysExpire"], out _))
-            {
-                throw new InternalServerErrorException("Refresh token expiration not defined");
-            }
         }
     }
 }

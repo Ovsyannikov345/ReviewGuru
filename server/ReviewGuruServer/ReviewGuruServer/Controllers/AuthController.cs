@@ -13,26 +13,35 @@ namespace ReviewGuru.API.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> LoginAsync(LoginDto authData)
+        public async Task<IActionResult> LoginAsync(LoginDto authData, CancellationToken cancellationToken = default)
         {
-            var tokens = await _authService.LoginAsync(authData);
+            var tokens = await _authService.LoginAsync(authData, cancellationToken);
 
             return Ok(tokens);
         }
 
         [HttpPost("register")]
         [AllowAnonymous]
-        public async Task<IActionResult> RegisterAsync(RegisterDto userData)
+        public async Task<IActionResult> RegisterAsync(RegisterDto userData, CancellationToken cancellationToken = default)
         {
-            var tokens = await _authService.RegisterAsync(userData);
+            var tokens = await _authService.RegisterAsync(userData, cancellationToken);
 
             return Ok(tokens);
         }
 
         [HttpPost("logout")]
-        public async Task<IActionResult> LogoutAsync(LogoutDto logoutData)
+        public async Task<IActionResult> LogoutAsync(LogoutDto logoutData, CancellationToken cancellationToken = default)
         {
-            await _authService.LogoutAsync(logoutData);
+            await _authService.LogoutAsync(logoutData, cancellationToken);
+
+            return Ok();
+        }
+
+        [HttpPost("verify")]
+        [AllowAnonymous]
+        public async Task<IActionResult> VerifyUserAsync(VerifyAccountDto verificationData, CancellationToken cancellationToken = default)
+        {
+            await _authService.VerifyUserAsync(verificationData, cancellationToken);
 
             return Ok();
         }
