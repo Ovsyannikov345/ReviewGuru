@@ -12,8 +12,8 @@ using ReviewGuru.DAL.Data;
 namespace ReviewGuru.DAL.Migrations
 {
     [DbContext(typeof(ReviewGuruDbContext))]
-    [Migration("20240705125354_CreateDeleteTrigger")]
-    partial class CreateDeleteTrigger
+    [Migration("20240705151002_AddReviewTriggersFinal")]
+    partial class AddReviewTriggersFinal
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
