@@ -14,7 +14,7 @@ namespace ReviewGuru.BLL.Utilities.EmailSender
     {
         private readonly IConfiguration _configuration = configuration;
 
-        public Task SendEmailAsync(string email, string subject, string message)
+        public Task SendEmailAsync(string email, string subject, string message, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -29,8 +29,8 @@ namespace ReviewGuru.BLL.Utilities.EmailSender
                     new MailMessage(from: _configuration["Email:From"]!,
                                     to: email,
                                     subject,
-                                    message
-                                    ));
+                                    message),
+                    cancellationToken);
             }
             catch (Exception)
             {

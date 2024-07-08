@@ -24,7 +24,7 @@ namespace ReviewGuru.BLL.Services
 
         private readonly IRefreshTokenRepository _refreshTokenRepository = refreshTokenRepository;
 
-        public async Task<TokenDto> CreateTokensAsync(User user)
+        public async Task<TokenDto> CreateTokensAsync(User user, CancellationToken cancellationToken = default)
         {
             var claims = GetClaims(user);
 
@@ -38,7 +38,7 @@ namespace ReviewGuru.BLL.Services
 
             try
             {
-                await _refreshTokenRepository.AddAsync(new RefreshToken() { Token = refreshToken });
+                await _refreshTokenRepository.AddAsync(new RefreshToken() { Token = refreshToken }, cancellationToken);
             }
             catch (Exception)
             {
@@ -49,9 +49,9 @@ namespace ReviewGuru.BLL.Services
             return new TokenDto(accessToken, refreshToken);
         }
 
-        public async Task<TokenDto> RefreshTokensAsync(RefreshTokensDto refreshData)
+        public async Task<TokenDto> RefreshTokensAsync(RefreshTokensDto refreshData, CancellationToken cancellationToken = default)
         {
-            var refreshToken = await _refreshTokenRepository.GetAsync(token => token.Token == refreshData.RefreshToken);
+            var refreshToken = await _refreshTokenRepository.GetAsync(token => token.Token == refreshData.RefreshToken, cancellationToken);
 
             if (refreshToken == null)
             {
@@ -75,7 +75,7 @@ namespace ReviewGuru.BLL.Services
 
             if (!validationResult.IsValid)
             {
-                await _refreshTokenRepository.DeleteAsync(refreshToken);
+                await _refreshTokenRepository.DeleteAsync(refreshToken, cancellationToken);
 
                 throw new ForbiddenException("Provided refresh token is invalid");
             }
@@ -90,8 +90,8 @@ namespace ReviewGuru.BLL.Services
 
             try
             {
-                await _refreshTokenRepository.DeleteAsync(refreshToken);
-                await _refreshTokenRepository.AddAsync(new RefreshToken() { Token = newRefreshToken });
+                await _refreshTokenRepository.DeleteAsync(refreshToken, cancellationToken);
+                await _refreshTokenRepository.AddAsync(new RefreshToken() { Token = newRefreshToken }, cancellationToken);
             }
             catch (Exception)
             {
@@ -132,7 +132,7 @@ namespace ReviewGuru.BLL.Services
                 _configuration["Jwt:VerificationSecretKey"]!);
         }
 
-        public async Task<TokenValidationResult> ValidateVerificationTokenAsync(string verificationToken)
+        public async Task<TokenValidationResult> ValidateVerificationTokenAsync(string verificationToken, CancellationToken cancellationToken = default)
         {
             var tokenHandler = new JsonWebTokenHandler();
 
@@ -157,16 +157,16 @@ namespace ReviewGuru.BLL.Services
             return validationResult;
         }
 
-        public async Task<int> RemoveRefreshTokenAsync(string refreshToken)
+        public async Task<int> RemoveRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
-            var token = await _refreshTokenRepository.GetAsync(t => t.Token == refreshToken);
+            var token = await _refreshTokenRepository.GetAsync(t => t.Token == refreshToken, cancellationToken);
 
             if (token == null)
             {
                 throw new NotFoundException("Provided refresh token is not found");
             }
 
-            return await _refreshTokenRepository.DeleteAsync(token);
+            return await _refreshTokenRepository.DeleteAsync(token, cancellationToken);
         }
 
         private List<Claim> GetClaims(User user)

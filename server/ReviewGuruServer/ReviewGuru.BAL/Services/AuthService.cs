@@ -42,9 +42,9 @@ namespace ReviewGuru.BLL.Services
 
         private readonly RegistrationValidator _registrationValidator = registrationValidator;
 
-        public async Task<TokenDto> LoginAsync(LoginDto authData)
+        public async Task<TokenDto> LoginAsync(LoginDto authData, CancellationToken cancellationToken = default)
         {
-            var user = await _userRepository.GetAsync(u => u.Login == authData.Login);
+            var user = await _userRepository.GetAsync(u => u.Login == authData.Login, cancellationToken);
 
             if (user == null)
             {
@@ -56,17 +56,17 @@ namespace ReviewGuru.BLL.Services
                 throw new UnauthorizedException("Provided credentials are invalid");
             }
 
-            return await _tokenService.CreateTokensAsync(user);
+            return await _tokenService.CreateTokensAsync(user, cancellationToken);
         }
 
-        public async Task LogoutAsync(LogoutDto logoutData)
+        public async Task LogoutAsync(LogoutDto logoutData, CancellationToken cancellationToken = default)
         {
-            await _tokenService.RemoveRefreshTokenAsync(logoutData.RefreshToken);
+            await _tokenService.RemoveRefreshTokenAsync(logoutData.RefreshToken, cancellationToken);
         }
 
-        public async Task<TokenDto> RegisterAsync(RegisterDto userData)
+        public async Task<TokenDto> RegisterAsync(RegisterDto userData, CancellationToken cancellationToken = default)
         {
-            var validationResult = await _registrationValidator.ValidateAsync(userData);
+            var validationResult = await _registrationValidator.ValidateAsync(userData, cancellationToken);
 
             if (!validationResult.IsValid)
             {
@@ -75,14 +75,14 @@ namespace ReviewGuru.BLL.Services
 
             User user = _mapper.Map<User>(userData);
 
-            bool isLoginAvailable = await IsLoginAvailable(user.Login);
+            bool isLoginAvailable = await IsLoginAvailable(user.Login, cancellationToken);
 
             if (!isLoginAvailable)
             {
                 throw new BadRequestException("Login is taken");
             }
 
-            bool isEmailAvailable = await IsEmailAvailable(user.Email);
+            bool isEmailAvailable = await IsEmailAvailable(user.Email, cancellationToken);
 
             if (!isEmailAvailable)
             {
@@ -91,7 +91,7 @@ namespace ReviewGuru.BLL.Services
 
             user.Password = BCrypt.Net.BCrypt.HashPassword(userData.Password);
 
-            User createdUser = await _userRepository.AddAsync(user);
+            User createdUser = await _userRepository.AddAsync(user, cancellationToken);
 
             string verificationToken = _tokenService.GenerateVerificationToken(createdUser);
 
@@ -99,26 +99,27 @@ namespace ReviewGuru.BLL.Services
             {
                 await _emailSender.SendEmailAsync(createdUser.Email,
                     "Email verification",
-                    EmailMessages.GetVerificationMessage($"{_configuration["Verification:URL"]}?token={verificationToken}"));
+                    EmailMessages.GetVerificationMessage($"{_configuration["Verification:URL"]}?token={verificationToken}"),
+                    cancellationToken);
             }
             catch (Exception)
             {
-                await _userRepository.DeleteAsync(createdUser);
+                await _userRepository.DeleteAsync(createdUser, cancellationToken);
                 throw;
             }
 
-            return await _tokenService.CreateTokensAsync(createdUser);
+            return await _tokenService.CreateTokensAsync(createdUser, cancellationToken);
         }
 
-        public async Task VerifyUserAsync(VerifyAccountDto verificationData)
+        public async Task VerifyUserAsync(VerifyAccountDto verificationData, CancellationToken cancellationToken = default)
         {
-            TokenValidationResult validationResult = await _tokenService.ValidateVerificationTokenAsync(verificationData.VerificationToken);
+            TokenValidationResult validationResult = await _tokenService.ValidateVerificationTokenAsync(verificationData.VerificationToken, cancellationToken);
 
             var userIdClaim = validationResult.ClaimsIdentity.FindFirst("Id") ?? throw new InternalServerErrorException("Verification failed. User id is not provided");
 
             int userId = int.Parse(userIdClaim.Value);
 
-            User user = await _userRepository.GetAsync(u => u.UserId == userId) ?? throw new NotFoundException("User to verify is not found");
+            User user = await _userRepository.GetAsync(u => u.UserId == userId, cancellationToken) ?? throw new NotFoundException("User to verify is not found");
 
             if (user.IsVerified)
             {
@@ -126,11 +127,11 @@ namespace ReviewGuru.BLL.Services
             }
 
             user.IsVerified = true;
-            await _userRepository.UpdateAsync(user);
+            await _userRepository.UpdateAsync(user, cancellationToken);
 
             try
             {
-                await _emailSender.SendEmailAsync(user.Email, "Thank you for joining our media review service!", EmailMessages.WelcomeMessage);
+                await _emailSender.SendEmailAsync(user.Email, "Thank you for joining our media review service!", EmailMessages.WelcomeMessage, cancellationToken);
             }
             catch (InternalServerErrorException)
             {
@@ -138,16 +139,16 @@ namespace ReviewGuru.BLL.Services
             }
         }
 
-        private async Task<bool> IsEmailAvailable(string email)
+        private async Task<bool> IsEmailAvailable(string email, CancellationToken cancellationToken = default)
         {
-            var user = await _userRepository.GetAsync(u => u.Email == email);
+            var user = await _userRepository.GetAsync(u => u.Email == email, cancellationToken);
 
             return user == null;
         }
 
-        private async Task<bool> IsLoginAvailable(string login)
+        private async Task<bool> IsLoginAvailable(string login, CancellationToken cancellationToken = default)
         {
-            var user = await _userRepository.GetAsync(u => u.Login == login);
+            var user = await _userRepository.GetAsync(u => u.Login == login, cancellationToken);
 
             return user == null;
         }

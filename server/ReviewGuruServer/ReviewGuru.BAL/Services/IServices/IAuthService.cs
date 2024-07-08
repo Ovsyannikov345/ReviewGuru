@@ -9,12 +9,12 @@ namespace ReviewGuru.BLL.Services.IServices
 {
     public interface IAuthService
     {
-        Task<TokenDto> LoginAsync(LoginDto authData);
+        Task<TokenDto> LoginAsync(LoginDto authData, CancellationToken cancellationToken = default);
 
-        Task<TokenDto> RegisterAsync(RegisterDto userData);
+        Task<TokenDto> RegisterAsync(RegisterDto userData, CancellationToken cancellationToken = default);
 
-        Task LogoutAsync(LogoutDto logoutData);
+        Task LogoutAsync(LogoutDto logoutData, CancellationToken cancellationToken = default);
 
-        Task VerifyUserAsync(VerifyAccountDto verificationData);
+        Task VerifyUserAsync(VerifyAccountDto verificationData, CancellationToken cancellationToken = default);
     }
 }

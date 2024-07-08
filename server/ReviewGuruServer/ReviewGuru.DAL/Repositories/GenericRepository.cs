@@ -20,43 +20,38 @@ namespace ReviewGuru.DAL.Repositories
         }
 
         public async Task<TDTO?> GetAsync(Expression<Func<TDTO, bool>> filter, CancellationToken cancellationToken = default)
-
         {
-            return await _context.Set<TDTO>().AsNoTracking().FirstOrDefaultAsync(filter);
+            return await _context.Set<TDTO>().AsNoTracking().FirstOrDefaultAsync(filter, cancellationToken);
         }
 
         public async Task<List<TDTO>> GetListAsync(int pageNumber, int pageSize, Expression<Func<TDTO, bool>>? filter = null, CancellationToken cancellationToken = default)
-
         {
             var entities = filter == null ? _context.Set<TDTO>() : _context.Set<TDTO>().Where(filter);
 
-            return await entities.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            return await entities.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
         }
 
         public async Task<TDTO> AddAsync(TDTO entity, CancellationToken cancellationToken = default)
-
         {
-            await _context.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            await _context.AddAsync(entity, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return entity;
         }
 
         public async Task<TDTO> UpdateAsync(TDTO entity, CancellationToken cancellationToken = default)
-
         {
             _context.Update(entity);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return entity;
         }
 
         public async Task<int> DeleteAsync(TDTO entity, CancellationToken cancellationToken = default)
-
         {
             _context.Remove(entity);
 
-            return await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }
