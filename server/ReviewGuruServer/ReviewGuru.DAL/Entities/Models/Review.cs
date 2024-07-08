@@ -29,5 +29,9 @@ namespace ReviewGuru.DAL.Entities.Models
         public DateTime? DateOfLastModification { get; set; } 
 
         public DateTime? DateOfDeleting { get; set; }
+
+        public Media Media { get; set; }
+
+        public User User { get; set; }
     }
 }
