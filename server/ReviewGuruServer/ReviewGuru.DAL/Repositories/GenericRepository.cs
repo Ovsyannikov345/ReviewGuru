@@ -25,7 +25,7 @@ namespace ReviewGuru.DAL.Repositories
             return await _context.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(filter);
         }
 
-        public async Task<List<TEntity>> GetListAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default)
+        public virtual async Task<List<TEntity>> GetListAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default)
         {
             var entities = filter == null ? _context.Set<TEntity>() : _context.Set<TEntity>().Where(filter);
 
