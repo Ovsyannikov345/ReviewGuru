@@ -9,7 +9,7 @@ namespace ReviewGuru.DAL.Entities.Models
 {
     public class Author
     {
-        [Required]
+        [Key]
         public int AuthorId { get; set; }
 
         [Required]
@@ -17,5 +17,7 @@ namespace ReviewGuru.DAL.Entities.Models
 
         [Required]
         public string LastName { get; set; } = "";
+
+        public List<MediaAuthor>? MediaAuthors { get; set; } = [];
     }
 }

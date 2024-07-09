@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services.IServices;
@@ -10,6 +10,7 @@ namespace ReviewGuru.API.Controllers
     public class TokenController(ITokenService tokenService) : ControllerBase
     {
         private readonly ITokenService _tokenService = tokenService;
+
 
         [HttpPost("refresh")]
         [AllowAnonymous]

@@ -22,7 +22,9 @@ namespace ReviewGuru.DAL.Entities.Models
         public string Email { get; set; } = "";
 
         public DateTime? DateOfBirth { get; set; }
-
+      
         public bool IsVerified { get; set; } = false;
+
+        public List<Review> Reviews { get; set; } = [];
     }
 }

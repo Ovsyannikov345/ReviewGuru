@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ReviewGuru.DAL.Data;
@@ -11,9 +12,11 @@ using ReviewGuru.DAL.Data;
 namespace ReviewGuru.DAL.Migrations
 {
     [DbContext(typeof(ReviewGuruDbContext))]
-    partial class ReviewGuruDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240705122749_ReviewFields")]
+    partial class ReviewFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,10 +83,6 @@ namespace ReviewGuru.DAL.Migrations
 
                     b.HasKey("MediaAuthorId");
 
-                    b.HasIndex("AuthorId");
-
-                    b.HasIndex("MediaId");
-
                     b.ToTable("MediaAuthor");
                 });
 
@@ -135,10 +134,6 @@ namespace ReviewGuru.DAL.Migrations
 
                     b.HasKey("ReviewId");
 
-                    b.HasIndex("MediaId");
-
-                    b.HasIndex("UserId");
-
                     b.ToTable("Reviews");
                 });
 
@@ -157,9 +152,6 @@ namespace ReviewGuru.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsVerified")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasColumnType("text");
@@ -171,57 +163,6 @@ namespace ReviewGuru.DAL.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("ReviewGuru.DAL.Entities.Models.MediaAuthor", b =>
-                {
-                    b.HasOne("ReviewGuru.DAL.Entities.Models.Author", "Author")
-                        .WithMany("MediaAuthors")
-                        .HasForeignKey("AuthorId");
-
-                    b.HasOne("ReviewGuru.DAL.Entities.Models.Media", "Media")
-                        .WithMany("MediaAuthors")
-                        .HasForeignKey("MediaId");
-
-                    b.Navigation("Author");
-
-                    b.Navigation("Media");
-                });
-
-            modelBuilder.Entity("ReviewGuru.DAL.Entities.Models.Review", b =>
-                {
-                    b.HasOne("ReviewGuru.DAL.Entities.Models.Media", "Media")
-                        .WithMany("Reviews")
-                        .HasForeignKey("MediaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ReviewGuru.DAL.Entities.Models.User", "User")
-                        .WithMany("Reviews")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Media");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ReviewGuru.DAL.Entities.Models.Author", b =>
-                {
-                    b.Navigation("MediaAuthors");
-                });
-
-            modelBuilder.Entity("ReviewGuru.DAL.Entities.Models.Media", b =>
-                {
-                    b.Navigation("MediaAuthors");
-
-                    b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("ReviewGuru.DAL.Entities.Models.User", b =>
-                {
-                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

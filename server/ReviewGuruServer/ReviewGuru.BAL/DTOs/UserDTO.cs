@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.DTOs
 {
-    public record UserDTO : IEntity
+    public record UserDTO 
     {
-        public int Id { get; private set; }
-        public string Login { get;  set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public DateTime? DateOfBirth { get; set; }
+        public int UserId { get; init; }
+        public string Login { get;  init; }
+        public string Email { get; init; }
+        public string Password { get; init; }
+        public DateTime? DateOfBirth { get; init; }
 
     }
 }

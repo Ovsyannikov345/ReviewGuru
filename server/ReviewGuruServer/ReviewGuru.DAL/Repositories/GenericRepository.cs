@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.DAL.Repositories
 {
-    public class GenericRepository<TDTO> : IGenericRepository<TDTO> where TDTO : class, new()
+    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class, new()
     {
         private readonly ReviewGuruDbContext _context;
 
@@ -19,19 +19,20 @@ namespace ReviewGuru.DAL.Repositories
             _context = context;
         }
 
-        public async Task<TDTO?> GetAsync(Expression<Func<TDTO, bool>> filter, CancellationToken cancellationToken = default)
+        public async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default)
+
         {
-            return await _context.Set<TDTO>().AsNoTracking().FirstOrDefaultAsync(filter, cancellationToken);
+            return await _context.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(filter);
         }
 
-        public async Task<List<TDTO>> GetListAsync(int pageNumber, int pageSize, Expression<Func<TDTO, bool>>? filter = null, CancellationToken cancellationToken = default)
+        public async Task<List<TEntity>> GetListAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default)
         {
-            var entities = filter == null ? _context.Set<TDTO>() : _context.Set<TDTO>().Where(filter);
+            var entities = filter == null ? _context.Set<TEntity>() : _context.Set<TEntity>().Where(filter);
 
             return await entities.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
         }
 
-        public async Task<TDTO> AddAsync(TDTO entity, CancellationToken cancellationToken = default)
+        public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             await _context.AddAsync(entity, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
@@ -39,7 +40,7 @@ namespace ReviewGuru.DAL.Repositories
             return entity;
         }
 
-        public async Task<TDTO> UpdateAsync(TDTO entity, CancellationToken cancellationToken = default)
+        public async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             _context.Update(entity);
             await _context.SaveChangesAsync(cancellationToken);
@@ -47,7 +48,8 @@ namespace ReviewGuru.DAL.Repositories
             return entity;
         }
 
-        public async Task<int> DeleteAsync(TDTO entity, CancellationToken cancellationToken = default)
+        public async Task<int> DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
+
         {
             _context.Remove(entity);
 

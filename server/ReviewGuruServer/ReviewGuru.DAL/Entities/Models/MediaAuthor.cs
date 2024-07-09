@@ -15,5 +15,11 @@ namespace ReviewGuru.DAL.Entities.Models
         public int? MediaId { get; set; }
 
         public int? AuthorId { get; set; }
+
+        public Author? Author { get; set; }
+
+        public Media? Media { get; set; }
     }
+
+    
 }

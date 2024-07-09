@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ReviewGuru.DAL.Data;
@@ -11,9 +12,11 @@ using ReviewGuru.DAL.Data;
 namespace ReviewGuru.DAL.Migrations
 {
     [DbContext(typeof(ReviewGuruDbContext))]
-    partial class ReviewGuruDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240708075028_RelationsInTables")]
+    partial class RelationsInTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,9 +159,6 @@ namespace ReviewGuru.DAL.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<bool>("IsVerified")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("Login")
                         .IsRequired()

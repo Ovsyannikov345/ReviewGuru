@@ -1,4 +1,5 @@
 ﻿using ReviewGuru.BLL.Services.IServices;
+using ReviewGuru.DAL.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,14 +8,17 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.DTOs
 {
-    public record ReviewDTO : IEntity
+    public record ReviewDTO
     {
-        public int Id { get; private set; }
-        public int UserId { get;  set; }
-        public int MediaId { get; set; }
-        public int Rating { get; set; }
-        public string UserReview { get; set; }
-        public DateTime DateOfCreation { get; set; } = DateTime.Now;
-
+        public int ReviewId { get; init; }
+        public int UserId { get;  init; }
+        public int MediaId { get; init; }
+        public int Rating { get; init; }
+        public string UserReview { get; init; } = string.Empty;
+        public DateTime DateOfCreation { get; init; } = DateTime.Now;
+        public DateTime? DateOfLastModification { get; private init; }
+        public DateTime? DateOfDeleting { get; private init; }
+        public MediaDTO MediaDTO { get; init; }
+        public UserDTO UserDTO { get; init; }
     }
 }

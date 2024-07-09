@@ -42,7 +42,7 @@ namespace ReviewGuruServer
             app.UseAuthorization();
 
             app.MapControllers()
-               .RequireAuthorization();
+              .RequireAuthorization();
 
             app.Run();
         }
