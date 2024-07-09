@@ -18,7 +18,7 @@ namespace ReviewGuru.DAL.Entities.Models
         [Required]
         public string Name { get; set; } = "";
 
-        public List<MediaAuthor>? MediaAuthors { get; set; } = [];
+        public List<Author> Authors { get; set; } = [];
 
         public List<Review> Reviews { get; set; } = [];
     }

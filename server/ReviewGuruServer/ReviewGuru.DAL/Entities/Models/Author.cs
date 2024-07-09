@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ReviewGuru.DAL.Entities.Models
@@ -18,6 +19,7 @@ namespace ReviewGuru.DAL.Entities.Models
         [Required]
         public string LastName { get; set; } = "";
 
-        public List<MediaAuthor>? MediaAuthors { get; set; } = [];
+        [JsonIgnore]
+        public List<Media> Media { get; set; } = [];
     }
 }
