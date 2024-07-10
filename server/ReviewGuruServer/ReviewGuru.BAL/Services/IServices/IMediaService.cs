@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services.IServices
 {
+
     public interface IMediaService
     {
         public Task<List<Media>> GetMediaListAsync(

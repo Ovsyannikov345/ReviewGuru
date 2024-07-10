@@ -27,5 +27,4 @@ namespace ReviewGuru.API.Controllers
             return Ok(media);
         }
     }
-
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services.IServices
 {
-    public interface IUserService : IGenericService<UserDTO, User>
+    public interface IUserService
     {
     }
 }

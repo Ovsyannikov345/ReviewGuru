@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services
 {
-    public class UserService(IGenericRepository<User> genericRepository, IMapper mapper) : GenericService<UserDTO, User>(genericRepository, mapper), IUserService
+    public class UserService(IGenericRepository<User> genericRepository, IMapper mapper) :  IUserService
     {
     }
 }

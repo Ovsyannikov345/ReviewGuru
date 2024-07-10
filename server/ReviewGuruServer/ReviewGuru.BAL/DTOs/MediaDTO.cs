@@ -1,4 +1,5 @@
 ﻿using ReviewGuru.BLL.Services.IServices;
+using ReviewGuru.DAL.Entities.Models;
 using System;
 
 using System.Collections.Generic;
@@ -13,6 +14,9 @@ namespace ReviewGuru.BLL.DTOs
         public int MediaId { get;  init; }
         public string MediaType { get; init; }
         public string Name { get; init; }
+        public List<MediaAuthorDTO>? MediaAuthors { get; set; } = [];
+        public List<ReviewDTO> Reviews { get; set; } = [];
+
     }
 
 }

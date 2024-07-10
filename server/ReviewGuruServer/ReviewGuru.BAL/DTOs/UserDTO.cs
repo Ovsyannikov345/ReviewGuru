@@ -14,6 +14,6 @@ namespace ReviewGuru.BLL.DTOs
         public string Email { get; init; }
         public string Password { get; init; }
         public DateTime? DateOfBirth { get; init; }
-
+        public List<ReviewDTO>? Reviews { get; init; }
     }
 }

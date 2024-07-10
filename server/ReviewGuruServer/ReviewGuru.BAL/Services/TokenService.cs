@@ -51,7 +51,7 @@ namespace ReviewGuru.BLL.Services
 
         public async Task<TokenDto> RefreshTokensAsync(RefreshTokensDto refreshData, CancellationToken cancellationToken = default)
         {
-            var refreshToken = await _refreshTokenRepository.GetAsync(token => token.Token == refreshData.RefreshToken, cancellationToken);
+            var refreshToken = await _refreshTokenRepository.GetByItemAsync(token => token.Token == refreshData.RefreshToken, cancellationToken);
 
             if (refreshToken == null)
             {
@@ -75,7 +75,7 @@ namespace ReviewGuru.BLL.Services
 
             if (!validationResult.IsValid)
             {
-                await _refreshTokenRepository.DeleteAsync(refreshToken, cancellationToken);
+                await _refreshTokenRepository.DeleteAsync(refreshToken.Id, cancellationToken);
 
                 throw new ForbiddenException("Provided refresh token is invalid");
             }
@@ -90,7 +90,7 @@ namespace ReviewGuru.BLL.Services
 
             try
             {
-                await _refreshTokenRepository.DeleteAsync(refreshToken, cancellationToken);
+                await _refreshTokenRepository.DeleteAsync(refreshToken.Id, cancellationToken);
                 await _refreshTokenRepository.AddAsync(new RefreshToken() { Token = newRefreshToken }, cancellationToken);
             }
             catch (Exception)
@@ -159,14 +159,14 @@ namespace ReviewGuru.BLL.Services
 
         public async Task<int> RemoveRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
-            var token = await _refreshTokenRepository.GetAsync(t => t.Token == refreshToken, cancellationToken);
+            var token = await _refreshTokenRepository.GetByItemAsync(t => t.Token == refreshToken, cancellationToken);
 
             if (token == null)
             {
                 throw new NotFoundException("Provided refresh token is not found");
             }
 
-            return await _refreshTokenRepository.DeleteAsync(token, cancellationToken);
+            return await _refreshTokenRepository.DeleteAsync(token.Id, cancellationToken);
         }
 
         private List<Claim> GetClaims(User user)

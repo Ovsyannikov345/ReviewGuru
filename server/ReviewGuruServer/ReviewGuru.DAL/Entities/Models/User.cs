@@ -9,7 +9,7 @@ namespace ReviewGuru.DAL.Entities.Models
 {
     public class User
     {
-        [Required]
+        [Key]
         public int UserId { get; set; }
 
         [Required]
@@ -22,9 +22,10 @@ namespace ReviewGuru.DAL.Entities.Models
         public string Email { get; set; } = "";
 
         public DateTime? DateOfBirth { get; set; }
-      
+
+        [Required]
         public bool IsVerified { get; set; } = false;
 
-        public List<Review> Reviews { get; set; } = [];
+        public virtual ICollection<Review> Reviews { get; set; }
     }
 }

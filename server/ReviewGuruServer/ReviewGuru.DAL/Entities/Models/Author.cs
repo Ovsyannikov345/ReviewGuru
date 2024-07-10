@@ -18,8 +18,8 @@ namespace ReviewGuru.DAL.Entities.Models
 
         [Required]
         public string LastName { get; set; } = "";
-
+      
         [JsonIgnore]
-        public List<Media> Media { get; set; } = [];
+        public ICollection<Media> Media { get; set; } = [];
     }
 }
