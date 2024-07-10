@@ -44,7 +44,7 @@ namespace ReviewGuru.BLL.Services
 
         public async Task<TokenDto> LoginAsync(LoginDto authData, CancellationToken cancellationToken = default)
         {
-            var user = await _userRepository.GetAsync(u => u.Login == authData.Login, cancellationToken);
+            var user = await _userRepository.GetByItemAsync(u => u.Login == authData.Login, cancellationToken);
 
             if (user == null)
             {
@@ -104,7 +104,7 @@ namespace ReviewGuru.BLL.Services
             }
             catch (Exception)
             {
-                await _userRepository.DeleteAsync(createdUser, cancellationToken);
+                await _userRepository.DeleteAsync(createdUser.UserId, cancellationToken);
                 throw;
             }
 
@@ -119,7 +119,7 @@ namespace ReviewGuru.BLL.Services
 
             int userId = int.Parse(userIdClaim.Value);
 
-            User user = await _userRepository.GetAsync(u => u.UserId == userId, cancellationToken) ?? throw new NotFoundException("User to verify is not found");
+            User user = await _userRepository.GetByItemAsync(u => u.UserId == userId, cancellationToken) ?? throw new NotFoundException("User to verify is not found");
 
             if (user.IsVerified)
             {
@@ -141,14 +141,14 @@ namespace ReviewGuru.BLL.Services
 
         private async Task<bool> IsEmailAvailable(string email, CancellationToken cancellationToken = default)
         {
-            var user = await _userRepository.GetAsync(u => u.Email == email, cancellationToken);
+            var user = await _userRepository.GetByItemAsync(u => u.Email == email, cancellationToken);
 
             return user == null;
         }
 
         private async Task<bool> IsLoginAvailable(string login, CancellationToken cancellationToken = default)
         {
-            var user = await _userRepository.GetAsync(u => u.Login == login, cancellationToken);
+            var user = await _userRepository.GetByItemAsync(u => u.Login == login, cancellationToken);
 
             return user == null;
         }

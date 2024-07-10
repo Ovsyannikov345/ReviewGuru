@@ -15,13 +15,16 @@ namespace ReviewGuru.DAL.Data
 
         public DbSet<Review> Reviews { get; set; }
 
-        public DbSet<MediaAuthor> MediaAuthor { get; set; }
-
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
-        }
+            modelBuilder.Entity<Media>(entity =>
+            {
+                entity.HasKey(e => e.MediaId);
+                entity.Property(e => e.MediaType).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(150);
+            });
+        }   
     }
 }

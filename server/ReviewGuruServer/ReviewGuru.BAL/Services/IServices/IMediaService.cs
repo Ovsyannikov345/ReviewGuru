@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services.IServices
 {
-    public interface IMediaService : IGenericService<MediaDTO, Media>
+    public interface IMediaService 
     {
+        Task<IEnumerable<MediaDTO>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default);
+        Task<MediaDTO> CreateAsync(MediaDTO dto, CancellationToken cancellationToken = default);
     }
 }

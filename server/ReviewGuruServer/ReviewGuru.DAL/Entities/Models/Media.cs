@@ -9,7 +9,7 @@ namespace ReviewGuru.DAL.Entities.Models
 {
     public class Media
     {
-        [Required]
+        [Key]
         public int MediaId { get; set; }
 
         [Required]
@@ -18,8 +18,10 @@ namespace ReviewGuru.DAL.Entities.Models
         [Required]
         public string Name { get; set; } = "";
 
-        public List<MediaAuthor>? MediaAuthors { get; set; } = [];
+        [Required]
+        public DateOnly YearOfCreating { get; set; }
 
-        public List<Review> Reviews { get; set; } = [];
+        public virtual ICollection<Author> Authors { get; set; } = [];
+        public virtual ICollection<Review> Reviews { get; set; } = [];
     }
 }

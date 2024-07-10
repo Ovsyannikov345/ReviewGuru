@@ -30,29 +30,6 @@ namespace ReviewGuru.API.Controllers
             await _mediaService.CreateAsync(mediaDTO, cancellationToken);
             return Created();
         }
-
-        [HttpPut]
-        [ActionName("UpdateMedia")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateMediaAsync([FromBody] MediaDTO mediaToUpdateDTO, CancellationToken cancellationToken = default)
-        {
-            await _mediaService.UpdateAsync(mediaToUpdateDTO, cancellationToken);
-            return Ok(mediaToUpdateDTO);
-        }
-
-        [HttpDelete]
-        [ActionName("DeleteMedia")]
-        [Route("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteMediaAsync([FromRoute] int id, CancellationToken cancellationToken = default)
-        {
-            await _mediaService.DeleteAsync(id, cancellationToken);
-            return Ok();
-        }
     }
 
 }

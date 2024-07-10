@@ -9,7 +9,7 @@ namespace ReviewGuru.DAL.Entities.Models
 {
     public class Review
     {
-        [Required]
+        [Key]
         public int ReviewId { get; set; }
 
         [Required]
@@ -30,8 +30,7 @@ namespace ReviewGuru.DAL.Entities.Models
 
         public DateTime? DateOfDeleting { get; set; }
 
-        public Media Media { get; set; }
-
-        public User User { get; set; }
+        public virtual Media Media { get; set; }
+        public virtual User User { get; set; }
     }
 }
