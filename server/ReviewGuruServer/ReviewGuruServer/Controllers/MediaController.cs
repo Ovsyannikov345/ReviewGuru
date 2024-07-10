@@ -34,8 +34,6 @@ namespace ReviewGuru.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AddMediaToFavorites(int mediaId, CancellationToken cancellationToken = default)
         {
-            Console.WriteLine(mediaId);
-
             int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
 
             await _mediaService.AddMediaToFavoritesAsync(userId, mediaId, cancellationToken);
