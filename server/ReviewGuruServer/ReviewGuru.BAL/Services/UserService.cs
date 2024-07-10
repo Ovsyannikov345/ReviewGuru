@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services.IServices;
+using ReviewGuru.BLL.Utilities.Constants;
 using ReviewGuru.BLL.Utilities.Exceptions;
 using ReviewGuru.DAL.Entities.Models;
 using ReviewGuru.DAL.Repositories.IRepositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,12 +18,23 @@ namespace ReviewGuru.BLL.Services
     {
         private readonly IUserRepository _userRepository = userRepository;
 
-        public async Task<IEnumerable<Media>> GetUserFavoritesAsync(int userId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Media>> GetUserFavoritesAsync(
+            int userId,
+            int pageNumber = Pagination.PageNumber,
+            int pageSize = Pagination.PageSize,
+            string searchText = "",
+            string mediaType = "",
+            CancellationToken cancellationToken = default)
         {
-            User user = await _userRepository.GetUserWithFavoritesAsync(u => u.UserId == userId, cancellationToken) ??
-                        throw new NotFoundException($"User with id {userId} is not found");
+            Expression<Func<Media, bool>> filter = (media) =>
+                       (mediaType == "" || media.MediaType == mediaType) &&
+                       (media.Name.Contains(searchText) ||
+                       media.Authors.Any(author => (author.LastName + " " + author.FirstName).Contains(searchText)));
 
-            return user.Favorites;
+            IEnumerable<Media> favorites = await _userRepository.GetUserFavoritesAsync(userId, pageNumber, pageSize, filter, cancellationToken) ??
+                                           throw new NotFoundException($"User with id {userId} is not found");
+
+            return favorites;
         }
     }
 }
