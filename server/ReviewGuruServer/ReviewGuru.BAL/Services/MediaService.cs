@@ -17,7 +17,7 @@ namespace ReviewGuru.BLL.Services
     {
         private readonly IMediaRepository _mediaRepository = mediaRepository;
 
-        public async Task<List<Media>> GetMediaListAsync(
+        public async Task<IEnumerable<Media>> GetMediaListAsync(
             int pageNumber = Pagination.PageNumber,
             int pageSize = Pagination.PageSize,
             string searchText = "",
@@ -30,7 +30,7 @@ namespace ReviewGuru.BLL.Services
                        media.Authors.Any(author => (author.LastName + " " + author.FirstName).Contains(searchText)));
 
 
-            return await _mediaRepository.GetListAsync(pageNumber, pageSize, filter, cancellationToken: cancellationToken);
+            return await _mediaRepository.GetAllAsync(pageNumber, pageSize, filter, cancellationToken: cancellationToken);
         }
     }
 }

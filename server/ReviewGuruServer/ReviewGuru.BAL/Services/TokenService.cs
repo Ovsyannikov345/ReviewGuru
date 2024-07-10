@@ -157,7 +157,7 @@ namespace ReviewGuru.BLL.Services
             return validationResult;
         }
 
-        public async Task<int> RemoveRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+        public async Task RemoveRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
             var token = await _refreshTokenRepository.GetByItemAsync(t => t.Token == refreshToken, cancellationToken);
 
@@ -166,7 +166,7 @@ namespace ReviewGuru.BLL.Services
                 throw new NotFoundException("Provided refresh token is not found");
             }
 
-            return await _refreshTokenRepository.DeleteAsync(token.Id, cancellationToken);
+            await _refreshTokenRepository.DeleteAsync(token.Id, cancellationToken);
         }
 
         private List<Claim> GetClaims(User user)

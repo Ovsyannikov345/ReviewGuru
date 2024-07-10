@@ -73,11 +73,8 @@ namespace ReviewGuru.API.Extensions
             services.AddSingleton(mapper);
         }
 
-
         public static void AddBusinessLogicServices(this IServiceCollection services)
         {
-            services.AddScoped(typeof(IGenericService<,>), typeof(GenericService<,>));
-
             services.AddScoped<ITokenService, TokenService>()
                     .AddScoped<IAuthService, AuthService>()
                     .AddScoped<IAuthorService, AuthorService>()
@@ -101,7 +98,6 @@ namespace ReviewGuru.API.Extensions
         {
             services.AddValidatorsFromAssemblyContaining<RegistrationValidator>();
         }
-
         public static void AddEmailSender(this IServiceCollection services)
         {
             services.AddTransient<ReviewGuru.BLL.Utilities.EmailSender.IEmailSender, EmailSender>();

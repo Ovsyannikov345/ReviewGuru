@@ -12,7 +12,7 @@ namespace ReviewGuru.BLL.Services.IServices
 
     public interface IMediaService
     {
-        public Task<List<Media>> GetMediaListAsync(
+        public Task<IEnumerable<Media>> GetMediaListAsync(
             int pageNumber = Pagination.PageNumber,
             int pageSize = Pagination.PageSize,
             string searchText = "",

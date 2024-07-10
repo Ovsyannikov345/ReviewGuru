@@ -22,6 +22,6 @@ namespace ReviewGuru.BLL.Services.IServices
 
         public Task<TokenValidationResult> ValidateVerificationTokenAsync(string verificationToken, CancellationToken cancellationToken = default);
 
-        public Task<int> RemoveRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
+        public Task RemoveRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
     }
 }

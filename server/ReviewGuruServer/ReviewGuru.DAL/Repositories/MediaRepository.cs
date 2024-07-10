@@ -16,7 +16,7 @@ namespace ReviewGuru.DAL.Repositories
     {
         private readonly ReviewGuruDbContext _context = context;
 
-        public override async Task<List<Media>> GetListAsync(int pageNumber, int pageSize, Expression<Func<Media, bool>>? filter = null, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<Media>> GetAllAsync(int pageNumber, int pageSize, Expression<Func<Media, bool>>? filter = null, CancellationToken cancellationToken = default)
         {
             var media = filter == null ? _context.Media : _context.Media.Where(filter);
 
