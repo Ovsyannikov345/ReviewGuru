@@ -12,7 +12,7 @@ namespace ReviewGuru.DAL.Repositories
 
         public async Task<User?> GetUserWithFavoritesAsync(Expression<Func<User, bool>> filter, CancellationToken cancellationToken = default)
         {
-            return await _context.Users.Include(u => u.Favorites).FirstOrDefaultAsync(filter, cancellationToken);
+            return await _context.Users.Include(u => u.Favorites).ThenInclude(media => media.Authors).FirstOrDefaultAsync(filter, cancellationToken);
         }
     }
 }
