@@ -26,5 +26,21 @@ namespace ReviewGuru.API.Controllers
 
             return Ok(media);
         }
+
+        [HttpPost("{mediaId}/add-to-favorites")]
+        [ActionName("AddMediaToFavorites")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AddMediaToFavorites(int mediaId, CancellationToken cancellationToken = default)
+        {
+            Console.WriteLine(mediaId);
+
+            int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
+
+            await _mediaService.AddMediaToFavoritesAsync(userId, mediaId, cancellationToken);
+
+            return Ok();
+        }
     }
 }
