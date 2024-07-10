@@ -6,6 +6,23 @@ using ReviewGuru.BLL.Utilities.Constants;
 
 namespace ReviewGuru.API.Controllers
 {
-        
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UserController(IUserService userService) : ControllerBase
+    {
+        private readonly IUserService _userService = userService;
 
+        [HttpGet("favorites")]
+        [ActionName("GetUserFavorites")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetUserFavorites(CancellationToken cancellationToken = default)
+        {
+            int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
+
+            var favoriteMedia = await _userService.GetUserFavoritesAsync(userId, cancellationToken);
+
+            return Ok(favoriteMedia);
+        }
+    }
 }
