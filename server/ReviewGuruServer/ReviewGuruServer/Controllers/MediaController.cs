@@ -5,7 +5,7 @@ using ReviewGuru.BLL.Utilities.Constants;
 
 namespace ReviewGuru.API.Controllers
 {
-    [Route("api/media")]
+    [Route("api/[controller]")]
     [ApiController]
     public class MediaController(IMediaService mediaService) : ControllerBase
     {
@@ -15,21 +15,16 @@ namespace ReviewGuru.API.Controllers
         [ActionName("GetAllMedia")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllMediaAsync(CancellationToken cancellationToken, int pageNumber = Pagination.PageNumber, int pageSize = Pagination.PageSize)
+        public async Task<IActionResult> GetAllMediaAsync(
+            CancellationToken cancellationToken = default,
+            int pageNumber = Pagination.PageNumber,
+            int pageSize = Pagination.PageSize,
+            string searchText = "",
+            string mediaType = "")
         {
-            var media = await _mediaService.GetAllAsync(pageNumber, pageSize, cancellationToken);
-            return Ok(media.ToList());
-        }
+            var media = await _mediaService.GetMediaListAsync(pageNumber, pageSize, searchText, mediaType, cancellationToken);
 
-        [HttpPost]
-        [ActionName("CreateMedia")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateMediaAsync([FromBody] MediaDTO mediaDTO, CancellationToken cancellationToken = default)
-        {
-            await _mediaService.CreateAsync(mediaDTO, cancellationToken);
-            return Created();
+            return Ok(media);
         }
     }
-
 }

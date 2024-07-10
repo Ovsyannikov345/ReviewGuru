@@ -15,10 +15,6 @@ namespace ReviewGuru.BLL.Utilities.Mapping
         {
             CreateMap<RegisterDto, User>();
             CreateMap<Author, AuthorDTO>().ReverseMap();
-            CreateMap<MediaAuthor, MediaAuthorDTO>()
-                .ForMember(dest => dest.AuthorDTO, opt => opt.MapFrom(src => src.Author))
-                .ForMember(dest => dest.MediaDTO, opt => opt.MapFrom(src => src.Media))
-                .ReverseMap();
             CreateMap<Media, MediaDTO>().ReverseMap();
             CreateMap<Review, ReviewDTO>()
                 .ForMember(dest => dest.MediaDTO, opt => opt.MapFrom(src => src.Media))

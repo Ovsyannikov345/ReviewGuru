@@ -81,7 +81,6 @@ namespace ReviewGuru.API.Extensions
             services.AddScoped<ITokenService, TokenService>()
                     .AddScoped<IAuthService, AuthService>()
                     .AddScoped<IAuthorService, AuthorService>()
-                    .AddScoped<IMediaAuthorService, MediaAuthorService>()
                     .AddScoped<IMediaService, MediaService>()
                     .AddScoped<IReviewService, ReviewService>()
                     .AddScoped<IUserService, UserService>();
@@ -94,7 +93,6 @@ namespace ReviewGuru.API.Extensions
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>()
                     .AddScoped<IUserRepository, UserRepository>()
                     .AddScoped<IAuthorRepository, AuthorRepository>()
-                    .AddScoped<IMediaAuthorRepository, MediaAuthorRepository>()
                     .AddScoped<IMediaRepository, MediaRepository>()
                     .AddScoped<IReviewRepository, ReviewRepository>();
         }
