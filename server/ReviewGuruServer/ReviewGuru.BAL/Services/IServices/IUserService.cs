@@ -10,5 +10,6 @@ namespace ReviewGuru.BLL.Services.IServices
 {
     public interface IUserService
     {
+        public Task<IEnumerable<Media>> GetUserFavoritesAsync(int userId, CancellationToken cancellationToken = default);
     }
 }
