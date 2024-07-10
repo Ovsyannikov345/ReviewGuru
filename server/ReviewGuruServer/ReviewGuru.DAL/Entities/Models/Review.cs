@@ -30,7 +30,8 @@ namespace ReviewGuru.DAL.Entities.Models
 
         public DateTime? DateOfDeleting { get; set; }
 
-        public virtual Media Media { get; set; }
-        public virtual User User { get; set; }
+        public virtual Media Media { get; set; } = null!;
+
+        public virtual User User { get; set; } = null!;
     }
 }

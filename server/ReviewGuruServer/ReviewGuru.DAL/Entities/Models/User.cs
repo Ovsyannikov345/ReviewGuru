@@ -26,6 +26,8 @@ namespace ReviewGuru.DAL.Entities.Models
         [Required]
         public bool IsVerified { get; set; } = false;
 
-        public virtual ICollection<Review> Reviews { get; set; }
+        public virtual ICollection<Review> Reviews { get; set; } = [];
+
+        public virtual ICollection<Media> Favorites { get; set; } = [];
     }
 }

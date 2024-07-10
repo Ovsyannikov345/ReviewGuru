@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ReviewGuru.DAL.Data;
@@ -11,9 +12,11 @@ using ReviewGuru.DAL.Data;
 namespace ReviewGuru.DAL.Migrations
 {
     [DbContext(typeof(ReviewGuruDbContext))]
-    partial class ReviewGuruDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240710151324_AddMediaDateAndMinorModelFieldsImprovements")]
+    partial class AddMediaDateAndMinorModelFieldsImprovements
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,21 +38,6 @@ namespace ReviewGuru.DAL.Migrations
                     b.HasIndex("MediaId");
 
                     b.ToTable("AuthorMedia");
-                });
-
-            modelBuilder.Entity("MediaUser", b =>
-                {
-                    b.Property<int>("FavoritesMediaId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UsersUserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("FavoritesMediaId", "UsersUserId");
-
-                    b.HasIndex("UsersUserId");
-
-                    b.ToTable("MediaUser");
                 });
 
             modelBuilder.Entity("ReviewGuru.DAL.Entities.Models.Author", b =>
@@ -196,21 +184,6 @@ namespace ReviewGuru.DAL.Migrations
                     b.HasOne("ReviewGuru.DAL.Entities.Models.Media", null)
                         .WithMany()
                         .HasForeignKey("MediaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MediaUser", b =>
-                {
-                    b.HasOne("ReviewGuru.DAL.Entities.Models.Media", null)
-                        .WithMany()
-                        .HasForeignKey("FavoritesMediaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ReviewGuru.DAL.Entities.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
