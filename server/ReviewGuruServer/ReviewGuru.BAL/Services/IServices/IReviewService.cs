@@ -21,7 +21,7 @@ namespace ReviewGuru.BLL.Services.IServices
         CancellationToken cancellationToken = default);
 
 
-        public Task<ReviewDTO> CreateAsync(ReviewDTO dto, CancellationToken cancellationToken = default);
+        public Task<ReviewDTO> CreateAsync(ReviewToCreateDTO dto, CancellationToken cancellationToken = default);
 
 
         public Task<ReviewDTO> UpdateAsync(ReviewDTO dto, CancellationToken cancellationToken = default);

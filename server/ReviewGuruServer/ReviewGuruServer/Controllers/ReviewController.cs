@@ -36,8 +36,11 @@ namespace ReviewGuru.API.Controllers
         [ActionName("CreateReview")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateReviewAsync([FromBody] ReviewDTO reviewDTO, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> CreateReviewAsync([FromBody] ReviewToCreateDTO reviewDTO, CancellationToken cancellationToken = default)
         {
+            int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
+
+            reviewDTO.UserId = userId;
             await _reviewService.CreateAsync(reviewDTO, cancellationToken : cancellationToken);
             return Created();
         }

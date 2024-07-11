@@ -20,7 +20,6 @@ namespace ReviewGuru.BLL.DTOs
         public DateTime? DateOfLastModification { get; private init; }
         public DateTime? DateOfDeleting { get; set; }
         public virtual MediaDTO MediaDTO { get; set; } = null!;
-        public virtual UserDTO UserDTO { get; set; } = null!;
 
     }
 

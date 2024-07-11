@@ -15,6 +15,7 @@ namespace ReviewGuru.BLL.DTOs
         public int MediaId { get;  init; }
         public string MediaType { get; init; }
         public string Name { get; init; }
+        public DateOnly YearOfCreating { get; set; }
         public virtual ICollection<AuthorDTO> AuthorDTO { get; set; } = [];
         public virtual ICollection<ReviewDTO> ReviewDTO { get; set; } = [];
         [JsonIgnore]
