@@ -22,20 +22,6 @@ namespace ReviewGuru.BLL.DTOs
         public virtual MediaDTO MediaDTO { get; set; } = null!;
         public virtual UserDTO UserDTO { get; set; } = null!;
 
-        public ReviewDTO(ReviewToCreateDTO reviewToCreateDto, User user, Media media, IMapper mapper)
-        {
-            ReviewId = reviewToCreateDto.ReviewId;
-            UserId = reviewToCreateDto.UserId;
-            MediaId = reviewToCreateDto.MediaId;
-            Rating = reviewToCreateDto.Rating;
-            UserReview = reviewToCreateDto.UserReview;
-            DateOfCreation = reviewToCreateDto.DateOfCreation;
-            DateOfLastModification = reviewToCreateDto.DateOfLastModification;
-            DateOfDeleting = reviewToCreateDto.DateOfDeleting;
-            UserDTO = mapper.Map<UserDTO>(user);
-            MediaDTO = mapper.Map<MediaDTO>(media);
-        }
-
     }
 
 }

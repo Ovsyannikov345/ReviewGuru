@@ -80,8 +80,7 @@ namespace ReviewGuru.API.Extensions
                     .AddScoped<IAuthorService, AuthorService>()
                     .AddScoped<IMediaService, MediaService>()
                     .AddScoped<IReviewService, ReviewService>()
-                    .AddScoped<IUserService, UserService>()
-                    .AddScoped<ICurrentUserService, CurrentUserService>();
+                    .AddScoped<IUserService, UserService>();
         }
 
         public static void AddDataAccessRepositories(this IServiceCollection services)

@@ -18,17 +18,11 @@ namespace ReviewGuru.BLL.Services
 {
     public class ReviewService(
         IGenericRepository<Review> genericRepository, 
-        IMapper mapper, 
-        ICurrentUserService currentUserService, 
-        IUserRepository userRepository, 
-        IMediaRepository mediaRepository
+        IMapper mapper
         ) :  IReviewService
     {
         private readonly IGenericRepository<Review> _genericRepository = genericRepository;
         private readonly IMapper _mapper = mapper;
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IUserRepository _userRepository;
-        private readonly IMediaRepository _mediaRepository;
         public async Task<IEnumerable<Review>> GetAllAsync(
         int pageNumber = Pagination.PageNumber,
         int pageSize = Pagination.PageSize,
@@ -51,26 +45,10 @@ namespace ReviewGuru.BLL.Services
             return await _genericRepository.GetAllAsync(pageNumber, pageSize, filter, cancellationToken: cancellationToken);
         }
 
-        public async Task<ReviewDTO> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            var review = await _genericRepository.GetByItemAsync(i => i.ReviewId == id, cancellationToken);
-            if (review == null)
-            {
-                throw new KeyNotFoundException($"Review with id {id} not found.");
-            }
-            return _mapper.Map<ReviewDTO>(review);
-        }
-
-        public async Task<ReviewDTO> CreateAsync(ReviewToCreateDTO reviewDto, int userId, CancellationToken cancellationToken = default)
+        public async Task<ReviewDTO> CreateAsync(ReviewDTO reviewDto, CancellationToken cancellationToken = default)
         {
             var review = _mapper.Map<Review>(reviewDto);
-            review.UserId = userId;
             review.DateOfCreation = DateTime.UtcNow;
-            var user = await _userRepository.GetByItemAsync(u => u.UserId == reviewDto.UserId);
-            var media = await _mediaRepository.GetByItemAsync(m => m.MediaId == reviewDto.MediaId);
-
-
-            var newReviewDto = new ReviewDTO(reviewDto, user, media, _mapper);
 
             var createdReview = await _genericRepository.AddAsync(review, cancellationToken);
             return _mapper.Map<ReviewDTO>(createdReview);
