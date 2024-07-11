@@ -22,7 +22,6 @@ namespace ReviewGuru.DAL.Repositories
         }
 
         public async Task<TEntity?> GetByItemAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default)
-
         {
             return await _context.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(filter);
         }

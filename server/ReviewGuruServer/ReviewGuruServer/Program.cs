@@ -1,3 +1,4 @@
+using Library.API.Extensions;
 using ReviewGuru.API.Extensions;
 
 namespace ReviewGuruServer
@@ -13,6 +14,8 @@ namespace ReviewGuruServer
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+            services.ConfigureSwagger();
+            services.AddHttpContextAccessor();
 
             services.AddIdentityDbContext(builder.Configuration);
             services.AddAuthenticationBearer(builder.Configuration);

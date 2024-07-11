@@ -174,10 +174,12 @@ namespace ReviewGuru.BLL.Services
             var claims = new List<Claim>()
             {
                 new("Id", user.UserId.ToString()),
-                new(ClaimTypes.Role, Roles.User.ToString())
+                new(ClaimTypes.Role, Roles.User.ToString()),
+                new(JwtRegisteredClaimNames.Sub, user.Login),
             };
 
             return claims;
         }
+
     }
 }
