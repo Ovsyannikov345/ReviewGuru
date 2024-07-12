@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ReviewGuru.BLL.DTOs;
+using ReviewGuru.BLL.Services;
 using ReviewGuru.BLL.Services.IServices;
 using ReviewGuru.BLL.Utilities.Constants;
+using ReviewGuru.DAL.Entities.Models;
 
 namespace ReviewGuru.API.Controllers
 {
@@ -16,9 +18,17 @@ namespace ReviewGuru.API.Controllers
         [ActionName("GetAllReviews")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllReviewsAsync(CancellationToken cancellationToken, int pageNumber = Pagination.PageNumber, int pageSize = Pagination.PageSize)
+        public async Task<IActionResult> GetReviewListAsync(
+        int pageNumber = Pagination.PageNumber,
+        int pageSize = Pagination.PageSize,
+        string searchText = "",
+        string mediaType = "",
+        int? minRating = null,
+        int? maxRating = null,
+        CancellationToken cancellationToken = default)
         {
-            var reviews = await _reviewService.GetAllAsync(pageNumber, pageSize, cancellationToken);
+            var reviews = await _reviewService.GetAllAsync(pageNumber, pageSize, searchText, mediaType, cancellationToken : cancellationToken);
+
             return Ok(reviews.ToList());
         }
 
@@ -26,9 +36,12 @@ namespace ReviewGuru.API.Controllers
         [ActionName("CreateReview")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateReviewAsync([FromBody] ReviewDTO reviewDTO, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> CreateReviewAsync([FromBody] ReviewToCreateDTO reviewDTO, CancellationToken cancellationToken = default)
         {
-            await _reviewService.CreateAsync(reviewDTO, cancellationToken);
+            int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
+
+            reviewDTO.UserId = userId;
+            await _reviewService.CreateAsync(reviewDTO, cancellationToken : cancellationToken);
             return Created();
         }
 

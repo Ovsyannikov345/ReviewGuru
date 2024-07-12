@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.DTOs
@@ -14,8 +15,11 @@ namespace ReviewGuru.BLL.DTOs
         public int MediaId { get;  init; }
         public string MediaType { get; init; }
         public string Name { get; init; }
-        public List<MediaAuthorDTO>? MediaAuthors { get; set; } = [];
-        public List<ReviewDTO> Reviews { get; set; } = [];
+        public DateOnly YearOfCreating { get; set; }
+        public virtual ICollection<AuthorDTO> AuthorDTO { get; set; } = [];
+        public virtual ICollection<ReviewDTO> ReviewDTO { get; set; } = [];
+        [JsonIgnore]
+        public virtual ICollection<UserDTO> UserDTO { get; set; } = [];
 
     }
 
