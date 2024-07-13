@@ -55,6 +55,27 @@ namespace ReviewGuru.API.Controllers
             return Ok(reviews.ToList());
         }
 
+        [HttpGet]
+        [Route("OthersReviews")]
+        [ActionName("GetAllExceptCurrentUserReviews")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAllExceptMyReviewsListAsync(
+        int pageNumber = Pagination.PageNumber,
+        int pageSize = Pagination.PageSize,
+        string searchText = "",
+        string mediaType = "",
+        int? minRating = null,
+        int? maxRating = null,
+        CancellationToken cancellationToken = default)
+        {
+            int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
+
+            var reviews = await _reviewService.GetAllExceptCurrentUserReviewsAsync(userId, pageNumber, pageSize, searchText, mediaType, minRating, maxRating, cancellationToken: cancellationToken);
+
+            return Ok(reviews.ToList());
+        }
+
         [HttpPost]
         [Route("CreateReview")]
         [ActionName("CreateReview")]
