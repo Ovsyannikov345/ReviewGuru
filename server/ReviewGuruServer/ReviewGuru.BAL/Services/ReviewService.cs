@@ -31,6 +31,7 @@ namespace ReviewGuru.BLL.Services
         CancellationToken cancellationToken = default)
         {
             Expression<Func<Review, bool>> filter = (review) =>
+                (review.DateOfDeleting == null) &&
                 (string.IsNullOrEmpty(mediaType) || review.Media.MediaType == mediaType) &&
                 (string.IsNullOrEmpty(searchText) ||
                  review.UserReview.Contains(searchText) ||
@@ -53,6 +54,7 @@ namespace ReviewGuru.BLL.Services
         CancellationToken cancellationToken = default)
         {
             Expression<Func<Review, bool>> filter = (review) =>
+                (review.DateOfDeleting == null) &&
                 (review.UserId == userId) &&
                 (string.IsNullOrEmpty(mediaType) || review.Media.MediaType == mediaType) &&
                 (string.IsNullOrEmpty(searchText) ||
@@ -76,6 +78,7 @@ namespace ReviewGuru.BLL.Services
         CancellationToken cancellationToken = default)
         {
             Expression<Func<Review, bool>> filter = (review) =>
+                (review.DateOfDeleting == null) &&
                 (review.UserId != userId) &&
                 (string.IsNullOrEmpty(mediaType) || review.Media.MediaType == mediaType) &&
                 (string.IsNullOrEmpty(searchText) ||
@@ -106,14 +109,18 @@ namespace ReviewGuru.BLL.Services
             return _mapper.Map<ReviewDTO>(await _reviewRepository.UpdateAsync(entityToUpdate, cancellationToken: cancellationToken));
         }
 
-        public async Task<ReviewDTO> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<ReviewDTO> DeleteAsync(int id, int userId, CancellationToken cancellationToken = default)
         {
+            var entityToDelete = await _reviewRepository.GetByItemAsync(i => i.ReviewId == id && i.UserId == userId && i.DateOfDeleting == null, cancellationToken);
 
-            var entityToDelete = _mapper.Map<Review>(id);
-
+            if (entityToDelete == null)
+            {
+                throw new Exception("Review with this ID is not found!");
+            }
 
             return _mapper.Map<ReviewDTO>(await _reviewRepository.DeleteAsync(entityToDelete.ReviewId, cancellationToken: cancellationToken));
         }
+
 
         private async Task<ICollection<Author>> CheckAndAddAuthors(ICollection<AuthorToCreateDTO> authorDtos, CancellationToken cancellationToken)
         {
