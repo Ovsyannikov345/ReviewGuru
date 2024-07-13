@@ -46,6 +46,6 @@ namespace ReviewGuru.BLL.Services.IServices
         public Task<ReviewDTO> UpdateAsync(ReviewDTO dto, CancellationToken cancellationToken = default);
 
 
-        public Task<ReviewDTO> DeleteAsync(int id, CancellationToken cancellationToken = default);
+        public Task<ReviewDTO> DeleteAsync(int id, int userId, CancellationToken cancellationToken = default);
     }
 }

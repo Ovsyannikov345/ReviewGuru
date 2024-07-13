@@ -109,7 +109,8 @@ namespace ReviewGuru.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteReviewAsync([FromRoute] int id, CancellationToken cancellationToken = default)
         {
-            await _reviewService.DeleteAsync(id, cancellationToken);
+            int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
+            await _reviewService.DeleteAsync(id, userId, cancellationToken);
             return Ok();
         }
     }
