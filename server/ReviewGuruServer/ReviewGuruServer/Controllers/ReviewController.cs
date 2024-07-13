@@ -32,6 +32,26 @@ namespace ReviewGuru.API.Controllers
             return Ok(reviews.ToList());
         }
 
+        [HttpGet]
+        [ActionName("MyReviews")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetMyReviewsListAsync(
+        int pageNumber = Pagination.PageNumber,
+        int pageSize = Pagination.PageSize,
+        string searchText = "",
+        string mediaType = "",
+        int? minRating = null,
+        int? maxRating = null,
+        CancellationToken cancellationToken = default)
+        {
+            int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
+
+            var reviews = await _reviewService.GetAllAsync(pageNumber, pageSize, searchText, mediaType, cancellationToken: cancellationToken);
+
+            return Ok(reviews.ToList());
+        }
+
         [HttpPost]
         [ActionName("CreateReview")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -40,8 +60,7 @@ namespace ReviewGuru.API.Controllers
         {
             int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
 
-            reviewDTO.UserId = userId;
-            await _reviewService.CreateAsync(reviewDTO, cancellationToken : cancellationToken);
+            await _reviewService.CreateAsync(reviewDTO, userId, cancellationToken : cancellationToken);
             return Created();
         }
 
