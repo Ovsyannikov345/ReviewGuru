@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services.IServices;
 using ReviewGuru.BLL.Utilities.Constants;
@@ -33,7 +34,6 @@ namespace ReviewGuru.BLL.Services
                 (string.IsNullOrEmpty(mediaType) || review.Media.MediaType == mediaType) &&
                 (string.IsNullOrEmpty(searchText) ||
                  review.UserReview.Contains(searchText) ||
-                 //review.User.Login.Contains(searchText) ||
                  review.Media.Name.Contains(searchText) ||
                  review.Media.Authors.Any(author => (author.LastName + " " + author.FirstName).Contains(searchText))) &&
                 (!minRating.HasValue || review.Rating >= minRating.Value) &&
@@ -42,13 +42,37 @@ namespace ReviewGuru.BLL.Services
             return await _reviewRepository.GetAllAsync(pageNumber, pageSize, filter, cancellationToken: cancellationToken);
         }
 
-        public async Task<ReviewDTO> CreateAsync(ReviewToCreateDTO reviewDto, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Review>> GetCurrentUserReviewsAsync(
+        int userId,
+        int pageNumber = Pagination.PageNumber,
+        int pageSize = Pagination.PageSize,
+        string searchText = "",
+        string mediaType = "",
+        int? minRating = null,
+        int? maxRating = null,
+        CancellationToken cancellationToken = default)
+        {
+            Expression<Func<Review, bool>> filter = (review) =>
+                (review.UserId == userId) &&
+                (string.IsNullOrEmpty(mediaType) || review.Media.MediaType == mediaType) &&
+                (string.IsNullOrEmpty(searchText) ||
+                 review.UserReview.Contains(searchText) ||
+                 review.Media.Name.Contains(searchText) ||
+                 review.Media.Authors.Any(author => (author.LastName + " " + author.FirstName).Contains(searchText))) &&
+                (!minRating.HasValue || review.Rating >= minRating.Value) &&
+                (!maxRating.HasValue || review.Rating <= maxRating.Value);
+
+            return await _reviewRepository.GetAllAsync(pageNumber, pageSize, filter, cancellationToken: cancellationToken);
+        }
+
+
+        public async Task<ReviewDTO> CreateAsync(ReviewToCreateDTO reviewDto, int userId, CancellationToken cancellationToken = default)
         {
             var authors = await CheckAndAddAuthors(reviewDto.MediaToCreateDTO.AuthorsToCreateDTO , cancellationToken);
 
             var media = await CheckAndAddMedia(reviewDto.MediaToCreateDTO, authors, cancellationToken);
 
-            var review = await CreateAndAddReview(reviewDto, media, cancellationToken);
+            var review = await CreateAndAddReview(reviewDto, userId, media, cancellationToken);
 
             return _mapper.Map<ReviewDTO>(review);
         }
@@ -105,9 +129,10 @@ namespace ReviewGuru.BLL.Services
             return await _mediaRepository.AddAsync(media, cancellationToken);
         }
 
-        private async Task<Review> CreateAndAddReview(ReviewToCreateDTO reviewDto, Media media, CancellationToken cancellationToken)
+        private async Task<Review> CreateAndAddReview(ReviewToCreateDTO reviewDto, int userId, Media media, CancellationToken cancellationToken)
         {
             var review = _mapper.Map<Review>(reviewDto);
+            review.UserId = userId;
             review.MediaId = media.MediaId;
             review.DateOfCreation = DateTime.UtcNow;
 
