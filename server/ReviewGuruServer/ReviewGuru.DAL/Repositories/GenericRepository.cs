@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,9 +22,19 @@ namespace ReviewGuru.DAL.Repositories
             _dbSet = _context.Set<TEntity>();
         }
 
+        public async Task<int> CountAsync(Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default)
+        {
+            if (filter == null)
+            {
+                return await _dbSet.CountAsync(cancellationToken);
+            }
+
+            return await _dbSet.CountAsync(filter, cancellationToken);
+        }
+
         public async Task<TEntity?> GetByItemAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default)
         {
-            return await _context.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(filter);
+            return await _context.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(filter, cancellationToken);
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default)

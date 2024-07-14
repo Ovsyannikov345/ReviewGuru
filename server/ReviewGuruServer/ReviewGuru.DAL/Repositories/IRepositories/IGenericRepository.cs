@@ -9,6 +9,8 @@ namespace ReviewGuru.DAL.Repositories.IRepositories
 {
     public interface IGenericRepository<TEntity> where TEntity : class
     {
+        Task<int> CountAsync(Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default);
+
         Task<TEntity?> GetByItemAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default);
 
         Task<IEnumerable<TEntity>> GetAllAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default);

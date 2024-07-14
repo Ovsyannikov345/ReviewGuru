@@ -19,6 +19,8 @@ namespace ReviewGuru.BLL.Services.IServices
             string mediaType = "",
             CancellationToken cancellationToken = default);
 
+        public Task<int> GetMediaCountAsync(string searchText = "", string mediaType = "", CancellationToken cancellationToken = default);
+
         public Task AddMediaToFavoritesAsync(int userId, int mediaId, CancellationToken cancellationToken = default);
     }
 }
