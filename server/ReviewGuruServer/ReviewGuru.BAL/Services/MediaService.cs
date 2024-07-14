@@ -30,10 +30,20 @@ namespace ReviewGuru.BLL.Services
             Expression<Func<Media, bool>> filter = (media) =>
                        (mediaType == "" || media.MediaType == mediaType) &&
                        (media.Name.Contains(searchText) ||
-                       media.Authors.Any(author => (author.LastName + " " + author.FirstName).Contains(searchText)));
+                       media.Authors.Any(author => (author.FirstName + " " + author.LastName).Contains(searchText)));
 
 
             return await _mediaRepository.GetAllAsync(pageNumber, pageSize, filter, cancellationToken: cancellationToken);
+        }
+
+        public async Task<int> GetMediaCountAsync(string searchText = "", string mediaType = "", CancellationToken cancellationToken = default)
+        {
+            Expression<Func<Media, bool>> filter = (media) =>
+                       (mediaType == "" || media.MediaType == mediaType) &&
+                       (media.Name.Contains(searchText) ||
+                       media.Authors.Any(author => (author.FirstName + " " + author.LastName).Contains(searchText)));
+
+            return await _mediaRepository.CountAsync(filter, cancellationToken);
         }
 
         public async Task AddMediaToFavoritesAsync(int userId, int mediaId, CancellationToken cancellationToken = default)

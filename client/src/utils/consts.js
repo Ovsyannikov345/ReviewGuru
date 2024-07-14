@@ -4,9 +4,20 @@ export const REGISTER_ROUTE = "/register";
 
 // Public routes
 export const CATALOGUE_ROUTE = "/catalogue";
-export const PRODUCT_ROUTE = "/product/:id";
+export const MEDIA_ROUTE = "/media/:id";
 export const VERIFICATION_ROUTE = "/verify-email";
 
 // Authorized routes
 export const MY_REVIEWS_ROUTE = "/my-reviews";
 export const FAVOURITES_ROUTE = "/favourites";
+
+// Consts
+export const MEDIA_PER_PAGE = 10;
+export const FAVORITES_PER_PAGE = 10;
+
+export const MEDIA_TYPES = [
+    { value: "All", name: "All"},
+    { value: "Movie", name: "Movie" },
+    { value: "Music", name: "Music" },
+    { value: "Book", name: "Book" },
+];

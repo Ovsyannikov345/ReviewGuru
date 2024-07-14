@@ -29,7 +29,7 @@ namespace ReviewGuru.BLL.Services
             Expression<Func<Media, bool>> filter = (media) =>
                        (mediaType == "" || media.MediaType == mediaType) &&
                        (media.Name.Contains(searchText) ||
-                       media.Authors.Any(author => (author.LastName + " " + author.FirstName).Contains(searchText)));
+                       media.Authors.Any(author => (author.FirstName + " " + author.LastName).Contains(searchText)));
 
             IEnumerable<Media> favorites = await _userRepository.GetUserFavoritesAsync(userId, pageNumber, pageSize, filter, cancellationToken) ??
                                            throw new NotFoundException($"User with id {userId} is not found");

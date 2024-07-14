@@ -1,6 +1,6 @@
 import { host } from "../api";
 
-const updateTokens = async (callbackFunction, argument) => {
+const updateTokens = async (callbackFunction, ...args) => {
     const refreshToken = localStorage.getItem("refreshToken");
 
     try {
@@ -9,11 +9,11 @@ const updateTokens = async (callbackFunction, argument) => {
         localStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("refreshToken", response.data.refreshToken);
 
-        if (argument === undefined) {
+        if (!args || args.length === 0) {
             return await callbackFunction();
         }
 
-        return await callbackFunction(argument);
+        return await callbackFunction(...args);
     } catch (error) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");

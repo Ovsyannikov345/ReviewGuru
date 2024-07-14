@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services.IServices;
 using ReviewGuru.BLL.Utilities.Constants;
@@ -12,6 +13,7 @@ namespace ReviewGuru.API.Controllers
         private readonly IMediaService _mediaService = mediaService;
 
         [HttpGet]
+        [AllowAnonymous]
         [ActionName("GetAllMedia")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -24,7 +26,9 @@ namespace ReviewGuru.API.Controllers
         {
             var media = await _mediaService.GetMediaListAsync(pageNumber, pageSize, searchText, mediaType, cancellationToken);
 
-            return Ok(media);
+            int totalMediaCount = await _mediaService.GetMediaCountAsync(searchText, mediaType, cancellationToken);
+
+            return Ok(new { totalMediaCount, media });
         }
 
         [HttpPost("{mediaId}/add-to-favorites")]

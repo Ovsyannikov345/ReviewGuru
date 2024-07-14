@@ -16,6 +16,7 @@ namespace ReviewGuru.API.Controllers
         private readonly IReviewService _reviewService = reviewService;
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("AllReviews")]
         [ActionName("GetAllReviews")]
         [ProducesResponseType(StatusCodes.Status200OK)]
