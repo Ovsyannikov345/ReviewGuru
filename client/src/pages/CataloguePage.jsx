@@ -60,6 +60,9 @@ const CataloguePage = () => {
     return (
         <>
             <Grid container flexDirection={"column"} alignItems={"center"} gap={"20px"} mt={"20px"} pb={"20px"}>
+                <Grid container xs={6}>
+                    <Typography variant="h4">Media catalogue</Typography>
+                </Grid>
                 <Grid container item alignItems={"center"} columnGap={"15px"} wrap="nowrap" xs={6}>
                     <Grid item>
                         <Selector
