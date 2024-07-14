@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services.IServices;
 using ReviewGuru.BLL.Utilities.Constants;
@@ -24,7 +24,9 @@ namespace ReviewGuru.API.Controllers
         {
             var media = await _mediaService.GetMediaListAsync(pageNumber, pageSize, searchText, mediaType, cancellationToken);
 
-            return Ok(media);
+            int totalMediaCount = await _mediaService.GetMediaCountAsync(searchText, mediaType, cancellationToken);
+
+            return Ok(new { totalMediaCount, media });
         }
 
         [HttpPost("{mediaId}/add-to-favorites")]
