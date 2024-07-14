@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services;
@@ -15,6 +16,7 @@ namespace ReviewGuru.API.Controllers
         private readonly IReviewService _reviewService = reviewService;
 
         [HttpGet]
+        [AllowAnonymous]
         [ActionName("GetAllReviews")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

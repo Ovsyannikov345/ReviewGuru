@@ -1,3 +1,4 @@
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services.IServices;
@@ -12,6 +13,7 @@ namespace ReviewGuru.API.Controllers
         private readonly IMediaService _mediaService = mediaService;
 
         [HttpGet]
+        [AllowAnonymous]
         [ActionName("GetAllMedia")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
