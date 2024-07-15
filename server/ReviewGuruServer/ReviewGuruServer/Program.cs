@@ -1,5 +1,7 @@
 using Library.API.Extensions;
+using Microsoft.EntityFrameworkCore;
 using ReviewGuru.API.Extensions;
+using ReviewGuru.DAL.Data;
 
 namespace ReviewGuruServer
 {
@@ -28,6 +30,12 @@ namespace ReviewGuruServer
             services.AddEmailSender();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<ReviewGuruDbContext>();
+                context.Database.Migrate();
+            }
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
