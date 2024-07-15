@@ -10,6 +10,7 @@ import PasswordIcon from "@mui/icons-material/Password";
 import LoginIcon from "@mui/icons-material/Login";
 import Logo from "../images/logo-black.png";
 import { sendLogoutRequest } from "../api/authApi";
+import { FAVOURITES_ROUTE } from "../utils/consts";
 
 const NavBar = () => {
     const [error, setError] = useState(false);
@@ -107,7 +108,11 @@ const NavBar = () => {
                                                 </IconButton>
                                             </Tooltip>
                                             <Tooltip title="Favorites">
-                                                <IconButton size="large" color="inherit">
+                                                <IconButton
+                                                    size="large"
+                                                    color="inherit"
+                                                    onClick={() => navigate(FAVOURITES_ROUTE)}
+                                                >
                                                     <FavoriteBorderIcon fontSize="large" />
                                                 </IconButton>
                                             </Tooltip>
