@@ -66,10 +66,17 @@ namespace ReviewGuru.API.Extensions
 
         public static void AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
         {
+            string[]? corsOrigins = configuration.GetSection("Cors:Origins").Get<string[]>();
+
+            if (corsOrigins == null)
+            {
+                throw new InvalidOperationException("Cors origins are not defined");
+            }
+
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
-                        builder => builder.WithOrigins("http://localhost:3000")
+                        builder => builder.WithOrigins(corsOrigins)
                                           .AllowAnyMethod()
                                           .AllowAnyHeader()
                                           .AllowCredentials());
