@@ -16,6 +16,7 @@ using ReviewGuru.BLL.Utilities.Validators;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using ReviewGuru.BLL.Utilities.EmailSender;
+using Npgsql;
 
 
 namespace ReviewGuru.API.Extensions
@@ -24,7 +25,21 @@ namespace ReviewGuru.API.Extensions
     {
         public static void AddIdentityDbContext(this IServiceCollection services, IConfiguration configuration) => services.AddDbContext<ReviewGuruDbContext>(options =>
         {
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+            var databaseUri = new Uri(configuration["DATABASE_URL"]!);
+
+            var userInfo = databaseUri.UserInfo.Split(':');
+
+            var connectionString = new NpgsqlConnectionStringBuilder
+            {
+                Host = databaseUri.Host,
+                Port = databaseUri.Port,
+                Username = userInfo[0],
+                Password = userInfo[1],
+                Database = databaseUri.LocalPath.TrimStart('/'),
+                SslMode = SslMode.Disable,
+            }.ToString();
+
+            options.UseNpgsql(connectionString);
         });
 
         public static void AddAuthenticationBearer(this IServiceCollection services, IConfiguration configuration)
@@ -51,10 +66,17 @@ namespace ReviewGuru.API.Extensions
 
         public static void AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
         {
+            string[]? corsOrigins = configuration.GetSection("Cors:Origins").Get<string[]>();
+
+            if (corsOrigins == null)
+            {
+                throw new InvalidOperationException("Cors origins are not defined");
+            }
+
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
-                        builder => builder.WithOrigins("http://localhost:3000")
+                        builder => builder.WithOrigins(corsOrigins)
                                           .AllowAnyMethod()
                                           .AllowAnyHeader()
                                           .AllowCredentials());
