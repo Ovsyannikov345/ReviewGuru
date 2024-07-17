@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Grid, Pagination, TextField, Typography } from "@mui/material";
 import CatalogueItem from "../components/CatalogueItem";
-import { sendMediaGetRequest } from "../api/mediaApi";
+import { sendFavoritesGetRequest, sendMediaGetRequest } from "../api/mediaApi";
 import { MEDIA_PER_PAGE, MEDIA_TYPES } from "../utils/consts";
 import useSnackbar from "./../hooks/useSnackbar";
 import Selector from "../components/Selector";
@@ -23,6 +23,8 @@ const CataloguePage = () => {
         media: [],
     });
 
+    const [favoriteMedia, setFavoriteMedia] = useState([]);
+
     const pagesCount = useMemo(() => {
         var count = Math.floor(mediaData.totalMediaCount / MEDIA_PER_PAGE);
 
@@ -33,8 +35,22 @@ const CataloguePage = () => {
         return count;
     }, [mediaData.totalMediaCount]);
 
+    const mediaWithFavoriteFlags = useMemo(() => {
+        const mediaList = [...mediaData.media];
+
+        mediaList.forEach((media) => {
+            if (favoriteMedia.find((m) => m.mediaId === media.mediaId)) {
+                media.isFavorite = true;
+            } else {
+                media.isFavorite = false;
+            }
+        });
+
+        return mediaList;
+    }, [favoriteMedia, mediaData.media]);
+
     useEffect(() => {
-        const fetchEvents = async () => {
+        const fetchMediaList = async () => {
             const response = await sendMediaGetRequest(
                 mediaQuery.page,
                 mediaQuery.mediaType === "All" ? "" : mediaQuery.mediaType,
@@ -49,7 +65,30 @@ const CataloguePage = () => {
             setMediaData(response.data);
         };
 
-        fetchEvents();
+        const fetchUserFavoritesList = async () => {
+            const response = await sendFavoritesGetRequest(
+                mediaQuery.page,
+                mediaQuery.mediaType === "All" ? "" : mediaQuery.mediaType,
+                mediaQuery.searchText
+            );
+
+            if (response?.data?.statusCode >= 400) {
+                displayError(response.data.message);
+                return;
+            }
+
+            setFavoriteMedia(response.data.favoriteMedia);
+        };
+
+        const fetchData = async () => {
+            await fetchMediaList();
+
+            if (localStorage.getItem("accessToken")) {
+                fetchUserFavoritesList();
+            }
+        };
+
+        fetchData();
     }, [mediaQuery]);
 
     const changePage = (event, value) => {
@@ -87,10 +126,10 @@ const CataloguePage = () => {
                         </Button>
                     </Grid>
                 </Grid>
-                {mediaData.media.length > 0 ? (
+                {mediaWithFavoriteFlags.length > 0 ? (
                     <>
                         <Grid container item xs={6} rowGap={"10px"}>
-                            {mediaData.media.map((media) => (
+                            {mediaWithFavoriteFlags.map((media) => (
                                 <CatalogueItem key={media.mediaId} mediaInfo={media} />
                             ))}
                         </Grid>
