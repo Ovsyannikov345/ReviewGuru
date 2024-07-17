@@ -34,5 +34,22 @@ namespace ReviewGuru.DAL.Repositories
 
             return await favorites.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
         }
+
+        public async Task<int> GetUserFavoritesCountAsync(
+            int userId,
+            Expression<Func<Media, bool>>? mediaFilter = null,
+            CancellationToken cancellationToken = default)
+        {
+            var favorites = _context.Users.Where(u => u.UserId == userId)
+                                          .Include(u => u.Favorites)
+                                          .SelectMany(u => u.Favorites);
+
+            if (mediaFilter != null)
+            {
+                favorites = favorites.Where(mediaFilter);
+            }
+
+            return await favorites.CountAsync(cancellationToken);
+        }
     }
 }

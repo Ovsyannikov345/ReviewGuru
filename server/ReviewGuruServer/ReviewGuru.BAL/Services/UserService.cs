@@ -36,5 +36,19 @@ namespace ReviewGuru.BLL.Services
 
             return favorites;
         }
+
+        public async Task<int> GetUserFavoritesCountAsync(
+            int userId,
+            string searchText = "",
+            string mediaType = "",
+            CancellationToken cancellationToken = default)
+        {
+            Expression<Func<Media, bool>> filter = (media) =>
+                       (mediaType == "" || media.MediaType == mediaType) &&
+                       (media.Name.Contains(searchText) ||
+                       media.Authors.Any(author => (author.FirstName + " " + author.LastName).Contains(searchText)));
+
+            return await _userRepository.GetUserFavoritesCountAsync(userId, filter, cancellationToken);
+        }
     }
 }

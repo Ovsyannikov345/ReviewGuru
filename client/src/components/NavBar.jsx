@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, AppBar, Toolbar, Grid, Menu, IconButton, Tooltip, MenuItem, ListItemIcon, Snackbar, Alert } from "@mui/material";
+import { Box, AppBar, Toolbar, Grid, Menu, IconButton, Tooltip, MenuItem, ListItemIcon, Button } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -10,56 +10,15 @@ import PasswordIcon from "@mui/icons-material/Password";
 import LoginIcon from "@mui/icons-material/Login";
 import Logo from "../images/logo-black.png";
 import { sendLogoutRequest } from "../api/authApi";
+import { CATALOGUE_ROUTE, FAVOURITES_ROUTE } from "../utils/consts";
+import useSnackbar from "../hooks/useSnackbar";
 
-const NavBar = () => {
-    const [error, setError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [success, setSuccess] = useState(false);
-    const [successMessage, setSuccessMessage] = useState("");
-
-    const displayError = (message) => {
-        closeSnackbar();
-        setErrorMessage(message);
-        setError(true);
-    };
-
-    const displaySuccess = (message) => {
-        closeSnackbar();
-        setSuccessMessage(message);
-        setSuccess(true);
-    };
-
-    const closeSnackbar = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
-
-        setSuccess(false);
-        setError(false);
-    };
-
-    const [accessToken, setAccessToken] = useState(localStorage.getItem("accessToken"));
-
+const NavBar = ({ accessToken, setAccessToken, setRefreshToken }) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
+    const { displayError, displaySuccess, ErrorSnackbar, SuccessSnackbar } = useSnackbar();
+
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const iframe = document.createElement("iframe");
-        iframe.style.display = "none";
-
-        document.body.appendChild(iframe);
-        iframe.contentWindow.addEventListener("storage", () => {
-            setAccessToken(localStorage.getItem("accessToken"));
-        });
-
-        return () => {
-            iframe.contentWindow.removeEventListener("storage", () => {
-                setAccessToken(localStorage.getItem("accessToken"));
-            });
-            document.body.removeChild(iframe);
-        };
-    }, []);
 
     const logout = async () => {
         const response = await sendLogoutRequest();
@@ -72,8 +31,8 @@ const NavBar = () => {
             return;
         }
 
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        setAccessToken(null);
+        setRefreshToken(null);
         displaySuccess("Logged out");
         navigate("/catalogue");
     };
@@ -85,11 +44,21 @@ const NavBar = () => {
                     <Toolbar style={{ paddingLeft: "100px", paddingRight: "100px" }}>
                         <Grid container alignItems={"center"} justifyContent={"space-between"}>
                             <Grid item mt={"5px"} mb={"5px"}>
-                                <img
-                                    src={Logo}
-                                    alt="Review Guru"
-                                    style={{ maxWidth: "200px", height: "auto", borderRadius: "10px" }}
-                                />
+                                <Grid container gap={"60px"} alignItems={"center"}>
+                                    <img
+                                        src={Logo}
+                                        alt="Review Guru"
+                                        style={{ maxWidth: "200px", height: "auto", borderRadius: "10px" }}
+                                    />
+                                    <Button
+                                        variant="text"
+                                        color="inherit"
+                                        style={{ fontSize: "18px", borderRadius: "0", borderBottom: "1px solid white" }}
+                                        onClick={() => navigate(CATALOGUE_ROUTE)}
+                                    >
+                                        Catalogue
+                                    </Button>
+                                </Grid>
                             </Grid>
                             <Grid item>
                                 <Grid container gap={"10px"}>
@@ -107,7 +76,11 @@ const NavBar = () => {
                                                 </IconButton>
                                             </Tooltip>
                                             <Tooltip title="Favorites">
-                                                <IconButton size="large" color="inherit">
+                                                <IconButton
+                                                    size="large"
+                                                    color="inherit"
+                                                    onClick={() => navigate(FAVOURITES_ROUTE)}
+                                                >
                                                     <FavoriteBorderIcon fontSize="large" />
                                                 </IconButton>
                                             </Tooltip>
@@ -163,16 +136,8 @@ const NavBar = () => {
                     Change password
                 </MenuItem>
             </Menu>
-            <Snackbar open={error} autoHideDuration={6000} onClose={closeSnackbar}>
-                <Alert onClose={closeSnackbar} severity="error" sx={{ width: "100%" }}>
-                    {errorMessage}
-                </Alert>
-            </Snackbar>
-            <Snackbar open={success} autoHideDuration={6000} onClose={closeSnackbar}>
-                <Alert onClose={closeSnackbar} severity="success" sx={{ width: "100%" }}>
-                    {successMessage}
-                </Alert>
-            </Snackbar>
+            <ErrorSnackbar />
+            <SuccessSnackbar />
         </>
     );
 };

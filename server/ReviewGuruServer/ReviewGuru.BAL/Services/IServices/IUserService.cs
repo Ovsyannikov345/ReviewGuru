@@ -18,5 +18,11 @@ namespace ReviewGuru.BLL.Services.IServices
             string searchText = "",
             string mediaType = "",
             CancellationToken cancellationToken = default);
+
+        public Task<int> GetUserFavoritesCountAsync(
+            int userId,
+            string searchText = "",
+            string mediaType = "",
+            CancellationToken cancellationToken = default);
     }
 }

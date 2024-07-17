@@ -3,7 +3,7 @@ import { TextField, Button, Link, Grid, Typography, Snackbar, Alert, CircularPro
 import { useNavigate } from "react-router-dom";
 import { sendLoginRequest } from "../api/authApi";
 
-const LoginPage = () => {
+const LoginPage = ({ setAcessToken, setRefreshToken }) => {
     const navigate = useNavigate();
 
     const [error, setError] = useState(false);
@@ -46,8 +46,8 @@ const LoginPage = () => {
             return;
         }
 
-        localStorage.setItem("accessToken", response.data.accessToken);
-        localStorage.setItem("refreshToken", response.data.refreshToken);
+        setAcessToken(response.data.accessToken);
+        setRefreshToken(response.data.refreshToken);
         navigate("/catalogue");
     };
 
