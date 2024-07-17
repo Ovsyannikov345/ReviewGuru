@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, AppBar, Toolbar, Grid, Menu, IconButton, Tooltip, MenuItem, ListItemIcon, Snackbar, Alert } from "@mui/material";
+import {
+    Box,
+    AppBar,
+    Toolbar,
+    Grid,
+    Menu,
+    IconButton,
+    Tooltip,
+    MenuItem,
+    ListItemIcon,
+    Snackbar,
+    Alert,
+    Button,
+} from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -10,7 +23,7 @@ import PasswordIcon from "@mui/icons-material/Password";
 import LoginIcon from "@mui/icons-material/Login";
 import Logo from "../images/logo-black.png";
 import { sendLogoutRequest } from "../api/authApi";
-import { FAVOURITES_ROUTE } from "../utils/consts";
+import { CATALOGUE_ROUTE, FAVOURITES_ROUTE } from "../utils/consts";
 
 const NavBar = () => {
     const [error, setError] = useState(false);
@@ -86,11 +99,21 @@ const NavBar = () => {
                     <Toolbar style={{ paddingLeft: "100px", paddingRight: "100px" }}>
                         <Grid container alignItems={"center"} justifyContent={"space-between"}>
                             <Grid item mt={"5px"} mb={"5px"}>
-                                <img
-                                    src={Logo}
-                                    alt="Review Guru"
-                                    style={{ maxWidth: "200px", height: "auto", borderRadius: "10px" }}
-                                />
+                                <Grid container gap={"60px"} alignItems={"center"}>
+                                    <img
+                                        src={Logo}
+                                        alt="Review Guru"
+                                        style={{ maxWidth: "200px", height: "auto", borderRadius: "10px" }}
+                                    />
+                                    <Button
+                                        variant="text"
+                                        color="inherit"
+                                        style={{ fontSize: "18px", borderRadius: "0", borderBottom: "1px solid white" }}
+                                        onClick={() => navigate(CATALOGUE_ROUTE)}
+                                    >
+                                        Catalogue
+                                    </Button>
+                                </Grid>
                             </Grid>
                             <Grid item>
                                 <Grid container gap={"10px"}>
