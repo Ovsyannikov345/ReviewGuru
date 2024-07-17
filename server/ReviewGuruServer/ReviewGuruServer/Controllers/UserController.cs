@@ -27,7 +27,9 @@ namespace ReviewGuru.API.Controllers
 
             var favoriteMedia = await _userService.GetUserFavoritesAsync(userId, pageNumber, pageSize, searchText, mediaType, cancellationToken);
 
-            return Ok(favoriteMedia);
+            var totalFavoritesCount = await _userService.GetUserFavoritesCountAsync(userId, searchText, mediaType, cancellationToken);
+
+            return Ok(new { totalFavoritesCount, favoriteMedia });
         }
     }
 }
