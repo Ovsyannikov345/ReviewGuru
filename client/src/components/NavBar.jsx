@@ -16,7 +16,7 @@ import useSnackbar from "../hooks/useSnackbar";
 const NavBar = ({ accessToken, setAccessToken, setRefreshToken }) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const { displayError, displaySuccess, ErrorSnackbar, SuccessSnackbar } = useSnackbar();
+    const { displayError, ErrorSnackbar } = useSnackbar();
 
     const navigate = useNavigate();
 
@@ -33,7 +33,6 @@ const NavBar = ({ accessToken, setAccessToken, setRefreshToken }) => {
 
         setAccessToken(null);
         setRefreshToken(null);
-        displaySuccess("Logged out");
         navigate("/catalogue");
     };
 
@@ -137,7 +136,6 @@ const NavBar = ({ accessToken, setAccessToken, setRefreshToken }) => {
                 </MenuItem>
             </Menu>
             <ErrorSnackbar />
-            <SuccessSnackbar />
         </>
     );
 };
