@@ -18,38 +18,40 @@ const FavouritesPage = () => {
 
     const [userText, setUserText] = useState("");
 
-    const [mediaData, setMediaData] = useState({
-        totalMediaCount: 1,
-        media: [],
+    const [favoritesData, setFavoritesData] = useState({
+        totalFavoritesCount: 1,
+        favoriteMedia: [],
     });
 
     const pagesCount = useMemo(() => {
-        var count = Math.floor(mediaData.totalMediaCount / MEDIA_PER_PAGE);
+        var count = Math.floor(favoritesData.totalFavoritesCount / MEDIA_PER_PAGE);
 
-        if (mediaData.totalMediaCount % MEDIA_PER_PAGE !== 0) {
+        if (favoritesData.totalFavoritesCount % MEDIA_PER_PAGE !== 0) {
             count++;
         }
 
         return count;
-    }, [mediaData.totalMediaCount]);
+    }, [favoritesData.totalFavoritesCount]);
 
     useEffect(() => {
-        const fetchEvents = async () => {
+        const fetchUserFavoritesList = async () => {
             const response = await sendFavoritesGetRequest(
                 mediaQuery.page,
                 mediaQuery.mediaType === "All" ? "" : mediaQuery.mediaType,
                 mediaQuery.searchText
             );
 
-            if (response?.data?.statusCode >= 400) {
+            if (!response?.data || response.data.statusCode >= 400) {
                 displayError(response.data.message);
                 return;
             }
 
-            setMediaData(response.data);
+            console.log(response)
+
+            setFavoritesData(response.data);
         };
 
-        fetchEvents();
+        fetchUserFavoritesList();
     }, [mediaQuery]);
 
     const changePage = (event, value) => {
@@ -60,7 +62,7 @@ const FavouritesPage = () => {
     return (
         <>
             <Grid container flexDirection={"column"} alignItems={"center"} gap={"20px"} mt={"20px"} pb={"20px"}>
-                <Grid container xs={6}>
+                <Grid container item xs={6}>
                     <Typography variant="h4">Your favorite media</Typography>
                 </Grid>
                 <Grid container item alignItems={"center"} columnGap={"15px"} wrap="nowrap" xs={6}>
@@ -87,11 +89,11 @@ const FavouritesPage = () => {
                         </Button>
                     </Grid>
                 </Grid>
-                {mediaData.media.length > 0 ? (
+                {favoritesData.favoriteMedia.length > 0 ? (
                     <>
                         <Grid container item xs={6} rowGap={"10px"}>
-                            {mediaData.media.map((media) => (
-                                <CatalogueItem key={media.mediaId} mediaInfo={media} />
+                            {favoritesData.favoriteMedia.map((media) => (
+                                <CatalogueItem key={media.mediaId} mediaInfo={{ ...media, isFavorite: true }} />
                             ))}
                         </Grid>
                         <Pagination
