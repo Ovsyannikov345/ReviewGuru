@@ -1,19 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-    Box,
-    AppBar,
-    Toolbar,
-    Grid,
-    Menu,
-    IconButton,
-    Tooltip,
-    MenuItem,
-    ListItemIcon,
-    Snackbar,
-    Alert,
-    Button,
-} from "@mui/material";
+import { Box, AppBar, Toolbar, Grid, Menu, IconButton, Tooltip, MenuItem, ListItemIcon, Button } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -24,56 +11,14 @@ import LoginIcon from "@mui/icons-material/Login";
 import Logo from "../images/logo-black.png";
 import { sendLogoutRequest } from "../api/authApi";
 import { CATALOGUE_ROUTE, FAVOURITES_ROUTE } from "../utils/consts";
+import useSnackbar from "../hooks/useSnackbar";
 
-const NavBar = () => {
-    const [error, setError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [success, setSuccess] = useState(false);
-    const [successMessage, setSuccessMessage] = useState("");
-
-    const displayError = (message) => {
-        closeSnackbar();
-        setErrorMessage(message);
-        setError(true);
-    };
-
-    const displaySuccess = (message) => {
-        closeSnackbar();
-        setSuccessMessage(message);
-        setSuccess(true);
-    };
-
-    const closeSnackbar = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
-
-        setSuccess(false);
-        setError(false);
-    };
-
-    const [accessToken, setAccessToken] = useState(localStorage.getItem("accessToken"));
-
+const NavBar = ({ accessToken, setAccessToken, setRefreshToken }) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
+    const { displayError, displaySuccess, ErrorSnackbar, SuccessSnackbar } = useSnackbar();
+
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const iframe = document.createElement("iframe");
-        iframe.style.display = "none";
-
-        document.body.appendChild(iframe);
-        iframe.contentWindow.addEventListener("storage", () => {
-            setAccessToken(localStorage.getItem("accessToken"));
-        });
-
-        return () => {
-            iframe.contentWindow.removeEventListener("storage", () => {
-                setAccessToken(localStorage.getItem("accessToken"));
-            });
-            document.body.removeChild(iframe);
-        };
-    }, []);
 
     const logout = async () => {
         const response = await sendLogoutRequest();
@@ -86,8 +31,8 @@ const NavBar = () => {
             return;
         }
 
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        setAccessToken(null);
+        setRefreshToken(null);
         displaySuccess("Logged out");
         navigate("/catalogue");
     };
@@ -191,16 +136,8 @@ const NavBar = () => {
                     Change password
                 </MenuItem>
             </Menu>
-            <Snackbar open={error} autoHideDuration={6000} onClose={closeSnackbar}>
-                <Alert onClose={closeSnackbar} severity="error" sx={{ width: "100%" }}>
-                    {errorMessage}
-                </Alert>
-            </Snackbar>
-            <Snackbar open={success} autoHideDuration={6000} onClose={closeSnackbar}>
-                <Alert onClose={closeSnackbar} severity="success" sx={{ width: "100%" }}>
-                    {successMessage}
-                </Alert>
-            </Snackbar>
+            <ErrorSnackbar />
+            <SuccessSnackbar />
         </>
     );
 };

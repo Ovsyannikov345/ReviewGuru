@@ -7,7 +7,7 @@ import moment from "moment";
 import { sendRegisterRequest } from "../api/authApi";
 import validateUser from "./../utils/validators/validateUser";
 
-const RegistrationPage = () => {
+const RegistrationPage = ({ setAcessToken, setRefreshToken }) => {
     const navigate = useNavigate();
 
     const [error, setError] = useState(false);
@@ -50,8 +50,8 @@ const RegistrationPage = () => {
             return;
         }
 
-        localStorage.setItem("accessToken", response.data.accessToken);
-        localStorage.setItem("refreshToken", response.data.refreshToken);
+        setAcessToken(response.data.accessToken);
+        setRefreshToken(response.data.refreshToken);
         navigate("/catalogue");
     };
 

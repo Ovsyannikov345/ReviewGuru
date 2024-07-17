@@ -3,13 +3,16 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import NavBar from "./components/NavBar";
 import AppRouter from "./router/AppRouter";
+import useTokens from "./hooks/useTokens";
 
 function App() {
+    const { accessToken, refreshToken, setAccessToken, setRefreshToken } = useTokens();
+
     return (
         <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="en-us">
             <BrowserRouter>
-                <NavBar />
-                <AppRouter />
+                <NavBar accessToken={accessToken} setAccessToken={setAccessToken} setRefreshToken={setRefreshToken} />
+                <AppRouter accessToken={accessToken} setAccessToken={setAccessToken} setRefreshToken={setRefreshToken} />
             </BrowserRouter>
         </LocalizationProvider>
     );
