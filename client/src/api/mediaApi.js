@@ -35,7 +35,7 @@ const sendMediaGetRequest = async (pageNumber, mediaType, searchText) => {
 const sendFavoritesGetRequest = async (pageNumber, mediaType, searchText) => {
     try {
         const response = await host.get(
-            `/favorites?pageNumber=${pageNumber}&pageSize=${MEDIA_PER_PAGE}&mediaType=${mediaType}&searchText=${searchText}`,
+            `/user/favorites?pageNumber=${pageNumber}&pageSize=${MEDIA_PER_PAGE}&mediaType=${mediaType}&searchText=${searchText}`,
             { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }
         );
 
