@@ -12,6 +12,16 @@ namespace ReviewGuru.DAL.Repositories.IRepositories
     {
         public Task<User?> GetUserWithFavoritesAsync(Expression<Func<User, bool>> filter, CancellationToken cancellationToken = default);
 
-        public Task<IEnumerable<Media>?> GetUserFavoritesAsync(int userId, int pageNumber, int pageSize, Expression<Func<Media, bool>>? mediaFilter = null, CancellationToken cancellationToken = default);
+        public Task<IEnumerable<Media>?> GetUserFavoritesAsync(
+            int userId,
+            int pageNumber,
+            int pageSize,
+            Expression<Func<Media, bool>>? mediaFilter = null,
+            CancellationToken cancellationToken = default);
+
+        public Task<int> GetUserFavoritesCountAsync(
+            int userId,
+            Expression<Func<Media, bool>>? mediaFilter = null,
+            CancellationToken cancellationToken = default);
     }
 }
