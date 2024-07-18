@@ -9,31 +9,29 @@ import EditIcon from "@mui/icons-material/Edit";
 import PasswordIcon from "@mui/icons-material/Password";
 import LoginIcon from "@mui/icons-material/Login";
 import Logo from "../images/logo-black.png";
-import { sendLogoutRequest } from "../api/authApi";
 import { CATALOGUE_ROUTE, FAVOURITES_ROUTE } from "../utils/consts";
 import useSnackbar from "../hooks/useSnackbar";
+import useApiRequest from "../hooks/useApiRequest";
 
-const NavBar = ({ accessToken, setAccessToken, setRefreshToken }) => {
+const NavBar = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const { displayError, displaySuccess, ErrorSnackbar, SuccessSnackbar } = useSnackbar();
+    const sendRequest = useApiRequest(accessToken, refreshToken, setAccessToken, setRefreshToken);
+
+    const { displayError, ErrorSnackbar } = useSnackbar();
 
     const navigate = useNavigate();
 
     const logout = async () => {
-        const response = await sendLogoutRequest();
+        const response = await sendRequest("auth/logout", "post", { refreshToken });
 
-        if (!response || response.data.statusCode >= 400) {
-            if (response) {
-                displayError(response.data.message);
-            }
-
+        if (!response.ok) {
+            displayError(response.error);
             return;
         }
 
         setAccessToken(null);
         setRefreshToken(null);
-        displaySuccess("Logged out");
         navigate("/catalogue");
     };
 
@@ -137,7 +135,6 @@ const NavBar = ({ accessToken, setAccessToken, setRefreshToken }) => {
                 </MenuItem>
             </Menu>
             <ErrorSnackbar />
-            <SuccessSnackbar />
         </>
     );
 };

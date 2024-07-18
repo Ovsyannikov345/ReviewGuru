@@ -11,8 +11,18 @@ function App() {
     return (
         <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="en-us">
             <BrowserRouter>
-                <NavBar accessToken={accessToken} setAccessToken={setAccessToken} setRefreshToken={setRefreshToken} />
-                <AppRouter accessToken={accessToken} setAccessToken={setAccessToken} setRefreshToken={setRefreshToken} />
+                <NavBar
+                    accessToken={accessToken}
+                    refreshToken={refreshToken}
+                    setAccessToken={setAccessToken}
+                    setRefreshToken={setRefreshToken}
+                />
+                <AppRouter
+                    accessToken={accessToken}
+                    refreshToken={refreshToken}
+                    setAccessToken={setAccessToken}
+                    setRefreshToken={setRefreshToken}
+                />
             </BrowserRouter>
         </LocalizationProvider>
     );

@@ -1,14 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Grid, Pagination, TextField, Typography } from "@mui/material";
 import CatalogueItem from "../components/CatalogueItem";
-import { sendFavoritesGetRequest, sendMediaGetRequest } from "../api/mediaApi";
 import { MEDIA_PER_PAGE, MEDIA_TYPES } from "../utils/consts";
 import useSnackbar from "./../hooks/useSnackbar";
 import Selector from "../components/Selector";
 import SearchIcon from "@mui/icons-material/Search";
+import useApiRequest from "../hooks/useApiRequest";
 
-const CataloguePage = () => {
+const CataloguePage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
     const { displayError, ErrorSnackbar, SuccessSnackbar } = useSnackbar();
+
+    const sendRequest = useApiRequest(accessToken, refreshToken, setAccessToken, setRefreshToken);
 
     const [mediaQuery, setMediaQuery] = useState({
         page: 1,
@@ -51,14 +53,20 @@ const CataloguePage = () => {
 
     useEffect(() => {
         const fetchMediaList = async () => {
-            const response = await sendMediaGetRequest(
-                mediaQuery.page,
-                mediaQuery.mediaType === "All" ? "" : mediaQuery.mediaType,
-                mediaQuery.searchText
+            const response = await sendRequest(
+                "media",
+                "get",
+                {},
+                {
+                    pageNumber: mediaQuery.page,
+                    pageSize: MEDIA_PER_PAGE,
+                    mediaType: mediaQuery.mediaType === "All" ? "" : mediaQuery.mediaType,
+                    searchText: mediaQuery.searchText,
+                }
             );
 
-            if (response?.data?.statusCode >= 400) {
-                displayError(response.data.message);
+            if (!response.ok) {
+                displayError(response.error);
                 return;
             }
 
@@ -66,14 +74,20 @@ const CataloguePage = () => {
         };
 
         const fetchUserFavoritesList = async () => {
-            const response = await sendFavoritesGetRequest(
-                mediaQuery.page,
-                mediaQuery.mediaType === "All" ? "" : mediaQuery.mediaType,
-                mediaQuery.searchText
+            const response = await sendRequest(
+                "user/favorites",
+                "get",
+                {},
+                {
+                    pageNumber: mediaQuery.page,
+                    pageSize: MEDIA_PER_PAGE,
+                    mediaType: mediaQuery.mediaType === "All" ? "" : mediaQuery.mediaType,
+                    searchText: mediaQuery.searchText,
+                }
             );
 
-            if (response?.data?.statusCode >= 400) {
-                displayError(response.data.message);
+            if (!response.ok) {
+                displayError(response.error);
                 return;
             }
 
@@ -83,7 +97,7 @@ const CataloguePage = () => {
         const fetchData = async () => {
             await fetchMediaList();
 
-            if (localStorage.getItem("accessToken")) {
+            if (accessToken) {
                 fetchUserFavoritesList();
             }
         };

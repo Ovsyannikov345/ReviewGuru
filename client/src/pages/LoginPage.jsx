@@ -1,27 +1,15 @@
 import React, { useState } from "react";
-import { TextField, Button, Link, Grid, Typography, Snackbar, Alert, CircularProgress } from "@mui/material";
+import { TextField, Button, Link, Grid, Typography, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { sendLoginRequest } from "../api/authApi";
+import useApiRequest from "../hooks/useApiRequest";
+import useSnackbar from "../hooks/useSnackbar";
 
-const LoginPage = ({ setAcessToken, setRefreshToken }) => {
+const LoginPage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
     const navigate = useNavigate();
 
-    const [error, setError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
+    const sendRequest = useApiRequest(accessToken, refreshToken, setAccessToken, setRefreshToken);
 
-    const displayError = (message) => {
-        closeSnackbar();
-        setErrorMessage(message);
-        setError(true);
-    };
-
-    const closeSnackbar = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
-
-        setError(false);
-    };
+    const { displayError, ErrorSnackbar } = useSnackbar();
 
     const [loading, setLoading] = useState(false);
 
@@ -38,15 +26,15 @@ const LoginPage = ({ setAcessToken, setRefreshToken }) => {
 
         setLoading(true);
 
-        const response = await sendLoginRequest(authData);
+        const response = await sendRequest("auth/login", "post", authData);
 
-        if (response.data.statusCode >= 400) {
-            displayError(response.data.message);
+        if (!response.ok) {
+            displayError(response.error);
             setLoading(false);
             return;
         }
 
-        setAcessToken(response.data.accessToken);
+        setAccessToken(response.data.accessToken);
         setRefreshToken(response.data.refreshToken);
         navigate("/catalogue");
     };
@@ -117,11 +105,7 @@ const LoginPage = ({ setAcessToken, setRefreshToken }) => {
                     </form>
                 </Grid>
             </Grid>
-            <Snackbar open={error} autoHideDuration={6000} onClose={closeSnackbar}>
-                <Alert onClose={closeSnackbar} severity="error" sx={{ width: "100%" }}>
-                    {errorMessage}
-                </Alert>
-            </Snackbar>
+            <ErrorSnackbar />
         </>
     );
 };

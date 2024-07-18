@@ -1,14 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Grid, Pagination, TextField, Typography } from "@mui/material";
 import CatalogueItem from "../components/CatalogueItem";
-import { sendFavoritesGetRequest } from "../api/mediaApi";
 import { MEDIA_PER_PAGE, MEDIA_TYPES } from "../utils/consts";
 import useSnackbar from "./../hooks/useSnackbar";
 import Selector from "../components/Selector";
 import SearchIcon from "@mui/icons-material/Search";
+import useApiRequest from "../hooks/useApiRequest";
 
-const FavouritesPage = () => {
+const FavouritesPage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
     const { displayError, ErrorSnackbar, SuccessSnackbar } = useSnackbar();
+
+    const sendRequest = useApiRequest(accessToken, refreshToken, setAccessToken, setRefreshToken);
 
     const [mediaQuery, setMediaQuery] = useState({
         page: 1,
@@ -35,18 +37,22 @@ const FavouritesPage = () => {
 
     useEffect(() => {
         const fetchUserFavoritesList = async () => {
-            const response = await sendFavoritesGetRequest(
-                mediaQuery.page,
-                mediaQuery.mediaType === "All" ? "" : mediaQuery.mediaType,
-                mediaQuery.searchText
+            const response = await sendRequest(
+                "user/favorites",
+                "get",
+                {},
+                {
+                    pageNumber: mediaQuery.page,
+                    pageSize: MEDIA_PER_PAGE,
+                    mediaType: mediaQuery.mediaType === "All" ? "" : mediaQuery.mediaType,
+                    searchText: mediaQuery.searchText,
+                }
             );
 
-            if (!response?.data || response.data.statusCode >= 400) {
-                displayError(response.data.message);
+            if (!response.ok) {
+                displayError(response.error);
                 return;
             }
-
-            console.log(response)
 
             setFavoritesData(response.data);
         };
