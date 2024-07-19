@@ -3,6 +3,7 @@ import { TextField, Button, Link, Grid, Typography, CircularProgress } from "@mu
 import { useNavigate } from "react-router-dom";
 import useApiRequest from "../hooks/useApiRequest";
 import useSnackbar from "../hooks/useSnackbar";
+import NavigateBack from "../components/buttons/NavigateBack";
 
 const LoginPage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
     const navigate = useNavigate();
@@ -51,6 +52,7 @@ const LoginPage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken 
                 height={"80%"}
             >
                 <Grid container item xs={12} sm={6} md={4} xl={3} gap={2} maxWidth={"480px"}>
+                    <NavigateBack to={"/catalogue"} label={"Catalogue"} />
                     <Typography variant="h4" width={"100%"} textAlign={"center"}>
                         Log in
                     </Typography>
