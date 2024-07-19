@@ -2,17 +2,27 @@
 using ReviewGuru.DAL.Data;
 using ReviewGuru.DAL.Entities.Models;
 using ReviewGuru.DAL.Repositories.IRepositories;
+using Serilog;
 using System.Linq.Expressions;
 
 namespace ReviewGuru.DAL.Repositories
 {
-    public class UserRepository(ReviewGuruDbContext context) : GenericRepository<User>(context), IUserRepository
+    public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        private readonly ReviewGuruDbContext _context = context;
+        private readonly ReviewGuruDbContext _context;
+        private readonly ILogger _logger;
+
+        public UserRepository(ReviewGuruDbContext context, ILogger logger) : base(context, logger)
+        {
+            _context = context;
+            _logger = logger;
+        }
 
         public async Task<User?> GetUserWithFavoritesAsync(Expression<Func<User, bool>> filter, CancellationToken cancellationToken = default)
         {
-            return await _context.Users.Include(u => u.Favorites).ThenInclude(media => media.Authors).FirstOrDefaultAsync(filter, cancellationToken);
+            var user = await _context.Users.Include(u => u.Favorites).ThenInclude(media => media.Authors).FirstOrDefaultAsync(filter, cancellationToken);
+            _logger.Information($"GetUserWithFavoritesAsync called. User: {user}");
+            return user;
         }
 
         public async Task<IEnumerable<Media>?> GetUserFavoritesAsync(int userId, int pageNumber, int pageSize, Expression<Func<Media, bool>>? mediaFilter = null, CancellationToken cancellationToken = default)
@@ -32,7 +42,10 @@ namespace ReviewGuru.DAL.Repositories
                 favorites = favorites.Where(mediaFilter);
             }
 
-            return await favorites.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+            var result = await favorites.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+            _logger.Information($"GetUserFavoritesAsync called. Favorites count: {result.Count}");
+
+            return result;
         }
 
         public async Task<int> GetUserFavoritesCountAsync(
@@ -49,7 +62,11 @@ namespace ReviewGuru.DAL.Repositories
                 favorites = favorites.Where(mediaFilter);
             }
 
-            return await favorites.CountAsync(cancellationToken);
+            int count = await favorites.CountAsync(cancellationToken);
+            _logger.Information($"GetUserFavoritesCountAsync called. Favorites count: {count}");
+
+            return count;
         }
     }
+
 }
