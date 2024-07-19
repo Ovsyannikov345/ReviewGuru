@@ -144,7 +144,7 @@ const CataloguePage = ({ accessToken, refreshToken, setAccessToken, setRefreshTo
                     <>
                         <Grid container item xs={6} rowGap={"10px"}>
                             {mediaWithFavoriteFlags.map((media) => (
-                                <CatalogueItem key={media.mediaId} mediaInfo={media} />
+                                <CatalogueItem key={media.mediaId} mediaInfo={media} isUserLogged={accessToken != null} />
                             ))}
                         </Grid>
                         <Pagination

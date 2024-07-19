@@ -99,7 +99,11 @@ const FavouritesPage = ({ accessToken, refreshToken, setAccessToken, setRefreshT
                     <>
                         <Grid container item xs={6} rowGap={"10px"}>
                             {favoritesData.favoriteMedia.map((media) => (
-                                <CatalogueItem key={media.mediaId} mediaInfo={{ ...media, isFavorite: true }} />
+                                <CatalogueItem
+                                    key={media.mediaId}
+                                    mediaInfo={{ ...media, isFavorite: true }}
+                                    isUserLogged={true}
+                                />
                             ))}
                         </Grid>
                         <Pagination
