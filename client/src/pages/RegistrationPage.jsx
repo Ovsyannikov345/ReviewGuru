@@ -140,7 +140,7 @@ const RegistrationPage = ({ accessToken, refreshToken, setAccessToken, setRefres
                         />
                         <DatePicker
                             sx={{ width: "100%", marginTop: "16px", marginBottom: "8px" }}
-                            label="Дата рождения"
+                            label="Date of birth"
                             disableFuture
                             minDate={moment().add(-100, "year")}
                             value={formik.values.dateOfBirth}
