@@ -86,7 +86,11 @@ const RegistrationPage = ({ accessToken, refreshToken, setAccessToken, setRefres
                                 formik.handleChange(e);
                             }}
                             error={formik.touched.login && formik.errors.login !== undefined}
-                            helperText={formik.touched.login && formik.errors.login !== undefined ? formik.errors.login : ""}
+                            helperText={
+                                formik.touched.login && formik.errors.login !== undefined
+                                    ? formik.errors.login
+                                    : "Login is case-sensitive"
+                            }
                         />
                         <TextField
                             id="password"

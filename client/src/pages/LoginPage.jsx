@@ -70,6 +70,7 @@ const LoginPage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken 
                             variant="outlined"
                             margin="normal"
                             fullWidth
+                            helperText="Login is case-sensitive"
                             value={authData.login}
                             onChange={(e) => setAuthData({ ...authData, login: e.target.value })}
                         />
