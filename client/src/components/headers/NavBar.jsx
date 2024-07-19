@@ -8,10 +8,10 @@ import RateReviewIcon from "@mui/icons-material/RateReview";
 import EditIcon from "@mui/icons-material/Edit";
 import PasswordIcon from "@mui/icons-material/Password";
 import LoginIcon from "@mui/icons-material/Login";
-import Logo from "../images/logo-black.png";
-import { CATALOGUE_ROUTE, FAVOURITES_ROUTE } from "../utils/consts";
-import useSnackbar from "../hooks/useSnackbar";
-import useApiRequest from "../hooks/useApiRequest";
+import Logo from "../../images/logo-black.png";
+import { CATALOGUE_ROUTE, FAVOURITES_ROUTE } from "../../utils/consts";
+import useSnackbar from "../../hooks/useSnackbar";
+import useApiRequest from "../../hooks/useApiRequest";
 
 const NavBar = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
     const [anchorEl, setAnchorEl] = useState(null);
