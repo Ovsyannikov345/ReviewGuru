@@ -52,7 +52,7 @@ const LoginPage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken 
                 height={"80%"}
             >
                 <Grid container item xs={12} sm={6} md={4} xl={3} gap={2} maxWidth={"480px"}>
-                    <NavigateBack to={"/catalogue"} label={"Catalogue"} />
+                    <NavigateBack to={-1} label={"Back"} />
                     <Typography variant="h4" width={"100%"} textAlign={"center"}>
                         Log in
                     </Typography>
