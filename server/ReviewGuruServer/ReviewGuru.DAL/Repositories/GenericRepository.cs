@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ReviewGuru.DAL.Data;
 using ReviewGuru.DAL.Repositories.IRepositories;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,39 +16,42 @@ namespace ReviewGuru.DAL.Repositories
     {
         private readonly ReviewGuruDbContext _context;
         protected readonly DbSet<TEntity> _dbSet;
+        private readonly ILogger _logger;
 
-        public GenericRepository(ReviewGuruDbContext context)
+        public GenericRepository(ReviewGuruDbContext context, ILogger logger)
         {
             _context = context;
             _dbSet = _context.Set<TEntity>();
+            _logger = logger;
         }
 
         public async Task<int> CountAsync(Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default)
         {
-            if (filter == null)
-            {
-                return await _dbSet.CountAsync(cancellationToken);
-            }
-
-            return await _dbSet.CountAsync(filter, cancellationToken);
+            int count = filter == null ? await _dbSet.CountAsync(cancellationToken) : await _dbSet.CountAsync(filter, cancellationToken);
+            _logger.Information($"CountAsync called. Count: {count}");
+            return count;
         }
 
         public async Task<TEntity?> GetByItemAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default)
         {
-            return await _context.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(filter, cancellationToken);
+            var entity = await _context.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(filter, cancellationToken);
+            _logger.Information($"GetByItemAsync called. Entity: {entity}");
+            return entity;
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default)
         {
             var entities = filter == null ? _dbSet : _dbSet.Where(filter);
-
-            return await entities.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+            var result = await entities.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+            _logger.Information($"GetAllAsync called. Entities count: {result.Count}");
+            return result;
         }
 
         public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             await _dbSet.AddAsync(entity, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
+            _logger.Information($"AddAsync called. Entity: {entity}");
             return entity;
         }
 
@@ -55,19 +59,21 @@ namespace ReviewGuru.DAL.Repositories
         {
             _dbSet.Update(entity);
             await _context.SaveChangesAsync(cancellationToken);
+            _logger.Information($"UpdateAsync called. Entity: {entity}");
             return entity;
         }
 
         public async Task<TEntity> DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
-
             var entity = await _dbSet.FindAsync([id], cancellationToken: cancellationToken);
             if (entity != null)
             {
                 _dbSet.Remove(entity);
                 await _context.SaveChangesAsync(cancellationToken);
+                _logger.Information($"DeleteAsync called. Entity: {entity}");
             }
             return entity;
         }
     }
+
 }

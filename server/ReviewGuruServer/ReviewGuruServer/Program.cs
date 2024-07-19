@@ -2,6 +2,7 @@ using Library.API.Extensions;
 using Microsoft.EntityFrameworkCore;
 using ReviewGuru.API.Extensions;
 using ReviewGuru.DAL.Data;
+using Serilog;
 
 namespace ReviewGuruServer
 {
@@ -12,6 +13,8 @@ namespace ReviewGuruServer
             var builder = WebApplication.CreateBuilder(args);
             var services = builder.Services;
 
+            builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console()
+            .WriteTo.File("debug_log.txt"));
             // Add services to the container.
             services.AddControllers();
             services.AddEndpointsApiExplorer();
