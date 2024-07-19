@@ -5,7 +5,7 @@ export default function useApiRequest(accessToken, refreshToken, setAccessToken,
             headers: {
                 "Content-Type": "application/json;charset=utf-8",
             },
-            body: JSON.stringify(refreshToken),
+            body: JSON.stringify({ refreshToken }),
         });
 
         if (!response.ok) {
@@ -30,14 +30,20 @@ export default function useApiRequest(accessToken, refreshToken, setAccessToken,
             queryString = params.toString();
         }
 
-        let response = await fetch(`${process.env.REACT_APP_SERVER_URL}/${endpointPath}?${queryString}`, {
-            method: method.toUpperCase(),
-            headers: {
-                "Content-Type": "application/json;charset=utf-8",
-                Authorization: `Bearer ${accessToken}`,
-            },
-            body: method.toUpperCase() === "GET" ? null : JSON.stringify(body),
-        });
+        let response;
+
+        try {
+            response = await fetch(`${process.env.REACT_APP_SERVER_URL}/${endpointPath}?${queryString}`, {
+                method: method.toUpperCase(),
+                headers: {
+                    "Content-Type": "application/json;charset=utf-8",
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: method.toUpperCase() === "GET" ? null : JSON.stringify(body),
+            });
+        } catch {
+            return { ok: false, error: "Service is currently unavailable" };
+        }
 
         if (response.ok) {
             if (response.status === 204 || response.headers.get("content-length") === "0") {
