@@ -8,26 +8,25 @@ import RateReviewIcon from "@mui/icons-material/RateReview";
 import EditIcon from "@mui/icons-material/Edit";
 import PasswordIcon from "@mui/icons-material/Password";
 import LoginIcon from "@mui/icons-material/Login";
-import Logo from "../images/logo-black.png";
-import { sendLogoutRequest } from "../api/authApi";
-import { CATALOGUE_ROUTE, FAVOURITES_ROUTE } from "../utils/consts";
-import useSnackbar from "../hooks/useSnackbar";
+import Logo from "../../images/logo-black.png";
+import { CATALOGUE_ROUTE, FAVOURITES_ROUTE } from "../../utils/consts";
+import useSnackbar from "../../hooks/useSnackbar";
+import useApiRequest from "../../hooks/useApiRequest";
 
-const NavBar = ({ accessToken, setAccessToken, setRefreshToken }) => {
+const NavBar = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
     const [anchorEl, setAnchorEl] = useState(null);
+
+    const sendRequest = useApiRequest(accessToken, refreshToken, setAccessToken, setRefreshToken);
 
     const { displayError, ErrorSnackbar } = useSnackbar();
 
     const navigate = useNavigate();
 
     const logout = async () => {
-        const response = await sendLogoutRequest();
+        const response = await sendRequest("auth/logout", "post", { refreshToken });
 
-        if (!response || response.data.statusCode >= 400) {
-            if (response) {
-                displayError(response.data.message);
-            }
-
+        if (!response.ok) {
+            displayError(response.error);
             return;
         }
 
@@ -47,7 +46,8 @@ const NavBar = ({ accessToken, setAccessToken, setRefreshToken }) => {
                                     <img
                                         src={Logo}
                                         alt="Review Guru"
-                                        style={{ maxWidth: "200px", height: "auto", borderRadius: "10px" }}
+                                        style={{ maxWidth: "200px", height: "auto", borderRadius: "10px", cursor: "pointer" }}
+                                        onClick={() => navigate(CATALOGUE_ROUTE)}
                                     />
                                     <Button
                                         variant="text"

@@ -6,7 +6,7 @@ import React from "react";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
-const CatalogueItem = ({ mediaInfo }) => {
+const CatalogueItem = ({ mediaInfo, isUserLogged }) => {
     const navigate = useNavigate();
 
     return (
@@ -28,18 +28,20 @@ const CatalogueItem = ({ mediaInfo }) => {
                 <Grid
                     container
                     flexDirection={"column"}
-                    justifyContent={"space-between"}
+                    justifyContent={isUserLogged ? "space-between" : "flex-end"}
                     alignItems={"flex-end"}
                     minWidth={"160px"}
                     height={"100%"}
                 >
-                    <IconButton style={{ marginTop: "-5px", marginRight: "-10px" }}>
-                        {!mediaInfo.isFavorite ? (
-                            <FavoriteBorderIcon style={{ fontSize: "30px" }} />
-                        ) : (
-                            <FavoriteIcon style={{ fontSize: "30px" }} color="error" />
-                        )}
-                    </IconButton>
+                    {isUserLogged && (
+                        <IconButton style={{ marginTop: "-5px", marginRight: "-10px" }}>
+                            {!mediaInfo.isFavorite ? (
+                                <FavoriteBorderIcon style={{ fontSize: "30px" }} />
+                            ) : (
+                                <FavoriteIcon style={{ fontSize: "30px" }} color="error" />
+                            )}
+                        </IconButton>
+                    )}
                     <Button
                         variant="contained"
                         onClick={() => navigate(`/media/${mediaInfo.mediaId}`)}

@@ -1,7 +1,7 @@
 import { BrowserRouter } from "react-router-dom";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import NavBar from "./components/NavBar";
+import NavBar from "./components/headers/NavBar";
 import AppRouter from "./router/AppRouter";
 import useTokens from "./hooks/useTokens";
 
@@ -11,8 +11,18 @@ function App() {
     return (
         <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="en-us">
             <BrowserRouter>
-                <NavBar accessToken={accessToken} setAccessToken={setAccessToken} setRefreshToken={setRefreshToken} />
-                <AppRouter accessToken={accessToken} setAccessToken={setAccessToken} setRefreshToken={setRefreshToken} />
+                <NavBar
+                    accessToken={accessToken}
+                    refreshToken={refreshToken}
+                    setAccessToken={setAccessToken}
+                    setRefreshToken={setRefreshToken}
+                />
+                <AppRouter
+                    accessToken={accessToken}
+                    refreshToken={refreshToken}
+                    setAccessToken={setAccessToken}
+                    setRefreshToken={setRefreshToken}
+                />
             </BrowserRouter>
         </LocalizationProvider>
     );

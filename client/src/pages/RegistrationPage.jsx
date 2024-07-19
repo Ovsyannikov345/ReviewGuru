@@ -1,31 +1,20 @@
 import React, { useState } from "react";
-import { TextField, Button, Link, Grid, Typography, Snackbar, Alert, CircularProgress } from "@mui/material";
+import { TextField, Button, Link, Grid, Typography, CircularProgress } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import moment from "moment";
-import { sendRegisterRequest } from "../api/authApi";
 import validateUser from "./../utils/validators/validateUser";
+import useApiRequest from "../hooks/useApiRequest";
+import useSnackbar from "../hooks/useSnackbar";
+import NavigateBack from "./../components/buttons/NavigateBack";
 
-const RegistrationPage = ({ setAcessToken, setRefreshToken }) => {
+const RegistrationPage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
     const navigate = useNavigate();
 
-    const [error, setError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
+    const sendRequest = useApiRequest(accessToken, refreshToken, setAccessToken, setRefreshToken);
 
-    const displayError = (message) => {
-        closeSnackbar();
-        setErrorMessage(message);
-        setError(true);
-    };
-
-    const closeSnackbar = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
-
-        setError(false);
-    };
+    const { displayError, ErrorSnackbar } = useSnackbar();
 
     const [loading, setLoading] = useState(false);
 
@@ -42,15 +31,15 @@ const RegistrationPage = ({ setAcessToken, setRefreshToken }) => {
             dataToSend.dateOfBirth = dataToSend.dateOfBirth.format("YYYY-MM-DDT00:00:00.000") + "Z";
         }
 
-        const response = await sendRegisterRequest(dataToSend);
+        const response = await sendRequest("auth/register", "post", dataToSend);
 
-        if (response.data.statusCode >= 400) {
-            displayError(response.data.message);
+        if (!response.ok) {
+            displayError(response.error);
             setLoading(false);
             return;
         }
 
-        setAcessToken(response.data.accessToken);
+        setAccessToken(response.data.accessToken);
         setRefreshToken(response.data.refreshToken);
         navigate("/catalogue");
     };
@@ -79,6 +68,7 @@ const RegistrationPage = ({ setAcessToken, setRefreshToken }) => {
                 height={"80%"}
             >
                 <Grid container item xs={12} sm={6} md={4} xl={3} gap={2} maxWidth={"480px"}>
+                    <NavigateBack to={-2} label={"Back"} />
                     <Typography variant="h4" width={"100%"} textAlign={"center"}>
                         Register
                     </Typography>
@@ -96,7 +86,11 @@ const RegistrationPage = ({ setAcessToken, setRefreshToken }) => {
                                 formik.handleChange(e);
                             }}
                             error={formik.touched.login && formik.errors.login !== undefined}
-                            helperText={formik.touched.login && formik.errors.login !== undefined ? formik.errors.login : ""}
+                            helperText={
+                                formik.touched.login && formik.errors.login !== undefined
+                                    ? formik.errors.login
+                                    : "Login is case-sensitive"
+                            }
                         />
                         <TextField
                             id="password"
@@ -152,7 +146,7 @@ const RegistrationPage = ({ setAcessToken, setRefreshToken }) => {
                         />
                         <DatePicker
                             sx={{ width: "100%", marginTop: "16px", marginBottom: "8px" }}
-                            label="Дата рождения"
+                            label="Date of birth"
                             disableFuture
                             minDate={moment().add(-100, "year")}
                             value={formik.values.dateOfBirth}
@@ -185,11 +179,7 @@ const RegistrationPage = ({ setAcessToken, setRefreshToken }) => {
                     </form>
                 </Grid>
             </Grid>
-            <Snackbar open={error} autoHideDuration={6000} onClose={closeSnackbar}>
-                <Alert onClose={closeSnackbar} severity="error" sx={{ width: "100%" }}>
-                    {errorMessage}
-                </Alert>
-            </Snackbar>
+            <ErrorSnackbar />
         </>
     );
 };

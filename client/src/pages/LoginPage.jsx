@@ -1,27 +1,16 @@
 import React, { useState } from "react";
-import { TextField, Button, Link, Grid, Typography, Snackbar, Alert, CircularProgress } from "@mui/material";
+import { TextField, Button, Link, Grid, Typography, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { sendLoginRequest } from "../api/authApi";
+import useApiRequest from "../hooks/useApiRequest";
+import useSnackbar from "../hooks/useSnackbar";
+import NavigateBack from "../components/buttons/NavigateBack";
 
-const LoginPage = ({ setAcessToken, setRefreshToken }) => {
+const LoginPage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
     const navigate = useNavigate();
 
-    const [error, setError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
+    const sendRequest = useApiRequest(accessToken, refreshToken, setAccessToken, setRefreshToken);
 
-    const displayError = (message) => {
-        closeSnackbar();
-        setErrorMessage(message);
-        setError(true);
-    };
-
-    const closeSnackbar = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
-
-        setError(false);
-    };
+    const { displayError, ErrorSnackbar } = useSnackbar();
 
     const [loading, setLoading] = useState(false);
 
@@ -38,15 +27,15 @@ const LoginPage = ({ setAcessToken, setRefreshToken }) => {
 
         setLoading(true);
 
-        const response = await sendLoginRequest(authData);
+        const response = await sendRequest("auth/login", "post", authData);
 
-        if (response.data.statusCode >= 400) {
-            displayError(response.data.message);
+        if (!response.ok) {
+            displayError(response.error);
             setLoading(false);
             return;
         }
 
-        setAcessToken(response.data.accessToken);
+        setAccessToken(response.data.accessToken);
         setRefreshToken(response.data.refreshToken);
         navigate("/catalogue");
     };
@@ -63,6 +52,7 @@ const LoginPage = ({ setAcessToken, setRefreshToken }) => {
                 height={"80%"}
             >
                 <Grid container item xs={12} sm={6} md={4} xl={3} gap={2} maxWidth={"480px"}>
+                    <NavigateBack to={-1} label={"Back"} />
                     <Typography variant="h4" width={"100%"} textAlign={"center"}>
                         Log in
                     </Typography>
@@ -80,6 +70,7 @@ const LoginPage = ({ setAcessToken, setRefreshToken }) => {
                             variant="outlined"
                             margin="normal"
                             fullWidth
+                            helperText="Login is case-sensitive"
                             value={authData.login}
                             onChange={(e) => setAuthData({ ...authData, login: e.target.value })}
                         />
@@ -117,11 +108,7 @@ const LoginPage = ({ setAcessToken, setRefreshToken }) => {
                     </form>
                 </Grid>
             </Grid>
-            <Snackbar open={error} autoHideDuration={6000} onClose={closeSnackbar}>
-                <Alert onClose={closeSnackbar} severity="error" sx={{ width: "100%" }}>
-                    {errorMessage}
-                </Alert>
-            </Snackbar>
+            <ErrorSnackbar />
         </>
     );
 };

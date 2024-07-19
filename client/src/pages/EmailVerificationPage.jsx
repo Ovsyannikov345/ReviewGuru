@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, CircularProgress, Dialog, Grid, Typography } from "@mui/material";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import { sendVerificationRequest } from "../api/authApi";
 import { CATALOGUE_ROUTE } from "./../utils/consts";
+import useApiRequest from "../hooks/useApiRequest";
 
-const EmailVerificationPage = () => {
+const EmailVerificationPage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
     const navigate = useNavigate();
+
+    const sendRequest = useApiRequest(accessToken, refreshToken, setAccessToken, setRefreshToken);
 
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -25,25 +27,23 @@ const EmailVerificationPage = () => {
 
         const verificationToken = searchParams.get("token");
 
-        setTimeout(async () => {
-            const response = await sendVerificationRequest(verificationToken);
+        const response = await sendRequest("auth/verify", "post", { verificationToken });
 
-            if (response.data.statusCode >= 400) {
-                setStatus({
-                    isLoading: false,
-                    isError: true,
-                    isSuccess: false,
-                });
-
-                return;
-            }
-
+        if (!response.ok) {
             setStatus({
                 isLoading: false,
-                isError: false,
-                isSuccess: true,
+                isError: true,
+                isSuccess: false,
             });
-        }, 3000);
+
+            return;
+        }
+
+        setStatus({
+            isLoading: false,
+            isError: false,
+            isSuccess: true,
+        });
     };
 
     useEffect(() => {
