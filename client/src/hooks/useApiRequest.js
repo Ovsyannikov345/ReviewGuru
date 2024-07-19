@@ -17,6 +17,37 @@ export default function useApiRequest(accessToken, refreshToken, setAccessToken,
         return tokens;
     };
 
+    const reattemptWithNewToken = async (endpointPath, method, body, queryString, newAccessToken) => {
+        let response;
+
+        try {
+            response = await fetch(`${process.env.REACT_APP_SERVER_URL}/${endpointPath}?${queryString}`, {
+                method: method.toUpperCase(),
+                headers: {
+                    "Content-Type": "application/json;charset=utf-8",
+                    Authorization: `Bearer ${newAccessToken}`,
+                },
+                body: method.toUpperCase() === "GET" ? null : JSON.stringify(body),
+            });
+        } catch {
+            return { ok: false, error: "Service is currently unavailable" };
+        }
+
+        if (response.ok) {
+            if (response.status === 204 || response.headers.get("content-length") === "0") {
+                return { ok: true, data: null };
+            }
+
+            const responseData = await response.json();
+
+            return { ok: true, data: responseData };
+        }
+
+        let responseData = await response.json();
+
+        return { ok: false, error: responseData.message ?? "Unexpected error" };
+    };
+
     const sendRequest = async (endpointPath, method, body, queryParams) => {
         let queryString = "";
 
@@ -74,7 +105,7 @@ export default function useApiRequest(accessToken, refreshToken, setAccessToken,
             setAccessToken(tokens.accessToken);
             setRefreshToken(tokens.refreshToken);
 
-            return await sendRequest(endpointPath, method, body, queryParams);
+            return await reattemptWithNewToken(endpointPath, method, body, queryString, tokens.accessToken);
         }
 
         let responseData = await response.json();
