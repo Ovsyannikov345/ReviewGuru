@@ -46,7 +46,8 @@ const NavBar = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) 
                                     <img
                                         src={Logo}
                                         alt="Review Guru"
-                                        style={{ maxWidth: "200px", height: "auto", borderRadius: "10px" }}
+                                        style={{ maxWidth: "200px", height: "auto", borderRadius: "10px", cursor: "pointer" }}
+                                        onClick={() => navigate(CATALOGUE_ROUTE)}
                                     />
                                     <Button
                                         variant="text"
