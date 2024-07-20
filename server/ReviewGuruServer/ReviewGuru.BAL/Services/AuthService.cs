@@ -12,6 +12,7 @@ using ReviewGuru.BLL.Utilities.Validators;
 using ReviewGuru.DAL.Entities.Models;
 using ReviewGuru.DAL.Repositories;
 using ReviewGuru.DAL.Repositories.IRepositories;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace ReviewGuru.BLL.Services
         ITokenService tokenService,
         IMapper mapper,
         IEmailSender emailSender,
+        ILogger logger,
         RegistrationValidator registrationValidator) : IAuthService
     {
         private readonly IConfiguration _configuration = configuration;
@@ -40,6 +42,8 @@ namespace ReviewGuru.BLL.Services
 
         private readonly IEmailSender _emailSender = emailSender;
 
+        private readonly ILogger _logger;
+
         private readonly RegistrationValidator _registrationValidator = registrationValidator;
 
         public async Task<TokenDto> LoginAsync(LoginDto authData, CancellationToken cancellationToken = default)
@@ -48,13 +52,17 @@ namespace ReviewGuru.BLL.Services
 
             if (user == null)
             {
+                _logger.Warning($"User with login {authData.Login} is not found");
                 throw new NotFoundException($"User with login {authData.Login} is not found");
             }
 
             if (!BCrypt.Net.BCrypt.Verify(authData.Password, user.Password))
             {
+                _logger.Warning($"Invalid credentials for user {user.Login}");
                 throw new UnauthorizedException("Provided credentials are invalid");
             }
+
+            _logger.Information($"User {user.Login} logged in successfully");
 
             return await _tokenService.CreateTokensAsync(user, cancellationToken);
         }
@@ -62,6 +70,7 @@ namespace ReviewGuru.BLL.Services
         public async Task LogoutAsync(LogoutDto logoutData, CancellationToken cancellationToken = default)
         {
             await _tokenService.RemoveRefreshTokenAsync(logoutData.RefreshToken, cancellationToken);
+            _logger.Information($"User logged out successfully");
         }
 
         public async Task<TokenDto> RegisterAsync(RegisterDto userData, CancellationToken cancellationToken = default)
@@ -108,6 +117,8 @@ namespace ReviewGuru.BLL.Services
                 throw;
             }
 
+            _logger.Information($"User {createdUser.Login} registered successfully");
+
             return await _tokenService.CreateTokensAsync(createdUser, cancellationToken);
         }
 
@@ -132,10 +143,12 @@ namespace ReviewGuru.BLL.Services
             try
             {
                 await _emailSender.SendEmailAsync(user.Email, "Thank you for joining our media review service!", EmailMessages.WelcomeMessage, cancellationToken);
+                _logger.Information($"User {user.Login} verified successfully");
             }
-            catch (InternalServerErrorException)
+            catch (InternalServerErrorException ex)
             {
-                // Ignored because welcome email sending is optional. TODO add logging here.
+                _logger.Error($"Error during user verification: {ex.Message}");
+                throw;
             }
         }
 
