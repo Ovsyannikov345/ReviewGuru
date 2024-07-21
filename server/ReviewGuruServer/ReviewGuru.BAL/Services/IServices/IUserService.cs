@@ -14,7 +14,7 @@ namespace ReviewGuru.BLL.Services.IServices
         public Task<IEnumerable<Media>> GetUserFavoritesAsync(
             int userId,
             int pageNumber = Pagination.PageNumber,
-            int pageSize = Pagination.PageSize,
+            int pageSize = Pagination.MaxPageSize,
             string searchText = "",
             string mediaType = "",
             CancellationToken cancellationToken = default);

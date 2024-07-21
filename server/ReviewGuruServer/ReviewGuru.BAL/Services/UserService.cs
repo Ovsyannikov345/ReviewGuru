@@ -18,12 +18,13 @@ namespace ReviewGuru.BLL.Services
     public class UserService(IUserRepository userRepository, ILogger logger) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
+
         private readonly ILogger _logger = logger;
 
         public async Task<IEnumerable<Media>> GetUserFavoritesAsync(
             int userId,
             int pageNumber = Pagination.PageNumber,
-            int pageSize = Pagination.PageSize,
+            int pageSize = Pagination.MaxPageSize,
             string searchText = "",
             string mediaType = "",
             CancellationToken cancellationToken = default)
