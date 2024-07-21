@@ -25,7 +25,7 @@ namespace ReviewGuru.BLL.Services
 
         private readonly IRefreshTokenRepository _refreshTokenRepository = refreshTokenRepository;
 
-        private readonly ILogger _logger;
+        private readonly ILogger _logger = logger;
 
         public async Task<TokenDto> CreateTokensAsync(User user, CancellationToken cancellationToken = default)
         {

@@ -42,7 +42,7 @@ namespace ReviewGuru.BLL.Services
 
         private readonly IEmailSender _emailSender = emailSender;
 
-        private readonly ILogger _logger;
+        private readonly ILogger _logger = logger;
 
         private readonly RegistrationValidator _registrationValidator = registrationValidator;
 
