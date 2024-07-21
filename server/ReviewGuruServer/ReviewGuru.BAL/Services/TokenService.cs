@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using ReviewGuru.BLL.DTOs;
@@ -18,11 +19,13 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services
 {
-    public class TokenService(IConfiguration configuration, IRefreshTokenRepository refreshTokenRepository) : ITokenService
+    public class TokenService(IConfiguration configuration, IRefreshTokenRepository refreshTokenRepository, ILogger logger) : ITokenService
     {
         private readonly IConfiguration _configuration = configuration;
 
         private readonly IRefreshTokenRepository _refreshTokenRepository = refreshTokenRepository;
+
+        private readonly ILogger _logger;
 
         public async Task<TokenDto> CreateTokensAsync(User user, CancellationToken cancellationToken = default)
         {
@@ -40,11 +43,13 @@ namespace ReviewGuru.BLL.Services
             {
                 await _refreshTokenRepository.AddAsync(new RefreshToken() { Token = refreshToken }, cancellationToken);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.Error($"Error during token save: {ex.Message}");
                 throw new InternalServerErrorException("Error while saving new refresh token");
             }
 
+            _logger.Information($"Tokens created for user {user.Login}");
 
             return new TokenDto(accessToken, refreshToken);
         }
@@ -93,10 +98,13 @@ namespace ReviewGuru.BLL.Services
                 await _refreshTokenRepository.DeleteAsync(refreshToken.Id, cancellationToken);
                 await _refreshTokenRepository.AddAsync(new RefreshToken() { Token = newRefreshToken }, cancellationToken);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.Error($"Error during token change: {ex.Message}");
                 throw new InternalServerErrorException("Error while changing refresh token in database");
             }
+
+            _logger.Information($"Tokens refreshed for user {validationResult.ClaimsIdentity.Name}");
 
             return new TokenDto(newAccessToken, newRefreshToken);
         }
@@ -151,8 +159,11 @@ namespace ReviewGuru.BLL.Services
 
             if (!validationResult.IsValid)
             {
+                _logger.Error("Provided validation token is invalid");
                 throw new ForbiddenException("Provided validation token is invalid");
             }
+
+            _logger.Information($"Verification token validated for user {validationResult.ClaimsIdentity.Name}");
 
             return validationResult;
         }
@@ -163,10 +174,12 @@ namespace ReviewGuru.BLL.Services
 
             if (token == null)
             {
+                _logger.Error("Provided refresh token is not found");
                 throw new NotFoundException("Provided refresh token is not found");
             }
 
             await _refreshTokenRepository.DeleteAsync(token.Id, cancellationToken);
+            _logger.Information($"Refresh token removed for user");
         }
 
         private List<Claim> GetClaims(User user)
