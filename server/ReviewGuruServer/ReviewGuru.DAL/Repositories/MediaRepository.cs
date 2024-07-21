@@ -29,7 +29,11 @@ namespace ReviewGuru.DAL.Repositories
             var media = filter == null ? _context.Media : _context.Media.Where(filter);
 
             media = media.Include(m => m.Authors);
-            var result = await media.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+
+            var result = await media.OrderBy(m => m.MediaId)
+                                    .Skip((pageNumber - 1) * pageSize)
+                                    .Take(pageSize)
+                                    .ToListAsync(cancellationToken);
 
             _logger.Information($"GetAllAsync called. Media count: {result.Count}");
 

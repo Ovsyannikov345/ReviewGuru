@@ -42,7 +42,11 @@ namespace ReviewGuru.DAL.Repositories
                 favorites = favorites.Where(mediaFilter);
             }
 
-            var result = await favorites.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+            var result = await favorites.OrderBy(m => m.MediaId)
+                                        .Skip((pageNumber - 1) * pageSize)
+                                        .Take(pageSize)
+                                        .ToListAsync(cancellationToken);
+
             _logger.Information($"GetUserFavoritesAsync called. Favorites count: {result.Count}");
 
             return result;
