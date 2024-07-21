@@ -148,7 +148,6 @@ namespace ReviewGuru.BLL.Services
             catch (InternalServerErrorException ex)
             {
                 _logger.Error($"Error during user verification: {ex.Message}");
-                throw;
             }
         }
 
