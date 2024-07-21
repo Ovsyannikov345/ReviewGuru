@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services.IServices;
 using ReviewGuru.BLL.Utilities.Constants;
@@ -21,7 +21,7 @@ namespace ReviewGuru.BLL.Services
 
         private readonly IUserRepository _userRepository = userRepository;
 
-        private readonly ILogger _logger;
+        private readonly ILogger _logger = logger;
 
         public async Task<IEnumerable<Media>> GetMediaListAsync(
             int pageNumber = Pagination.PageNumber,
