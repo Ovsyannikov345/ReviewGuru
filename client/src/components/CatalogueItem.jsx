@@ -6,7 +6,7 @@ import React from "react";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
-const CatalogueItem = ({ mediaInfo, isUserLogged }) => {
+const CatalogueItem = ({ mediaInfo, isUserLogged, addToFavorites, removeFromFavorites }) => {
     const navigate = useNavigate();
 
     return (
@@ -33,14 +33,24 @@ const CatalogueItem = ({ mediaInfo, isUserLogged }) => {
                     minWidth={"160px"}
                     height={"100%"}
                 >
-                    {isUserLogged && (
-                        <IconButton style={{ marginTop: "-5px", marginRight: "-10px" }}>
-                            {!mediaInfo.isFavorite ? (
+                    {isUserLogged ? (
+                        !mediaInfo.isFavorite ? (
+                            <IconButton
+                                style={{ marginTop: "-5px", marginRight: "-10px" }}
+                                onClick={() => addToFavorites(mediaInfo.mediaId)}
+                            >
                                 <FavoriteBorderIcon style={{ fontSize: "30px" }} />
-                            ) : (
+                            </IconButton>
+                        ) : (
+                            <IconButton
+                                style={{ marginTop: "-5px", marginRight: "-10px" }}
+                                onClick={() => removeFromFavorites(mediaInfo.mediaId)}
+                            >
                                 <FavoriteIcon style={{ fontSize: "30px" }} color="error" />
-                            )}
-                        </IconButton>
+                            </IconButton>
+                        )
+                    ) : (
+                        <></>
                     )}
                     <Button
                         variant="contained"

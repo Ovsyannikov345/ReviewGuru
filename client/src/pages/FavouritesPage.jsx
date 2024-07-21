@@ -8,7 +8,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import useApiRequest from "../hooks/useApiRequest";
 
 const FavouritesPage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
-    const { displayError, ErrorSnackbar, SuccessSnackbar } = useSnackbar();
+    const { displayError, displaySuccess, ErrorSnackbar, SuccessSnackbar } = useSnackbar();
 
     const sendRequest = useApiRequest(accessToken, refreshToken, setAccessToken, setRefreshToken);
 
@@ -65,6 +65,21 @@ const FavouritesPage = ({ accessToken, refreshToken, setAccessToken, setRefreshT
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
+    const removeMediaFromFavorites = async (mediaId) => {
+        const response = await sendRequest(`media/${mediaId}/remove-from-favorites`, "post", {}, {});
+
+        if (!response.ok) {
+            displayError(response.error);
+            return;
+        }
+
+        setFavoritesData({
+            totalFavoritesCount: favoritesData.totalFavoritesCount - 1,
+            favoriteMedia: favoritesData.favoriteMedia.filter((m) => m.mediaId !== mediaId),
+        });
+        displaySuccess("Removed media from favorites");
+    };
+
     return (
         <>
             <Grid container flexDirection={"column"} alignItems={"center"} gap={"20px"} mt={"20px"} pb={"20px"}>
@@ -103,6 +118,7 @@ const FavouritesPage = ({ accessToken, refreshToken, setAccessToken, setRefreshT
                                     key={media.mediaId}
                                     mediaInfo={{ ...media, isFavorite: true }}
                                     isUserLogged={true}
+                                    removeFromFavorites={removeMediaFromFavorites}
                                 />
                             ))}
                         </Grid>
