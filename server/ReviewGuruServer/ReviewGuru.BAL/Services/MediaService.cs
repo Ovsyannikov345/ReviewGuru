@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services.IServices;
 using ReviewGuru.BLL.Utilities.Constants;
@@ -60,7 +60,7 @@ namespace ReviewGuru.BLL.Services
                 _logger.Error($"User with id {userId} was not found");
                 throw new NotFoundException($"User with id {userId} was not found");
             }
-                        
+
             if (user.Favorites.Any(media => media.MediaId == mediaId))
             {
                 _logger.Error("Media is already in favorites");
@@ -72,7 +72,7 @@ namespace ReviewGuru.BLL.Services
             {
                 _logger.Error($"Media with id {mediaId} was not found");
                 throw new NotFoundException($"Media with id {mediaId} was not found");
-            } 
+            }
 
             user.Favorites.Add(media);
 
@@ -80,6 +80,30 @@ namespace ReviewGuru.BLL.Services
 
             await _userRepository.UpdateAsync(user, cancellationToken);
         }
+
+        public async Task RemoveMediaFromFavoritesAsync(int userId, int mediaId, CancellationToken cancellationToken = default)
+        {
+            User? user = await _userRepository.GetUserWithFavoritesAsync(u => u.UserId == userId, cancellationToken);
+
+            if (user == null)
+            {
+                _logger.Error("User with id {UserId} was not found", userId);
+
+                throw new NotFoundException($"User with id {userId} was not found");
+            }
+
+            Media? media = user.Favorites.FirstOrDefault(m => m.MediaId == mediaId);
+
+            if (media == null)
+            {
+                _logger.Error("Media with id {MediaId} was not found in user with id {UserId} favorites", mediaId, userId);
+
+                throw new BadRequestException("Media is not in favorites");
+            }
+
+            user.Favorites.Remove(media);
+            _logger.Information("Media has been removed from favorites");
+            await _userRepository.UpdateAsync(user, cancellationToken);
+        }
     }
 }
-

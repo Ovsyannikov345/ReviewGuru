@@ -44,5 +44,19 @@ namespace ReviewGuru.API.Controllers
 
             return Ok();
         }
+
+        [HttpPost("{mediaId}/remove-from-favorites")]
+        [ActionName("RemoveMediaFromFavorites")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RemoveMediaFromFavorites(int mediaId, CancellationToken cancellationToken = default)
+        {
+            int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
+
+            await _mediaService.RemoveMediaFromFavoritesAsync(userId, mediaId, cancellationToken);
+
+            return Ok();
+        }
     }
 }
