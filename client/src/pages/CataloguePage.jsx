@@ -8,7 +8,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import useApiRequest from "../hooks/useApiRequest";
 
 const CataloguePage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
-    const { displayError, ErrorSnackbar, SuccessSnackbar } = useSnackbar();
+    const { displayError, displaySuccess, ErrorSnackbar, SuccessSnackbar } = useSnackbar();
 
     const sendRequest = useApiRequest(accessToken, refreshToken, setAccessToken, setRefreshToken);
 
@@ -79,8 +79,6 @@ const CataloguePage = ({ accessToken, refreshToken, setAccessToken, setRefreshTo
                 "get",
                 {},
                 {
-                    pageNumber: mediaQuery.page,
-                    pageSize: MEDIA_PER_PAGE,
                     mediaType: mediaQuery.mediaType === "All" ? "" : mediaQuery.mediaType,
                     searchText: mediaQuery.searchText,
                 }
@@ -108,6 +106,30 @@ const CataloguePage = ({ accessToken, refreshToken, setAccessToken, setRefreshTo
     const changePage = (event, value) => {
         setMediaQuery({ ...mediaQuery, page: value });
         window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    const addMediaToFavorites = async (mediaId) => {
+        const response = await sendRequest(`media/${mediaId}/add-to-favorites`, "post", {}, {});
+
+        if (!response.ok) {
+            displayError(response.error);
+            return;
+        }
+
+        setFavoriteMedia([...favoriteMedia, mediaData.media.find((m) => m.mediaId === mediaId)]);
+        displaySuccess("Added media to favorites");
+    };
+
+    const removeMediaFromFavorites = async (mediaId) => {
+        const response = await sendRequest(`media/${mediaId}/remove-from-favorites`, "post", {}, {});
+
+        if (!response.ok) {
+            displayError(response.error);
+            return;
+        }
+
+        setFavoriteMedia(favoriteMedia.filter((m) => m.mediaId !== mediaId));
+        displaySuccess("Removed media from favorites");
     };
 
     return (
@@ -144,7 +166,13 @@ const CataloguePage = ({ accessToken, refreshToken, setAccessToken, setRefreshTo
                     <>
                         <Grid container item xs={6} rowGap={"10px"}>
                             {mediaWithFavoriteFlags.map((media) => (
-                                <CatalogueItem key={media.mediaId} mediaInfo={media} isUserLogged={accessToken != null} />
+                                <CatalogueItem
+                                    key={media.mediaId}
+                                    mediaInfo={media}
+                                    isUserLogged={accessToken != null}
+                                    addToFavorites={addMediaToFavorites}
+                                    removeFromFavorites={removeMediaFromFavorites}
+                                />
                             ))}
                         </Grid>
                         <Pagination
