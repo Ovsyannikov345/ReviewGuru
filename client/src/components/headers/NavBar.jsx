@@ -5,11 +5,12 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import RateReviewIcon from "@mui/icons-material/RateReview";
+import MovieIcon from "@mui/icons-material/Movie";
 import EditIcon from "@mui/icons-material/Edit";
 import PasswordIcon from "@mui/icons-material/Password";
 import LoginIcon from "@mui/icons-material/Login";
 import Logo from "../../images/logo-black.png";
-import { CATALOGUE_ROUTE, FAVOURITES_ROUTE } from "../../utils/consts";
+import { CATALOGUE_ROUTE, CREATE_REVIEW_ROUTE, FAVOURITES_ROUTE } from "../../utils/consts";
 import useSnackbar from "../../hooks/useSnackbar";
 import useApiRequest from "../../hooks/useApiRequest";
 
@@ -54,8 +55,18 @@ const NavBar = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) 
                                         color="inherit"
                                         style={{ fontSize: "18px", borderRadius: "0", borderBottom: "1px solid white" }}
                                         onClick={() => navigate(CATALOGUE_ROUTE)}
+                                        startIcon={<MovieIcon />}
                                     >
                                         Catalogue
+                                    </Button>
+                                    <Button
+                                        variant="text"
+                                        color="inherit"
+                                        style={{ fontSize: "18px", borderRadius: "0", borderBottom: "1px solid white" }}
+                                        onClick={() => navigate(CREATE_REVIEW_ROUTE)}
+                                        startIcon={<RateReviewIcon />}
+                                    >
+                                        Write review
                                     </Button>
                                 </Grid>
                             </Grid>

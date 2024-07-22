@@ -10,13 +10,14 @@ export const VERIFICATION_ROUTE = "/verify-email";
 // Authorized routes
 export const MY_REVIEWS_ROUTE = "/my-reviews";
 export const FAVOURITES_ROUTE = "/favourites";
+export const CREATE_REVIEW_ROUTE = "/create-review";
 
 // Consts
 export const MEDIA_PER_PAGE = 10;
 export const FAVORITES_PER_PAGE = 10;
 
 export const MEDIA_TYPES = [
-    { value: "All", name: "All"},
+    { value: "All", name: "All" },
     { value: "Movie", name: "Movie" },
     { value: "Music", name: "Music" },
     { value: "Book", name: "Book" },
