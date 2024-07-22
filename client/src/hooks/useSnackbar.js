@@ -28,7 +28,7 @@ const useSnackbar = () => {
     };
 
     const ErrorSnackbar = () => (
-        <Snackbar open={error} autoHideDuration={6000} onClose={closeSnackbar}>
+        <Snackbar open={error} autoHideDuration={3000} onClose={closeSnackbar}>
             <Alert onClose={closeSnackbar} severity="error" sx={{ width: "100%" }}>
                 {errorMessage}
             </Alert>
@@ -36,7 +36,7 @@ const useSnackbar = () => {
     );
 
     const SuccessSnackbar = () => (
-        <Snackbar open={success} autoHideDuration={6000} onClose={closeSnackbar}>
+        <Snackbar open={success} autoHideDuration={3000} onClose={closeSnackbar}>
             <Alert onClose={closeSnackbar} severity="success" sx={{ width: "100%" }}>
                 {successMessage}
             </Alert>
