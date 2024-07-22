@@ -24,6 +24,7 @@ namespace ReviewGuru.BLL.Utilities.Mapping
             CreateMap<ReviewToCreateDTO, Review>().ReverseMap();
             CreateMap<MediaToCreateDTO, Media>().ReverseMap();
             CreateMap<AuthorToCreateDTO, Author>().ReverseMap();
+            CreateMap<ReviewToCreateAPIDTO, Review>().ReverseMap();
         }
     }
 }
