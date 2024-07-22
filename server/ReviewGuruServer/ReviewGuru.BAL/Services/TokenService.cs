@@ -93,7 +93,7 @@ namespace ReviewGuru.BLL.Services
                 _configuration["Jwt:AccessSecretKey"]!);
 
             string newRefreshToken = GenerateToken(validationResult.ClaimsIdentity.Claims,
-                DateTime.Now.AddMinutes(int.Parse(_configuration["Jwt:RefreshDaysExpire"]!)),
+                DateTime.Now.AddDays(int.Parse(_configuration["Jwt:RefreshDaysExpire"]!)),
                 _configuration["Jwt:RefreshSecretKey"]!);
 
             try
