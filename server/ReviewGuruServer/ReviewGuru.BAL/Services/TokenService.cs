@@ -80,6 +80,9 @@ namespace ReviewGuru.BLL.Services
 
             if (!validationResult.IsValid)
             {
+                _logger.Information($"Failed to refresh tokens. Exception: {validationResult.Exception}");
+                _logger.Information($"Provided token: {refreshData.RefreshToken}");
+
                 await _refreshTokenRepository.DeleteAsync(refreshToken.Id, cancellationToken);
 
                 throw new ForbiddenException("Provided refresh token is invalid");
