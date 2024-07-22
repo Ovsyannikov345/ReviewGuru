@@ -42,6 +42,17 @@ namespace ReviewGuru.API.Extensions
             options.UseNpgsql(connectionString);
         });
 
+        public static void AddHttpClientWithApiKey(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddHttpClient("ReviewGuruAPIClient")
+                .ConfigureHttpClient(client =>
+                {
+                    var apiKey = configuration["APIKey"];
+                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+                });
+        }
+
+
         public static void AddAuthenticationBearer(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthentication(options =>
@@ -102,7 +113,8 @@ namespace ReviewGuru.API.Extensions
                     .AddScoped<IAuthorService, AuthorService>()
                     .AddScoped<IMediaService, MediaService>()
                     .AddScoped<IReviewService, ReviewService>()
-                    .AddScoped<IUserService, UserService>();
+                    .AddScoped<IUserService, UserService>()
+                    .AddScoped<IOMDbService, OMDbSrvice>();
         }
 
         public static void AddDataAccessRepositories(this IServiceCollection services)
