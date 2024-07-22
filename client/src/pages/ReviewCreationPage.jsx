@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     FormControl,
     Grid,
@@ -8,6 +8,9 @@ import {
     TextField,
     Button,
     Autocomplete,
+    Select,
+    InputLabel,
+    MenuItem,
 } from "@mui/material";
 import useApiRequest from "./../hooks/useApiRequest";
 import useSnackbar from "./../hooks/useSnackbar";
@@ -18,7 +21,7 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
 
     const sendRequest = useApiRequest(accessToken, refreshToken, setAccessToken, setRefreshToken);
 
-    const { displayError, displaySuccess, ErrorSnackbar, SuccessSnackbar } = useSnackbar();
+    const { displayError, ErrorSnackbar } = useSnackbar();
 
     const [mediaCatalogue, setMediaCatalogue] = useState([]);
 
@@ -29,6 +32,18 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
     });
 
     const [mediaInputValue, setMediaInputValue] = useState("");
+
+    const [newMediaMode, setNewMediaMode] = useState(false);
+
+    const [newMedia, setNewMedia] = useState({
+        mediaType: "",
+        name: "",
+        yearOfCreating: "",
+    });
+
+    const sortedMedia = useMemo(() => {
+        return mediaCatalogue.sort((a, b) => a.mediaType.localeCompare(b.mediaType));
+    }, [mediaCatalogue]);
 
     useEffect(() => {
         const fetchMediaCatalogue = async () => {
@@ -46,22 +61,61 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
     }, []);
 
     const createReview = async () => {
-        console.log(review);
-
-        if (review.rating == null || review.userReview.trim().length === 0 || review.mediaToCreateDTO == null) {
+        if (review.rating == null || review.userReview.trim().length === 0) {
             displayError("Fill the review information");
             return;
         }
 
-        const response = await sendRequest("review/CreateReview", "post", review, {});
+        if (!newMediaMode) {
+            if (review.mediaToCreateDTO == null) {
+                displayError("Fill the review information");
+                return;
+            }
 
-        if (!response.ok) {
-            displayError(response.error);
+            const response = await sendRequest("review/CreateReview", "post", review, {});
+
+            if (!response.ok) {
+                displayError(response.error);
+                return;
+            }
+
+            navigate(-1);
             return;
         }
 
-        displaySuccess("Review created");
-        navigate(-1);
+        if (newMedia.mediaType === "") {
+            displayError("Select media type");
+            return;
+        }
+
+        if (newMedia.mediaType !== "Movie") {
+            if (!newMedia.name) {
+                displayError("Fill media name");
+                return;
+            }
+
+            if (newMedia.yearOfCreating && (newMedia.yearOfCreating < 1 || newMedia.yearOfCreating > new Date().getFullYear())) {
+                displayError("Invalid media creation year");
+                return;
+            }
+
+            const reviewData = {
+                ...review,
+                mediaToCreateDTO: { ...newMedia, yearOfCreating: `${newMedia.yearOfCreating}-01-01` },
+            };
+
+            console.log(reviewData);
+
+            const response = await sendRequest("review/CreateReview", "post", reviewData, {});
+
+            if (!response.ok) {
+                displayError(response.error);
+                return;
+            }
+
+            navigate(-1);
+            return;
+        }
     };
 
     return (
@@ -71,33 +125,83 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                     <Typography variant="h4">Create new review</Typography>
                 </Grid>
                 <Grid container item flexDirection={"column"} alignItems={"flex-start"} xs={6} rowGap={"20px"}>
-                    <FormControl fullWidth>
-                        <Autocomplete
-                            value={review.mediaToCreateDTO}
-                            onChange={(event, newValue) => {
-                                setReview({ ...review, mediaToCreateDTO: newValue });
-                            }}
-                            inputValue={mediaInputValue}
-                            onInputChange={(event, newInputValue) => {
-                                setMediaInputValue(newInputValue);
-                            }}
-                            options={mediaCatalogue}
-                            getOptionLabel={(m) => m.name}
-                            fullWidth
-                            renderInput={(params) => <TextField {...params} label="Select media from catalogue" />}
-                        />
-
-                        <Link
-                            variant="body2"
-                            display={"block"}
-                            onClick={(e) => {
-                                e.preventDefault();
-                            }}
-                            sx={{ cursor: "pointer", userSelect: "none", textDecoration: "none", mt: "5px" }}
-                        >
-                            Your media is not in the list?
-                        </Link>
-                    </FormControl>
+                    {!newMediaMode ? (
+                        <FormControl fullWidth>
+                            <Typography variant="h6">Media</Typography>
+                            <Autocomplete
+                                value={review.mediaToCreateDTO}
+                                onChange={(event, newValue) => {
+                                    setReview({ ...review, mediaToCreateDTO: newValue });
+                                }}
+                                inputValue={mediaInputValue}
+                                onInputChange={(event, newInputValue) => {
+                                    setMediaInputValue(newInputValue);
+                                }}
+                                options={sortedMedia}
+                                getOptionLabel={(m) => m.name}
+                                fullWidth
+                                renderInput={(params) => <TextField {...params} label="Select media from catalogue" />}
+                                groupBy={(m) => m.mediaType}
+                                style={{ marginTop: "5px" }}
+                            />
+                            <Link
+                                variant="body2"
+                                display={"block"}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setNewMediaMode(true);
+                                }}
+                                sx={{ cursor: "pointer", userSelect: "none", textDecoration: "none", mt: "5px" }}
+                            >
+                                Your media is not in the list?
+                            </Link>
+                        </FormControl>
+                    ) : (
+                        <Grid container gap={"15px"}>
+                            <Typography variant="h6">New media</Typography>
+                            <TextField
+                                label="Media name"
+                                fullWidth
+                                value={newMedia.name}
+                                onChange={(e) => setNewMedia({ ...newMedia, name: e.target.value })}
+                            ></TextField>
+                            <Grid container gap={"20px"}>
+                                <FormControl style={{ width: "200px" }}>
+                                    <InputLabel id="media-type-label">Media type</InputLabel>
+                                    <Select
+                                        labelId="media-type-label"
+                                        label="Media type"
+                                        value={newMedia.mediaType}
+                                        onChange={(e) => setNewMedia({ ...newMedia, mediaType: e.target.value })}
+                                    >
+                                        {["Movie", "Music", "Book"].map((type) => (
+                                            <MenuItem key={type} value={type}>
+                                                {type}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <TextField
+                                    label="Media creation year"
+                                    type="number"
+                                    style={{ width: "200px" }}
+                                    value={newMedia.yearOfCreating}
+                                    onChange={(e) => setNewMedia({ ...newMedia, yearOfCreating: e.target.value })}
+                                ></TextField>
+                            </Grid>
+                            <Link
+                                variant="body2"
+                                display={"block"}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setNewMediaMode(false);
+                                }}
+                                sx={{ cursor: "pointer", userSelect: "none", textDecoration: "none", mt: "-10px" }}
+                            >
+                                Select media from catalogue
+                            </Link>
+                        </Grid>
+                    )}
                     <Grid container flexDirection={"column"}>
                         <Typography variant="h6">Your grade</Typography>
                         <Rating
@@ -140,7 +244,6 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                 </Grid>
             </Grid>
             <ErrorSnackbar />
-            <SuccessSnackbar />
         </>
     );
 };
