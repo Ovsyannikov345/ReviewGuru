@@ -11,6 +11,7 @@ import {
     Select,
     InputLabel,
     MenuItem,
+    Chip,
 } from "@mui/material";
 import useApiRequest from "./../hooks/useApiRequest";
 import useSnackbar from "./../hooks/useSnackbar";
@@ -39,6 +40,12 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
         mediaType: "",
         name: "",
         yearOfCreating: "",
+        authors: [],
+    });
+
+    const [newAuthor, setNewAuthor] = useState({
+        firstName: "",
+        lastName: "",
     });
 
     const sortedMedia = useMemo(() => {
@@ -59,6 +66,33 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
 
         fetchMediaCatalogue();
     }, []);
+
+    const addAuthorToNewMedia = () => {
+        if (!newAuthor.firstName || !newAuthor.lastName) {
+            displayError("Fill the author data");
+            return;
+        }
+
+        if (
+            newMedia.authors.some((author) => author.firstName === newAuthor.firstName && author.lastName === newAuthor.lastName)
+        ) {
+            displayError("Author already added");
+            return;
+        }
+
+        setNewMedia({
+            ...newMedia,
+            authors: [...newMedia.authors, { firstName: newAuthor.firstName, lastName: newAuthor.lastName }],
+        });
+        setNewAuthor({ firstName: "", lastName: "" });
+    };
+
+    const removeAuthorFromNewMedia = (firstName, lastName) => {
+        setNewMedia({
+            ...newMedia,
+            authors: newMedia.authors.filter((author) => !(author.firstName === firstName && author.lastName === lastName)),
+        });
+    };
 
     const createReview = async () => {
         if (review.rating == null || review.userReview.trim().length === 0) {
@@ -101,7 +135,11 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
 
             const reviewData = {
                 ...review,
-                mediaToCreateDTO: { ...newMedia, yearOfCreating: `${newMedia.yearOfCreating}-01-01` },
+                mediaToCreateDTO: {
+                    ...newMedia,
+                    yearOfCreating: `${newMedia.yearOfCreating}-01-01`,
+                    authorsToCreateDTO: newMedia.authors,
+                },
             };
 
             console.log(reviewData);
@@ -188,6 +226,36 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                                     value={newMedia.yearOfCreating}
                                     onChange={(e) => setNewMedia({ ...newMedia, yearOfCreating: e.target.value })}
                                 ></TextField>
+                            </Grid>
+                            <Grid container flexDirection={"column"} gap={"10px"}>
+                                <Typography variant="h6">Authors</Typography>
+                                {newMedia.authors.length > 0 && (
+                                    <Grid container gap={"10px"}>
+                                        {newMedia.authors.map((author) => (
+                                            <Chip
+                                                label={author.firstName + " " + author.lastName}
+                                                onDelete={() => removeAuthorFromNewMedia(author.firstName, author.lastName)}
+                                            />
+                                        ))}
+                                    </Grid>
+                                )}
+                                <Grid container gap={"10px"}>
+                                    <TextField
+                                        label="First name"
+                                        style={{ width: "200px" }}
+                                        value={newAuthor.firstName}
+                                        onChange={(e) => setNewAuthor({ ...newAuthor, firstName: e.target.value })}
+                                    />
+                                    <TextField
+                                        label="Last name"
+                                        style={{ width: "200px" }}
+                                        value={newAuthor.lastName}
+                                        onChange={(e) => setNewAuthor({ ...newAuthor, lastName: e.target.value })}
+                                    />
+                                    <Button variant="contained" style={{ width: "100px" }} onClick={addAuthorToNewMedia}>
+                                        Add
+                                    </Button>
+                                </Grid>
                             </Grid>
                             <Link
                                 variant="body2"
