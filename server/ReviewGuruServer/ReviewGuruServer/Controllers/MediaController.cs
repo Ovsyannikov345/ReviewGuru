@@ -20,7 +20,7 @@ namespace ReviewGuru.API.Controllers
         public async Task<IActionResult> GetAllMediaAsync(
             CancellationToken cancellationToken = default,
             int pageNumber = Pagination.PageNumber,
-            int pageSize = Pagination.PageSize,
+            int pageSize = Pagination.MaxPageSize,
             string searchText = "",
             string mediaType = "")
         {

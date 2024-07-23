@@ -80,6 +80,9 @@ namespace ReviewGuru.BLL.Services
 
             if (!validationResult.IsValid)
             {
+                _logger.Information($"Failed to refresh tokens. Exception: {validationResult.Exception}");
+                _logger.Information($"Provided token: {refreshData.RefreshToken}");
+
                 await _refreshTokenRepository.DeleteAsync(refreshToken.Id, cancellationToken);
 
                 throw new ForbiddenException("Provided refresh token is invalid");
@@ -90,7 +93,7 @@ namespace ReviewGuru.BLL.Services
                 _configuration["Jwt:AccessSecretKey"]!);
 
             string newRefreshToken = GenerateToken(validationResult.ClaimsIdentity.Claims,
-                DateTime.Now.AddMinutes(int.Parse(_configuration["Jwt:RefreshDaysExpire"]!)),
+                DateTime.Now.AddDays(int.Parse(_configuration["Jwt:RefreshDaysExpire"]!)),
                 _configuration["Jwt:RefreshSecretKey"]!);
 
             try
