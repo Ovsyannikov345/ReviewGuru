@@ -73,7 +73,7 @@ export default function useApiRequest(accessToken, refreshToken, setAccessToken,
                 body: method.toUpperCase() === "GET" ? null : JSON.stringify(body),
             });
         } catch {
-            return { ok: false, error: "Service is currently unavailable", status: response.status };
+            return { ok: false, error: "Service is currently unavailable", status: 500 };
         }
 
         if (response.ok) {
