@@ -4,6 +4,7 @@ using ReviewGuru.BLL.Services.IServices;
 using ReviewGuru.BLL.Utilities.Constants;
 using ReviewGuru.BLL.Utilities.Exceptions;
 using ReviewGuru.DAL.Entities.Models;
+using ReviewGuru.DAL.Repositories;
 using ReviewGuru.DAL.Repositories.IRepositories;
 using Serilog;
 using System;
@@ -15,11 +16,21 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services
 {
-    public class MediaService(IMediaRepository mediaRepository, IUserRepository userRepository, ILogger logger) : IMediaService
+    public class MediaService(
+        IMediaRepository mediaRepository, 
+        IAuthorRepository authorRepository, 
+        IUserRepository userRepository, 
+        IMapper mapper,
+        ILogger logger
+        ) : IMediaService
     {
         private readonly IMediaRepository _mediaRepository = mediaRepository;
 
+        private readonly IAuthorRepository _authorRepository = authorRepository;
+
         private readonly IUserRepository _userRepository = userRepository;
+
+        private readonly IMapper _mapper;
 
         private readonly ILogger _logger = logger;
 
@@ -104,6 +115,57 @@ namespace ReviewGuru.BLL.Services
             user.Favorites.Remove(media);
             _logger.Information("Media has been removed from favorites");
             await _userRepository.UpdateAsync(user, cancellationToken);
+        }
+
+        public async Task AddMediaAsync(MediaToCreateDTO mediaDto, CancellationToken cancellationToken = default)
+        {
+            var authors = await CheckAndAddAuthors(mediaDto.AuthorsToCreateDTO, cancellationToken);
+
+            var media = await CheckAndAddMedia(mediaDto, authors, cancellationToken);
+        }
+
+        private async Task<ICollection<Author>> CheckAndAddAuthors(ICollection<AuthorToCreateDTO> authorDtos, CancellationToken cancellationToken)
+        {
+            var authors = new List<Author>();
+
+            foreach (var authorDto in authorDtos)
+            {
+                var existingAuthor = await _authorRepository.GetByItemAsync(a => a.FirstName == authorDto.FirstName && a.LastName == authorDto.LastName);
+                if (existingAuthor != null)
+                {
+                    _logger.Information("Author(s) already exists");
+                    return authors;
+                }
+                else
+                {
+                    var author = _mapper.Map<Author>(authorDto);
+                    var addedAuthor = await _authorRepository.AddAsync(author, cancellationToken);
+                    authors.Add(addedAuthor);
+                    _logger.Information("Author(s) were added");
+                }
+            }
+
+            _logger.Information("The authors were returned");
+
+            return authors;
+        }
+
+
+        private async Task<Media> CheckAndAddMedia(MediaToCreateDTO mediaDto, ICollection<Author> authors, CancellationToken cancellationToken)
+        {
+            var existingMedia = await _mediaRepository.GetByItemAsync(m => m.Name == mediaDto.Name && m.MediaType == mediaDto.MediaType);
+            if (existingMedia != null)
+            {
+                _logger.Information("Media already exists");
+                return existingMedia;
+            }
+
+            var media = _mapper.Map<Media>(mediaDto);
+            media.Authors = authors;
+
+            _logger.Information("Media has been returned");
+
+            return await _mediaRepository.AddAsync(media, cancellationToken);
         }
     }
 }
