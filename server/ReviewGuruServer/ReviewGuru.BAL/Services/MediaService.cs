@@ -18,9 +18,9 @@ using System.Threading.Tasks;
 namespace ReviewGuru.BLL.Services
 {
     public class MediaService(
-        IMediaRepository mediaRepository, 
-        IAuthorRepository authorRepository, 
-        IUserRepository userRepository, 
+        IMediaRepository mediaRepository,
+        IAuthorRepository authorRepository,
+        IUserRepository userRepository,
         IMapper mapper,
         ILogger logger
         ) : IMediaService
@@ -120,23 +120,24 @@ namespace ReviewGuru.BLL.Services
 
         public async Task AddMediaAsync(MediaToCreateYDTO mediaToCreate, CancellationToken cancellationToken = default)
         {
-            var existingMedia = await _mediaRepository.GetByItemAsync
-                (m => m.Name == mediaToCreate.Name && m.YearOfCreating == DateOnly.FromDateTime(mediaToCreate.YearOfCreating));
+            var existingMedia = await _mediaRepository.GetByItemAsync(
+                m => m.Name.ToLower() == mediaToCreate.Name.ToLower() &&
+                m.YearOfCreating == DateOnly.FromDateTime(mediaToCreate.YearOfCreating));
 
             if (existingMedia != null)
             {
-                throw new Exception("Media is alredy exists.");
+                throw new BadRequestException("Media already exists.");
             }
 
             var media = new Media
             {
                 MediaType = mediaToCreate.MediaType,
                 Name = mediaToCreate.Name,
-                YearOfCreating = DateOnly.FromDateTime( mediaToCreate.YearOfCreating),
+                YearOfCreating = DateOnly.FromDateTime(mediaToCreate.YearOfCreating),
                 Authors = mediaToCreate.AuthorsToCreateDTO.Select(a => new Author { FirstName = a.FirstName, LastName = a.LastName }).ToList()
             };
 
-            await _mediaRepository.AddAsync(media);
+            await _mediaRepository.AddAsync(media, cancellationToken);
         }
 
 
