@@ -1,13 +1,17 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Grid, Pagination, TextField, Typography } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import CatalogueItem from "../components/CatalogueItem";
-import { MEDIA_PER_PAGE, MEDIA_TYPES } from "../utils/consts";
+import { CREATE_MEDIA_ROUTE, MEDIA_PER_PAGE, MEDIA_TYPES } from "../utils/consts";
 import useSnackbar from "./../hooks/useSnackbar";
 import Selector from "../components/Selector";
 import SearchIcon from "@mui/icons-material/Search";
 import useApiRequest from "../hooks/useApiRequest";
+import { useNavigate } from "react-router";
 
 const CataloguePage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
+    const navigate = useNavigate();
+
     const { displayError, displaySuccess, ErrorSnackbar, SuccessSnackbar } = useSnackbar();
 
     const sendRequest = useApiRequest(accessToken, refreshToken, setAccessToken, setRefreshToken);
@@ -135,8 +139,11 @@ const CataloguePage = ({ accessToken, refreshToken, setAccessToken, setRefreshTo
     return (
         <>
             <Grid container flexDirection={"column"} alignItems={"center"} gap={"20px"} mt={"20px"} pb={"20px"}>
-                <Grid container item xs={6}>
+                <Grid container item xs={6} gap={"15px"}>
                     <Typography variant="h4">Media catalogue</Typography>
+                    <Button variant="contained" endIcon={<AddIcon />} onClick={() => navigate(CREATE_MEDIA_ROUTE)}>
+                        Add
+                    </Button>
                 </Grid>
                 <Grid container item alignItems={"center"} columnGap={"15px"} wrap="nowrap" xs={6}>
                     <Grid item>
