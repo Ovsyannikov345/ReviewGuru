@@ -18,9 +18,9 @@ using System.Threading.Tasks;
 namespace ReviewGuru.BLL.Services
 {
     public class MediaService(
-        IMediaRepository mediaRepository, 
-        IAuthorRepository authorRepository, 
-        IUserRepository userRepository, 
+        IMediaRepository mediaRepository,
+        IAuthorRepository authorRepository,
+        IUserRepository userRepository,
         IMapper mapper,
         ILogger logger
         ) : IMediaService
@@ -31,7 +31,7 @@ namespace ReviewGuru.BLL.Services
 
         private readonly IUserRepository _userRepository = userRepository;
 
-        private readonly IMapper _mapper;
+        private readonly IMapper _mapper = mapper;
 
         private readonly ILogger _logger = logger;
 
@@ -120,25 +120,46 @@ namespace ReviewGuru.BLL.Services
 
         public async Task AddMediaAsync(MediaToCreateYDTO mediaToCreate, CancellationToken cancellationToken = default)
         {
-            var existingMedia = await _mediaRepository.GetByItemAsync
-                (m => m.Name == mediaToCreate.Name && m.YearOfCreating == DateOnly.FromDateTime(mediaToCreate.YearOfCreating));
+            var existingMedia = await _mediaRepository.GetByItemAsync(
+                m => m.Name.ToLower() == mediaToCreate.Name.ToLower() &&
+                m.YearOfCreating.Year == DateOnly.FromDateTime(mediaToCreate.YearOfCreating).Year);
 
             if (existingMedia != null)
             {
-                throw new Exception("Media is alredy exists.");
+                throw new BadRequestException("Media already exists.");
             }
 
             var media = new Media
             {
                 MediaType = mediaToCreate.MediaType,
                 Name = mediaToCreate.Name,
-                YearOfCreating = DateOnly.FromDateTime( mediaToCreate.YearOfCreating),
-                Authors = mediaToCreate.AuthorsToCreateDTO.Select(a => new Author { FirstName = a.FirstName, LastName = a.LastName }).ToList()
+                YearOfCreating = DateOnly.FromDateTime(mediaToCreate.YearOfCreating),
             };
 
-            await _mediaRepository.AddAsync(media);
+            var createdMedia = await _mediaRepository.AddAsync(media, cancellationToken);
+
+            foreach (var authorDto in mediaToCreate.AuthorsToCreateDTO)
+            {
+                var existingAuthor = await _authorRepository.GetByItemAsync(a => a.FirstName.ToLower() == authorDto.FirstName.ToLower() &&
+                                                                            a.LastName.ToLower() == authorDto.LastName.ToLower(), cancellationToken);
+
+                if (existingAuthor != null)
+                {
+                    _logger.Information("Author(s) already exists");
+                    createdMedia.Authors.Add(existingAuthor);
+                }
+                else
+                {
+                    var author = _mapper.Map<Author>(authorDto);
+
+                    var createdAuthor = await _authorRepository.AddAsync(author, cancellationToken);
+
+                    createdMedia.Authors.Add(createdAuthor);
+                    _logger.Information("Author(s) were added");
+                }
+            }
+
+            await _mediaRepository.UpdateAsync(createdMedia, cancellationToken);
         }
-
-
     }
 }
