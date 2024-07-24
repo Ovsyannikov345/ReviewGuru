@@ -213,7 +213,7 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                 <Grid container justifyContent={"center"}>
                     <Typography variant="h4">Create new review</Typography>
                 </Grid>
-                <Grid container xs={6} mt={"-60px"} ml={"-10px"}>
+                <Grid container item xs={6} mt={"-60px"} ml={"-10px"}>
                     <NavigateBack to={-1} label={"Back"} />
                 </Grid>
                 <Grid container item flexDirection={"column"} alignItems={"flex-start"} xs={6} rowGap={"20px"}>
