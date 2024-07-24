@@ -168,7 +168,6 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
             );
 
             if (response.ok) {
-                console.log("Fetched movie from omdb!");
                 navigate(-1);
                 return;
             }
