@@ -25,6 +25,6 @@ namespace ReviewGuru.BLL.Services.IServices
 
         public Task RemoveMediaFromFavoritesAsync(int userId, int mediaId, CancellationToken cancellationToken = default);
 
-        public Task AddMediaAsync(MediaToCreateDTO mediaDto, CancellationToken cancellationToken = default);
+        public Task AddMediaAsync(MediaToCreateYDTO mediaDto, CancellationToken cancellationToken = default);
     }
 }

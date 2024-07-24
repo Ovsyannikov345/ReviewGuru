@@ -63,7 +63,7 @@ namespace ReviewGuru.API.Controllers
         [ActionName("AddMedia")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddMediaAsync([FromBody] MediaToCreateDTO mediaDto, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddMediaAsync([FromBody] MediaToCreateYDTO mediaDto, CancellationToken cancellationToken)
         {
             await _mediaService.AddMediaAsync(mediaDto, cancellationToken);
 
