@@ -122,7 +122,7 @@ namespace ReviewGuru.BLL.Services
         {
             var existingMedia = await _mediaRepository.GetByItemAsync(
                 m => m.Name.ToLower() == mediaToCreate.Name.ToLower() &&
-                m.YearOfCreating == DateOnly.FromDateTime(mediaToCreate.YearOfCreating));
+                m.YearOfCreating.Year == DateOnly.FromDateTime(mediaToCreate.YearOfCreating).Year);
 
             if (existingMedia != null)
             {
