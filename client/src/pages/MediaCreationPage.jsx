@@ -77,79 +77,44 @@ const MediaCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefre
     };
 
     const createMedia = async () => {
-        // TODO implement
-        // if (review.rating == null || review.userReview.trim().length === 0) {
-        //     displayError("Fill the review information");
-        //     return;
-        // }
-        // if (!newMediaMode) {
-        //     if (review.mediaToCreateDTO == null) {
-        //         displayError("Fill the review information");
-        //         return;
-        //     }
-        //     const response = await sendRequest("review/CreateReview", "post", review, {});
-        //     if (!response.ok) {
-        //         displayError(response.error);
-        //         return;
-        //     }
-        //     navigate(-1);
-        //     return;
-        // }
-        // if (newMedia.mediaType === "") {
-        //     displayError("Select media type");
-        //     return;
-        // }
-        // if (!newMedia.name) {
-        //     displayError("Fill media name");
-        //     return;
-        // }
-        // if (newMedia.yearOfCreating && (newMedia.yearOfCreating < 1 || newMedia.yearOfCreating > new Date().getFullYear())) {
-        //     displayError("Invalid media creation year");
-        //     return;
-        // }
-        // if (newMedia.mediaType === "Movie") {
-        //     const response = await sendRequest(
-        //         "OMDb/CreateReview",
-        //         "post",
-        //         {
-        //             rating: review.rating,
-        //             userReview: review.userReview,
-        //             mediaName: newMedia.name,
-        //             yearOfMediaCreation: newMedia.yearOfCreating ? newMedia.yearOfCreating : null,
-        //         },
-        //         {}
-        //     );
-        //     if (response.ok) {
-        //         navigate(-1);
-        //         return;
-        //     }
-        //     if (response.status === 400) {
-        //         displayError(response.error);
-        //         return;
-        //     }
-        // }
-        // if (!newMedia.yearOfCreating) {
-        //     displayError("Enter media creation year");
-        //     return;
-        // }
-        // const reviewData = {
-        //     ...review,
-        //     mediaToCreateDTO: {
-        //         ...newMedia,
-        //         yearOfCreating: `${newMedia.yearOfCreating}-01-01`,
-        //         authorsToCreateDTO: newMedia.authors.map((author) => ({
-        //             authorId: author.authorId,
-        //             firstName: author.firstName,
-        //             lastName: author.lastName,
-        //         })),
-        //     },
-        // };
-        // const response = await sendRequest("review/CreateReview", "post", reviewData, {});
-        // if (!response.ok) {
-        //     displayError(response.error);
-        //     return;
-        // }
-        // navigate(-1);
+        if (newMedia.mediaType === "") {
+            displayError("Select media type");
+            return;
+        }
+
+        if (!newMedia.name) {
+            displayError("Fill media name");
+            return;
+        }
+
+        if (!newMedia.yearOfCreating) {
+            displayError("Enter media creation year");
+            return;
+        }
+
+        if (newMedia.yearOfCreating < 1 || newMedia.yearOfCreating > new Date().getFullYear()) {
+            displayError("Invalid media creation year");
+            return;
+        }
+
+        const mediaData = {
+            ...newMedia,
+            yearOfCreating: `${newMedia.yearOfCreating}-01-01`,
+            authorsToCreateDTO: newMedia.authors.map((author) => ({
+                authorId: author.authorId,
+                firstName: author.firstName,
+                lastName: author.lastName,
+            })),
+        };
+
+        const response = await sendRequest("media/AddMedia", "post", mediaData, {});
+
+        if (!response.ok) {
+            displayError(response.error);
+            return;
+        }
+
+        navigate(-1);
     };
 
     return (
