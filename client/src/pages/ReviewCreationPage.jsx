@@ -144,42 +144,67 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
             return;
         }
 
-        if (newMedia.mediaType !== "Movie") {
-            if (!newMedia.name) {
-                displayError("Fill media name");
-                return;
-            }
+        if (!newMedia.name) {
+            displayError("Fill media name");
+            return;
+        }
 
-            if (newMedia.yearOfCreating && (newMedia.yearOfCreating < 1 || newMedia.yearOfCreating > new Date().getFullYear())) {
-                displayError("Invalid media creation year");
-                return;
-            }
+        if (newMedia.yearOfCreating && (newMedia.yearOfCreating < 1 || newMedia.yearOfCreating > new Date().getFullYear())) {
+            displayError("Invalid media creation year");
+            return;
+        }
 
-            const reviewData = {
-                ...review,
-                mediaToCreateDTO: {
-                    ...newMedia,
-                    yearOfCreating: `${newMedia.yearOfCreating}-01-01`,
-                    authorsToCreateDTO: newMedia.authors.map((author) => ({
-                        authorId: author.authorId,
-                        firstName: author.firstName,
-                        lastName: author.lastName,
-                    })),
+        if (newMedia.mediaType === "Movie") {
+            const response = await sendRequest(
+                "OMDb/CreateReview",
+                "post",
+                {
+                    rating: review.rating,
+                    userReview: review.userReview,
+                    mediaName: newMedia.name,
+                    yearOfMediaCreation: newMedia.yearOfCreating ? newMedia.yearOfCreating : null,
                 },
-            };
+                {}
+            );
 
-            console.log(reviewData);
+            if (response.ok) {
+                console.log("Fetched movie from omdb!");
+                navigate(-1);
+                return;
+            }
 
-            const response = await sendRequest("review/CreateReview", "post", reviewData, {});
-
-            if (!response.ok) {
+            if (response.status === 400) {
                 displayError(response.error);
                 return;
             }
+        }
 
-            navigate(-1);
+        if (!newMedia.yearOfCreating) {
+            displayError("Enter media creation year");
             return;
         }
+
+        const reviewData = {
+            ...review,
+            mediaToCreateDTO: {
+                ...newMedia,
+                yearOfCreating: `${newMedia.yearOfCreating}-01-01`,
+                authorsToCreateDTO: newMedia.authors.map((author) => ({
+                    authorId: author.authorId,
+                    firstName: author.firstName,
+                    lastName: author.lastName,
+                })),
+            },
+        };
+
+        const response = await sendRequest("review/CreateReview", "post", reviewData, {});
+
+        if (!response.ok) {
+            displayError(response.error);
+            return;
+        }
+
+        navigate(-1);
     };
 
     return (
@@ -268,44 +293,6 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                                         ))}
                                     </Grid>
                                 )}
-                                {/* <Autocomplete
-                                    value={null}
-                                    onChange={(event, newValue) => {
-                                        addAuthorToNewMedia(newValue);
-                                        setAuthorInputValue("");
-                                    }}
-                                    inputValue={authorInputValue}
-                                    onInputChange={(event, newInputValue) => {
-                                        setAuthorInputValue(newInputValue);
-                                    }}
-                                    options={availableAuthors}
-                                    getOptionLabel={(a) => (a ? a.firstName + " " + a.lastName : "")}
-                                    fullWidth
-                                    renderInput={(params) => <TextField {...params} label="Select existing author" />}
-                                    groupBy={(a) => a.groupLetter}
-                                    style={{ marginTop: "5px" }}
-                                /> */}
-
-                                {/* <Typography variant="subtitle2">Create new author</Typography>
-                                <Grid container gap={"10px"}>
-                                    <TextField
-                                        label="First name"
-                                        autoComplete="off"
-                                        style={{ width: "200px" }}
-                                        value={newAuthor.firstName}
-                                        onChange={(e) => setNewAuthor({ ...newAuthor, firstName: e.target.value })}
-                                    />
-                                    <TextField
-                                        label="Last name"
-                                        autoComplete="off"
-                                        style={{ width: "200px" }}
-                                        value={newAuthor.lastName}
-                                        onChange={(e) => setNewAuthor({ ...newAuthor, lastName: e.target.value })}
-                                    />
-                                    <Button variant="contained" style={{ width: "100px" }} onClick={addNewAuthorToNewMedia}>
-                                        Add
-                                    </Button>
-                                </Grid> */}
                                 <AuthorAutocomplete
                                     authors={availableAuthors}
                                     addAuthor={addAuthorToNewMedia}
