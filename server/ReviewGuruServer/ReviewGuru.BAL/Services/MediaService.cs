@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services.IServices;
 using ReviewGuru.BLL.Utilities.Constants;
 using ReviewGuru.BLL.Utilities.Exceptions;
 using ReviewGuru.DAL.Entities.Models;
+using ReviewGuru.DAL.Repositories;
 using ReviewGuru.DAL.Repositories.IRepositories;
 using Serilog;
 using System;
@@ -15,11 +17,21 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services
 {
-    public class MediaService(IMediaRepository mediaRepository, IUserRepository userRepository, ILogger logger) : IMediaService
+    public class MediaService(
+        IMediaRepository mediaRepository, 
+        IAuthorRepository authorRepository, 
+        IUserRepository userRepository, 
+        IMapper mapper,
+        ILogger logger
+        ) : IMediaService
     {
         private readonly IMediaRepository _mediaRepository = mediaRepository;
 
+        private readonly IAuthorRepository _authorRepository = authorRepository;
+
         private readonly IUserRepository _userRepository = userRepository;
+
+        private readonly IMapper _mapper;
 
         private readonly ILogger _logger = logger;
 
@@ -105,5 +117,28 @@ namespace ReviewGuru.BLL.Services
             _logger.Information("Media has been removed from favorites");
             await _userRepository.UpdateAsync(user, cancellationToken);
         }
+
+        public async Task AddMediaAsync(MediaToCreateYDTO mediaToCreate, CancellationToken cancellationToken = default)
+        {
+            var existingMedia = await _mediaRepository.GetByItemAsync
+                (m => m.Name == mediaToCreate.Name && m.YearOfCreating == DateOnly.FromDateTime(mediaToCreate.YearOfCreating));
+
+            if (existingMedia != null)
+            {
+                throw new Exception("Media is alredy exists.");
+            }
+
+            var media = new Media
+            {
+                MediaType = mediaToCreate.MediaType,
+                Name = mediaToCreate.Name,
+                YearOfCreating = DateOnly.FromDateTime( mediaToCreate.YearOfCreating),
+                Authors = mediaToCreate.AuthorsToCreateDTO.Select(a => new Author { FirstName = a.FirstName, LastName = a.LastName }).ToList()
+            };
+
+            await _mediaRepository.AddAsync(media);
+        }
+
+
     }
 }

@@ -20,7 +20,7 @@ namespace ReviewGuru.API.Controllers
         public async Task<IActionResult> GetAllMediaAsync(
             CancellationToken cancellationToken = default,
             int pageNumber = Pagination.PageNumber,
-            int pageSize = Pagination.MaxPageSize,
+            int pageSize = Pagination.PageSize,
             string searchText = "",
             string mediaType = "")
         {
@@ -57,6 +57,17 @@ namespace ReviewGuru.API.Controllers
             await _mediaService.RemoveMediaFromFavoritesAsync(userId, mediaId, cancellationToken);
 
             return Ok();
+        }
+
+        [HttpPost("AddMedia")]
+        [ActionName("AddMedia")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AddMediaAsync([FromBody] MediaToCreateYDTO mediaDto, CancellationToken cancellationToken)
+        {
+            await _mediaService.AddMediaAsync(mediaDto, cancellationToken);
+
+            return Created();
         }
     }
 }
