@@ -35,17 +35,17 @@ export default function useApiRequest(accessToken, refreshToken, setAccessToken,
 
         if (response.ok) {
             if (response.status === 204 || response.headers.get("content-length") === "0") {
-                return { ok: true, data: null };
+                return { ok: true, data: null, status: response.status };
             }
 
             const responseData = await response.json();
 
-            return { ok: true, data: responseData };
+            return { ok: true, data: responseData, status: response.status };
         }
 
         let responseData = await response.json();
 
-        return { ok: false, error: responseData.message ?? "Unexpected error" };
+        return { ok: false, error: responseData.message ?? "Unexpected error", status: response.status };
     };
 
     const sendRequest = async (endpointPath, method, body, queryParams) => {
@@ -73,17 +73,17 @@ export default function useApiRequest(accessToken, refreshToken, setAccessToken,
                 body: method.toUpperCase() === "GET" ? null : JSON.stringify(body),
             });
         } catch {
-            return { ok: false, error: "Service is currently unavailable" };
+            return { ok: false, error: "Service is currently unavailable", status: response.status };
         }
 
         if (response.ok) {
             if (response.status === 204 || response.headers.get("content-length") === "0") {
-                return { ok: true, data: null };
+                return { ok: true, data: null, status: response.status };
             }
 
             const responseData = await response.json();
 
-            return { ok: true, data: responseData };
+            return { ok: true, data: responseData, status: response.status };
         }
 
         if (response.status === 401) {
@@ -99,7 +99,7 @@ export default function useApiRequest(accessToken, refreshToken, setAccessToken,
                 setAccessToken(null);
                 setRefreshToken(null);
 
-                return { ok: false, error: "Session expired" };
+                return { ok: false, error: "Session expired", status: 403 };
             }
 
             setAccessToken(tokens.accessToken);
@@ -110,7 +110,7 @@ export default function useApiRequest(accessToken, refreshToken, setAccessToken,
 
         let responseData = await response.json();
 
-        return { ok: false, error: responseData.message ?? "Unexpected error" };
+        return { ok: false, error: responseData.message ?? "Unexpected error", status: response.status };
     };
 
     return sendRequest;
