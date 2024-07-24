@@ -7,15 +7,16 @@ import {
     Rating,
     TextField,
     Button,
-    Autocomplete,
     Select,
     InputLabel,
     MenuItem,
     Chip,
+    Autocomplete,
 } from "@mui/material";
 import useApiRequest from "./../hooks/useApiRequest";
 import useSnackbar from "./../hooks/useSnackbar";
 import { useNavigate } from "react-router-dom";
+import AuthorAutocomplete from "../components/AuthorAutocomplete";
 
 const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
     const navigate = useNavigate();
@@ -43,14 +44,23 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
         authors: [],
     });
 
-    const [newAuthor, setNewAuthor] = useState({
-        firstName: "",
-        lastName: "",
-    });
+    const [authors, setAuthors] = useState([]);
 
     const sortedMedia = useMemo(() => {
         return mediaCatalogue.sort((a, b) => a.mediaType.localeCompare(b.mediaType));
     }, [mediaCatalogue]);
+
+    const availableAuthors = useMemo(() => {
+        const availableAuthors = authors.filter((author) => !newMedia.authors.includes(author));
+
+        availableAuthors.forEach((author) => {
+            author.groupLetter = author.firstName[0];
+        });
+
+        availableAuthors.sort((a, b) => a.groupLetter.localeCompare(b.groupLetter));
+
+        return availableAuthors;
+    }, [authors, newMedia.authors]);
 
     useEffect(() => {
         const fetchMediaCatalogue = async () => {
@@ -64,27 +74,39 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
             setMediaCatalogue(response.data.media);
         };
 
-        fetchMediaCatalogue();
+        const fetchAuthors = async () => {
+            const response = await sendRequest("authors", "get", {}, {});
+
+            if (!response.ok) {
+                displayError(response.error);
+                return;
+            }
+
+            setAuthors(response.data);
+        };
+
+        const fetchData = async () => {
+            await fetchMediaCatalogue();
+            await fetchAuthors();
+        };
+
+        fetchData();
     }, []);
 
-    const addAuthorToNewMedia = () => {
-        if (!newAuthor.firstName || !newAuthor.lastName) {
-            displayError("Fill the author data");
-            return;
-        }
+    const addAuthorToNewMedia = (author) => {
+        setNewMedia({ ...newMedia, authors: [...newMedia.authors, author] });
+    };
 
-        if (
-            newMedia.authors.some((author) => author.firstName === newAuthor.firstName && author.lastName === newAuthor.lastName)
-        ) {
-            displayError("Author already added");
+    const addNewAuthorToNewMedia = (newAuthor) => {
+        if (authors.some((author) => author.firstName === newAuthor.firstName && author.lastName === newAuthor.lastName)) {
+            displayError("Author already exists");
             return;
         }
 
         setNewMedia({
             ...newMedia,
-            authors: [...newMedia.authors, { firstName: newAuthor.firstName, lastName: newAuthor.lastName }],
+            authors: [...newMedia.authors, newAuthor],
         });
-        setNewAuthor({ firstName: "", lastName: "" });
     };
 
     const removeAuthorFromNewMedia = (firstName, lastName) => {
@@ -138,7 +160,11 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                 mediaToCreateDTO: {
                     ...newMedia,
                     yearOfCreating: `${newMedia.yearOfCreating}-01-01`,
-                    authorsToCreateDTO: newMedia.authors,
+                    authorsToCreateDTO: newMedia.authors.map((author) => ({
+                        authorId: author.authorId,
+                        firstName: author.firstName,
+                        lastName: author.lastName,
+                    })),
                 },
             };
 
@@ -200,6 +226,7 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                             <TextField
                                 label="Media name"
                                 fullWidth
+                                autoComplete="off"
                                 value={newMedia.name}
                                 onChange={(e) => setNewMedia({ ...newMedia, name: e.target.value })}
                             ></TextField>
@@ -222,6 +249,7 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                                 <TextField
                                     label="Media creation year"
                                     type="number"
+                                    autoComplete="off"
                                     style={{ width: "200px" }}
                                     value={newMedia.yearOfCreating}
                                     onChange={(e) => setNewMedia({ ...newMedia, yearOfCreating: e.target.value })}
@@ -233,29 +261,57 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                                     <Grid container gap={"10px"}>
                                         {newMedia.authors.map((author) => (
                                             <Chip
+                                                key={author.firstName + author.lastName}
                                                 label={author.firstName + " " + author.lastName}
                                                 onDelete={() => removeAuthorFromNewMedia(author.firstName, author.lastName)}
                                             />
                                         ))}
                                     </Grid>
                                 )}
+                                {/* <Autocomplete
+                                    value={null}
+                                    onChange={(event, newValue) => {
+                                        addAuthorToNewMedia(newValue);
+                                        setAuthorInputValue("");
+                                    }}
+                                    inputValue={authorInputValue}
+                                    onInputChange={(event, newInputValue) => {
+                                        setAuthorInputValue(newInputValue);
+                                    }}
+                                    options={availableAuthors}
+                                    getOptionLabel={(a) => (a ? a.firstName + " " + a.lastName : "")}
+                                    fullWidth
+                                    renderInput={(params) => <TextField {...params} label="Select existing author" />}
+                                    groupBy={(a) => a.groupLetter}
+                                    style={{ marginTop: "5px" }}
+                                /> */}
+
+                                {/* <Typography variant="subtitle2">Create new author</Typography>
                                 <Grid container gap={"10px"}>
                                     <TextField
                                         label="First name"
+                                        autoComplete="off"
                                         style={{ width: "200px" }}
                                         value={newAuthor.firstName}
                                         onChange={(e) => setNewAuthor({ ...newAuthor, firstName: e.target.value })}
                                     />
                                     <TextField
                                         label="Last name"
+                                        autoComplete="off"
                                         style={{ width: "200px" }}
                                         value={newAuthor.lastName}
                                         onChange={(e) => setNewAuthor({ ...newAuthor, lastName: e.target.value })}
                                     />
-                                    <Button variant="contained" style={{ width: "100px" }} onClick={addAuthorToNewMedia}>
+                                    <Button variant="contained" style={{ width: "100px" }} onClick={addNewAuthorToNewMedia}>
                                         Add
                                     </Button>
-                                </Grid>
+                                </Grid> */}
+                                <AuthorAutocomplete
+                                    authors={availableAuthors}
+                                    addAuthor={addAuthorToNewMedia}
+                                    addNewAuthor={addNewAuthorToNewMedia}
+                                    displayError={displayError}
+                                />
                             </Grid>
                             <Link
                                 variant="body2"
@@ -294,6 +350,7 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                             multiline
                             minRows={3}
                             placeholder="Write your review here"
+                            autoComplete="off"
                             style={{ marginTop: "5px" }}
                             value={review.userReview}
                             onChange={(e) => setReview({ ...review, userReview: e.target.value })}
