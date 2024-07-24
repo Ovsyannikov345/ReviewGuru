@@ -12,12 +12,12 @@ using System.Linq.Expressions;
 namespace ReviewGuru.BLL.Services
 {
     public class ReviewService(
-        IReviewRepository reviewRepository, 
+        IReviewRepository reviewRepository,
         IMediaRepository mediaRepository,
         IAuthorRepository authorRepository,
         IMapper mapper,
         ILogger logger
-        ) :  IReviewService
+        ) : IReviewService
     {
         private readonly IReviewRepository _reviewRepository = reviewRepository;
         private readonly IMediaRepository _mediaRepository = mediaRepository;
@@ -102,7 +102,7 @@ namespace ReviewGuru.BLL.Services
 
         public async Task<ReviewDTO> CreateAsync(ReviewToCreateDTO reviewDto, int userId, CancellationToken cancellationToken = default)
         {
-            var authors = await CheckAndAddAuthors(reviewDto.MediaToCreateDTO.AuthorsToCreateDTO , cancellationToken);
+            var authors = await CheckAndAddAuthors(reviewDto.MediaToCreateDTO.AuthorsToCreateDTO, cancellationToken);
 
             var media = await CheckAndAddMedia(reviewDto.MediaToCreateDTO, authors, cancellationToken);
 
@@ -140,7 +140,7 @@ namespace ReviewGuru.BLL.Services
 
         private async Task<ICollection<Author>> CheckAndAddAuthors(ICollection<AuthorToCreateDTO> authorDtos, CancellationToken cancellationToken)
         {
-            var authors =  new List<Author>();
+            var authors = new List<Author>();
 
             foreach (var authorDto in authorDtos)
             {
@@ -148,7 +148,7 @@ namespace ReviewGuru.BLL.Services
                 if (existingAuthor != null)
                 {
                     _logger.Information("Author(s) already exists");
-                    return authors;
+                    authors.Add(existingAuthor);
                 }
                 else
                 {
@@ -164,7 +164,6 @@ namespace ReviewGuru.BLL.Services
             return authors;
         }
 
-
         private async Task<Media> CheckAndAddMedia(MediaToCreateDTO mediaDto, ICollection<Author> authors, CancellationToken cancellationToken)
         {
             var existingMedia = await _mediaRepository.GetByItemAsync(m => m.Name == mediaDto.Name && m.MediaType == mediaDto.MediaType);
@@ -175,11 +174,19 @@ namespace ReviewGuru.BLL.Services
             }
 
             var media = _mapper.Map<Media>(mediaDto);
-            media.Authors = authors;
+
+            var createdMedia = await _mediaRepository.AddAsync(media, cancellationToken);
+
+            foreach (var author in authors)
+            {
+                createdMedia.Authors.Add(author);
+            }
+
+            createdMedia = await _mediaRepository.UpdateAsync(createdMedia, cancellationToken);
 
             _logger.Information("Media has been returned");
 
-            return await _mediaRepository.AddAsync(media, cancellationToken);
+            return createdMedia;
         }
 
         private async Task<Review> CreateAndAddReview(ReviewToCreateDTO reviewDto, int userId, Media media, CancellationToken cancellationToken)
