@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services.IServices;
 using ReviewGuru.BLL.Utilities.Constants;
+using ReviewGuru.BLL.Utilities.Exceptions;
 using ReviewGuru.DAL.Entities.Models;
 using ReviewGuru.DAL.Repositories;
 using ReviewGuru.DAL.Repositories.IRepositories;
@@ -54,14 +55,16 @@ namespace ReviewGuru.BLL.Services
         {
             var media = await CheckAndAddMedia(mediaDto, cancellationToken);
 
-            var existingReview = await _reviewRepository.GetByItemAsync(r => r.UserId == userId && r.MediaId == media.MediaId);
+            var existingReview = await _reviewRepository.GetByItemAsync(r => r.UserId == userId && r.MediaId == media.MediaId, cancellationToken);
+
             if (existingReview != null)
             {
                 _logger.Error("You cannot create two reviews from the same user for the same entity");
-                throw new Exception("You cannot create two reviews from the same user for the same entity");
+                throw new BadRequestException("You cannot create two reviews from the same user for the same entity");
             }
 
             var review = _mapper.Map<Review>(reviewAPIDto);
+
             review.UserId = userId;
             review.Rating = reviewAPIDto.Rating;
             review.UserReview = reviewAPIDto.UserReview;
@@ -75,7 +78,9 @@ namespace ReviewGuru.BLL.Services
 
         private async Task<Media> CheckAndAddMedia(MediaToCreateDTO mediaDto, CancellationToken cancellationToken)
         {
-            var existingMedia = await _mediaRepository.GetByItemAsync(m => m.Name == mediaDto.Name && m.MediaType == mediaDto.MediaType);
+            var existingMedia = await _mediaRepository.GetByItemAsync(m => m.Name.ToLower() == mediaDto.Name.ToLower() &&
+                                                                      m.MediaType.ToLower() == mediaDto.MediaType.ToLower());
+            
             if (existingMedia != null)
             {
                 _logger.Information("Media already exists");
@@ -84,20 +89,31 @@ namespace ReviewGuru.BLL.Services
 
             var media = _mapper.Map<Media>(mediaDto);
 
+            media.MediaType = mediaDto.MediaType[0].ToString().ToUpper() + mediaDto.MediaType[1..];
+
+            var createdMedia = await _mediaRepository.AddAsync(media, cancellationToken);
+
             foreach (var authorDto in mediaDto.AuthorsToCreateDTO)
             {
                 var existingAuthor = await _authorRepository.GetByItemAsync(a => a.FirstName == authorDto.FirstName && a.LastName == authorDto.LastName);
+
                 if (existingAuthor == null)
                 {
+                    _logger.Information("Creating a new author");
                     var author = _mapper.Map<Author>(authorDto);
-                    media.Authors.Add(author);
+                    createdMedia.Authors.Add(author);
+                    continue;
                 }
-                
+
+                _logger.Information("Adding existing author");
+                createdMedia.Authors.Add(existingAuthor);
             }
+
+            createdMedia = await _mediaRepository.UpdateAsync(createdMedia, cancellationToken);
 
             _logger.Information("Media has been added");
 
-            return await _mediaRepository.AddAsync(media, cancellationToken);
+            return createdMedia;
         }
 
         public async Task<MediaToCreateDTO> GetMediaDataFromOmdbAsync(string movieTitle, int? year = null)
@@ -160,11 +176,6 @@ namespace ReviewGuru.BLL.Services
             if (movieData.Director != null)
             {
                 authors.AddRange(CreateAuthorDtoListFromString(movieData.Director.ToString()));
-            }
-
-            if (movieData.Writer != null)
-            {
-                authors.AddRange(CreateAuthorDtoListFromString(movieData.Writer.ToString()));
             }
 
             return authors;
