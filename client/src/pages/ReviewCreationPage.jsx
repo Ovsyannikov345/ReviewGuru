@@ -17,6 +17,7 @@ import useApiRequest from "./../hooks/useApiRequest";
 import useSnackbar from "./../hooks/useSnackbar";
 import { useNavigate } from "react-router-dom";
 import AuthorAutocomplete from "../components/AuthorAutocomplete";
+import NavigateBack from "./../components/buttons/NavigateBack";
 
 const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) => {
     const navigate = useNavigate();
@@ -211,6 +212,9 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
             <Grid container flexDirection={"column"} alignItems={"center"} gap={"20px"} mt={"20px"} pb={"20px"}>
                 <Grid container justifyContent={"center"}>
                     <Typography variant="h4">Create new review</Typography>
+                </Grid>
+                <Grid container xs={6} mt={"-60px"} ml={"-10px"}>
+                    <NavigateBack to={-1} label={"Back"} />
                 </Grid>
                 <Grid container item flexDirection={"column"} alignItems={"flex-start"} xs={6} rowGap={"20px"}>
                     {!newMediaMode ? (
