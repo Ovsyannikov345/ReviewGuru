@@ -1,7 +1,8 @@
-import { CREATE_REVIEW_ROUTE, FAVOURITES_ROUTE, MY_REVIEWS_ROUTE } from "../utils/consts";
+import { CREATE_MEDIA_ROUTE, CREATE_REVIEW_ROUTE, FAVOURITES_ROUTE, MY_REVIEWS_ROUTE } from "../utils/consts";
 import MyReviewsPage from "./../pages/MyReviewsPage";
 import FavouritesPage from "./../pages/FavouritesPage";
 import ReviewCreationPage from "../pages/ReviewCreationPage";
+import MediaCreationPage from "../pages/MediaCreationPage";
 
 export const authorizedRoutes = [
     {
@@ -15,5 +16,9 @@ export const authorizedRoutes = [
     {
         path: CREATE_REVIEW_ROUTE,
         Component: ReviewCreationPage,
+    },
+    {
+        path: CREATE_MEDIA_ROUTE,
+        Component: MediaCreationPage,
     },
 ];

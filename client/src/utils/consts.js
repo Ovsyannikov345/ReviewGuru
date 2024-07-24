@@ -11,6 +11,7 @@ export const VERIFICATION_ROUTE = "/verify-email";
 export const MY_REVIEWS_ROUTE = "/my-reviews";
 export const FAVOURITES_ROUTE = "/favourites";
 export const CREATE_REVIEW_ROUTE = "/create-review";
+export const CREATE_MEDIA_ROUTE = "/create-media";
 
 // Consts
 export const MEDIA_PER_PAGE = 10;
