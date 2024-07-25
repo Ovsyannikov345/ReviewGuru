@@ -150,7 +150,12 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
             return;
         }
 
-        if (newMedia.yearOfCreating && (newMedia.yearOfCreating < 1 || newMedia.yearOfCreating > new Date().getFullYear())) {
+        if (
+            newMedia.yearOfCreating &&
+            (Number.isNaN(parseInt(newMedia.yearOfCreating)) ||
+                newMedia.yearOfCreating < 1 ||
+                newMedia.yearOfCreating > new Date().getFullYear())
+        ) {
             displayError("Invalid media creation year");
             return;
         }
@@ -276,7 +281,6 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                                 </FormControl>
                                 <TextField
                                     label="Media creation year"
-                                    type="number"
                                     autoComplete="off"
                                     style={{ width: "200px" }}
                                     value={newMedia.yearOfCreating}
