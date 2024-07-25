@@ -239,6 +239,17 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                     {!newMediaMode ? (
                         <FormControl fullWidth>
                             <Typography variant="h6">Media</Typography>
+                            <Link
+                                variant="body2"
+                                display={"block"}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setNewMediaMode(true);
+                                }}
+                                sx={{ cursor: "pointer", userSelect: "none", textDecoration: "none", mt: "5px", mb: "5px" }}
+                            >
+                                Your media is not in the list?
+                            </Link>
                             <Autocomplete
                                 value={review.mediaToCreateDTO}
                                 onChange={(event, newValue) => {
@@ -255,21 +266,23 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                                 groupBy={(m) => m.mediaType}
                                 style={{ marginTop: "5px" }}
                             />
+                        </FormControl>
+                    ) : (
+                        <Grid container gap={"15px"}>
+                            <Grid container>
+                                <Typography variant="h6">New media</Typography>
+                            </Grid>
                             <Link
                                 variant="body2"
                                 display={"block"}
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    setNewMediaMode(true);
+                                    setNewMediaMode(false);
                                 }}
-                                sx={{ cursor: "pointer", userSelect: "none", textDecoration: "none", mt: "5px" }}
+                                sx={{ cursor: "pointer", userSelect: "none", textDecoration: "none", mt: "-10px", mb: "-5px" }}
                             >
-                                Your media is not in the list?
+                                Select media from catalogue
                             </Link>
-                        </FormControl>
-                    ) : (
-                        <Grid container gap={"15px"}>
-                            <Typography variant="h6">New media</Typography>
                             <TextField
                                 label="Media name"
                                 fullWidth
@@ -321,17 +334,6 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                                     displayError={displayError}
                                 />
                             </Grid>
-                            <Link
-                                variant="body2"
-                                display={"block"}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setNewMediaMode(false);
-                                }}
-                                sx={{ cursor: "pointer", userSelect: "none", textDecoration: "none", mt: "-10px" }}
-                            >
-                                Select media from catalogue
-                            </Link>
                         </Grid>
                     )}
                     <Grid container flexDirection={"column"}>
