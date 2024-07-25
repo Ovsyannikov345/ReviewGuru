@@ -16,7 +16,8 @@ namespace ReviewGuruServer
             builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console()
             .WriteTo.File("debug_log.txt"));
             // Add services to the container.
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.ConfigureSwagger();
