@@ -18,11 +18,11 @@ namespace ReviewGuru.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllMediaAsync(
-            CancellationToken cancellationToken = default,
             int pageNumber = Pagination.PageNumber,
             int pageSize = Pagination.PageSize,
             string searchText = "",
-            string mediaType = "")
+            string mediaType = "",
+            CancellationToken cancellationToken = default)
         {
             var media = await _mediaService.GetMediaListAsync(pageNumber, pageSize, searchText, mediaType, cancellationToken);
 
