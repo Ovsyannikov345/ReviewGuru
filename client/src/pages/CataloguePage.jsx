@@ -5,7 +5,6 @@ import CatalogueItem from "../components/CatalogueItem";
 import { CREATE_MEDIA_ROUTE, MEDIA_PER_PAGE, MEDIA_TYPES } from "../utils/consts";
 import useSnackbar from "./../hooks/useSnackbar";
 import Selector from "../components/Selector";
-import SearchIcon from "@mui/icons-material/Search";
 import useApiRequest from "../hooks/useApiRequest";
 import { useNavigate } from "react-router";
 
@@ -21,8 +20,6 @@ const CataloguePage = ({ accessToken, refreshToken, setAccessToken, setRefreshTo
         mediaType: MEDIA_TYPES[0].value,
         searchText: "",
     });
-
-    const [userText, setUserText] = useState("");
 
     const [mediaData, setMediaData] = useState({
         totalMediaCount: 1,
@@ -157,16 +154,9 @@ const CataloguePage = ({ accessToken, refreshToken, setAccessToken, setRefreshTo
                         <TextField
                             fullWidth
                             placeholder="Type the text to search"
-                            value={userText}
-                            onChange={(e) => setUserText(e.target.value)}
+                            value={mediaQuery.searchText}
+                            onChange={(e) => setMediaQuery({ ...mediaQuery, searchText: e.target.value })}
                         />
-                        <Button
-                            variant="contained"
-                            style={{ width: "100px" }}
-                            onClick={() => setMediaQuery({ ...mediaQuery, searchText: userText })}
-                        >
-                            <SearchIcon style={{ fontSize: "30px" }} />
-                        </Button>
                     </Grid>
                 </Grid>
                 {mediaWithFavoriteFlags.length > 0 ? (

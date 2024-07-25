@@ -48,7 +48,21 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
     const [authors, setAuthors] = useState([]);
 
     const sortedMedia = useMemo(() => {
-        return mediaCatalogue.sort((a, b) => a.mediaType.localeCompare(b.mediaType));
+        return mediaCatalogue.sort((a, b) => {
+            if (a.mediaType > b.mediaType) {
+                return 1;
+            }
+
+            if (a.mediaType < b.mediaType) {
+                return -1;
+            }
+
+            if (a.name > b.name) {
+                return 1;
+            }
+
+            return -1;
+        });
     }, [mediaCatalogue]);
 
     const availableAuthors = useMemo(() => {
@@ -65,7 +79,7 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
 
     useEffect(() => {
         const fetchMediaCatalogue = async () => {
-            const response = await sendRequest("media", "get", {}, {});
+            const response = await sendRequest("media", "get", {}, { pageSize: 2000000000 });
 
             if (!response.ok) {
                 displayError(response.error);
@@ -150,7 +164,12 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
             return;
         }
 
-        if (newMedia.yearOfCreating && (newMedia.yearOfCreating < 1 || newMedia.yearOfCreating > new Date().getFullYear())) {
+        if (
+            newMedia.yearOfCreating &&
+            (Number.isNaN(parseInt(newMedia.yearOfCreating)) ||
+                newMedia.yearOfCreating < 1 ||
+                newMedia.yearOfCreating > new Date().getFullYear())
+        ) {
             displayError("Invalid media creation year");
             return;
         }
@@ -220,6 +239,18 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                     {!newMediaMode ? (
                         <FormControl fullWidth>
                             <Typography variant="h6">Media</Typography>
+                            <Link
+                                variant="body2"
+                                display={"block"}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setNewMediaMode(true);
+                                }}
+                                fontSize={"17px"}
+                                sx={{ cursor: "pointer", userSelect: "none", textDecoration: "none", mt: "5px", mb: "5px" }}
+                            >
+                                Your media is not in the list?
+                            </Link>
                             <Autocomplete
                                 value={review.mediaToCreateDTO}
                                 onChange={(event, newValue) => {
@@ -236,21 +267,24 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                                 groupBy={(m) => m.mediaType}
                                 style={{ marginTop: "5px" }}
                             />
+                        </FormControl>
+                    ) : (
+                        <Grid container gap={"15px"}>
+                            <Grid container>
+                                <Typography variant="h6">New media</Typography>
+                            </Grid>
                             <Link
                                 variant="body2"
                                 display={"block"}
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    setNewMediaMode(true);
+                                    setNewMediaMode(false);
                                 }}
-                                sx={{ cursor: "pointer", userSelect: "none", textDecoration: "none", mt: "5px" }}
+                                fontSize={"17px"}
+                                sx={{ cursor: "pointer", userSelect: "none", textDecoration: "none", mt: "-10px", mb: "-5px" }}
                             >
-                                Your media is not in the list?
+                                Select media from catalogue
                             </Link>
-                        </FormControl>
-                    ) : (
-                        <Grid container gap={"15px"}>
-                            <Typography variant="h6">New media</Typography>
                             <TextField
                                 label="Media name"
                                 fullWidth
@@ -276,7 +310,6 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                                 </FormControl>
                                 <TextField
                                     label="Media creation year"
-                                    type="number"
                                     autoComplete="off"
                                     style={{ width: "200px" }}
                                     value={newMedia.yearOfCreating}
@@ -303,17 +336,6 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                                     displayError={displayError}
                                 />
                             </Grid>
-                            <Link
-                                variant="body2"
-                                display={"block"}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setNewMediaMode(false);
-                                }}
-                                sx={{ cursor: "pointer", userSelect: "none", textDecoration: "none", mt: "-10px" }}
-                            >
-                                Select media from catalogue
-                            </Link>
                         </Grid>
                     )}
                     <Grid container flexDirection={"column"}>

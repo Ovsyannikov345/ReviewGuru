@@ -92,7 +92,11 @@ const MediaCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefre
             return;
         }
 
-        if (newMedia.yearOfCreating < 1 || newMedia.yearOfCreating > new Date().getFullYear()) {
+        if (
+            Number.isNaN(parseInt(newMedia.yearOfCreating)) ||
+            newMedia.yearOfCreating < 1 ||
+            newMedia.yearOfCreating > new Date().getFullYear()
+        ) {
             displayError("Invalid media creation year");
             return;
         }
@@ -127,6 +131,9 @@ const MediaCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefre
                     <NavigateBack to={-1} label={"Back"} />
                 </Grid>
                 <Grid container item flexDirection={"column"} alignItems={"flex-start"} xs={6} rowGap={"20px"}>
+                    <Typography variant="h6" style={{ marginBottom: "-5px" }}>
+                        Media info
+                    </Typography>
                     <Grid container gap={"15px"}>
                         <TextField
                             label="Media name"
@@ -153,7 +160,6 @@ const MediaCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefre
                             </FormControl>
                             <TextField
                                 label="Media creation year"
-                                type="number"
                                 autoComplete="off"
                                 style={{ width: "200px" }}
                                 value={newMedia.yearOfCreating}
