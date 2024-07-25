@@ -127,6 +127,9 @@ const MediaCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefre
                     <NavigateBack to={-1} label={"Back"} />
                 </Grid>
                 <Grid container item flexDirection={"column"} alignItems={"flex-start"} xs={6} rowGap={"20px"}>
+                    <Typography variant="h6" style={{ marginBottom: "-5px" }}>
+                        Media info
+                    </Typography>
                     <Grid container gap={"15px"}>
                         <TextField
                             label="Media name"
