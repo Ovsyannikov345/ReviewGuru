@@ -53,7 +53,9 @@ namespace ReviewGuru.API.Controllers
 
             var reviews = await _reviewService.GetCurrentUserReviewsAsync(userId, pageNumber, pageSize, searchText, mediaType, minRating, maxRating, cancellationToken: cancellationToken);
 
-            return Ok(reviews.ToList());
+            int totalReviewsCount = await _reviewService.GetCurrentUserReviewsCountAsync(userId, pageNumber, pageSize, searchText, mediaType, minRating, maxRating, cancellationToken);
+
+            return Ok(new { totalReviewsCount, reviews });
         }
 
         [HttpGet]
@@ -86,7 +88,7 @@ namespace ReviewGuru.API.Controllers
         {
             int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
 
-            await _reviewService.CreateAsync(reviewDTO, userId, cancellationToken : cancellationToken);
+            await _reviewService.CreateAsync(reviewDTO, userId, cancellationToken: cancellationToken);
             return Created();
         }
 

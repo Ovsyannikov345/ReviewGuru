@@ -16,6 +16,7 @@ namespace ReviewGuru.DAL.Repositories
     public class MediaRepository : GenericRepository<Media>, IMediaRepository
     {
         private readonly ReviewGuruDbContext _context;
+
         private readonly ILogger _logger;
 
         public MediaRepository(ReviewGuruDbContext context, ILogger logger) : base(context, logger)
@@ -35,10 +36,20 @@ namespace ReviewGuru.DAL.Repositories
                                     .Take(pageSize)
                                     .ToListAsync(cancellationToken);
 
-            _logger.Information($"GetAllAsync called. Media count: {result.Count}");
+            _logger.Information("GetAllAsync called. Media count: {0}", result.Count);
 
             return result;
         }
-    }
 
+        public async Task<Media?> GetMediaWithReviewsAsync(int mediaId, CancellationToken cancellationToken = default)
+        {
+            Media? media = await _context.Media.Include(m => m.Authors)
+                                               .Include(m => m.Reviews)
+                                               .FirstOrDefaultAsync(m => m.MediaId == mediaId, cancellationToken);
+
+            _logger.Information("GetMediaWithReviewsAsync called. Media id: {MediaId}", mediaId);
+
+            return media;
+        }
+    }
 }

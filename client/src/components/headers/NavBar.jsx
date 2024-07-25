@@ -6,11 +6,10 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import MovieIcon from "@mui/icons-material/Movie";
-import EditIcon from "@mui/icons-material/Edit";
 import PasswordIcon from "@mui/icons-material/Password";
 import LoginIcon from "@mui/icons-material/Login";
 import Logo from "../../images/logo-black.png";
-import { CATALOGUE_ROUTE, CREATE_REVIEW_ROUTE, FAVOURITES_ROUTE } from "../../utils/consts";
+import { CATALOGUE_ROUTE, CREATE_REVIEW_ROUTE, FAVOURITES_ROUTE, MY_REVIEWS_ROUTE } from "../../utils/consts";
 import useSnackbar from "../../hooks/useSnackbar";
 import useApiRequest from "../../hooks/useApiRequest";
 
@@ -127,19 +126,13 @@ const NavBar = ({ accessToken, refreshToken, setAccessToken, setRefreshToken }) 
                 transformOrigin={{ horizontal: "right", vertical: "top" }}
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             >
-                <MenuItem key={1}>
+                <MenuItem key={1} onClick={() => navigate(MY_REVIEWS_ROUTE)}>
                     <ListItemIcon>
                         <RateReviewIcon fontSize="small" />
                     </ListItemIcon>
                     My reviews
                 </MenuItem>
                 <MenuItem key={2}>
-                    <ListItemIcon>
-                        <EditIcon fontSize="small" />
-                    </ListItemIcon>
-                    Edit profile
-                </MenuItem>
-                <MenuItem key={3}>
                     <ListItemIcon>
                         <PasswordIcon fontSize="small" />
                     </ListItemIcon>
