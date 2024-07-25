@@ -16,6 +16,7 @@ export const CREATE_MEDIA_ROUTE = "/create-media";
 // Consts
 export const MEDIA_PER_PAGE = 10;
 export const FAVORITES_PER_PAGE = 10;
+export const REVIEWS_PER_PAGE = 10;
 
 export const MEDIA_TYPES = [
     { value: "All", name: "All" },
