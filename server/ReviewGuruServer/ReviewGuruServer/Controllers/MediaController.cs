@@ -31,6 +31,18 @@ namespace ReviewGuru.API.Controllers
             return Ok(new { totalMediaCount, media });
         }
 
+        [HttpGet("{mediaId}")]
+        [AllowAnonymous]
+        [ActionName("GetMediaData")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetMediaAsync(int mediaId, CancellationToken cancellationToken = default)
+        {
+            var media = await _mediaService.GetMediaWithReviewsAsync(mediaId, cancellationToken);
+
+            return Ok(media);
+        }
+
         [HttpPost("{mediaId}/add-to-favorites")]
         [ActionName("AddMediaToFavorites")]
         [ProducesResponseType(StatusCodes.Status200OK)]

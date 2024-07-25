@@ -64,6 +64,20 @@ namespace ReviewGuru.BLL.Services
             return await _mediaRepository.CountAsync(filter, cancellationToken);
         }
 
+        public async Task<Media> GetMediaWithReviewsAsync(int mediaId, CancellationToken cancellationToken = default)
+        {
+            Media? media = await _mediaRepository.GetMediaWithReviewsAsync(mediaId, cancellationToken);
+
+            if (media == null)
+            {
+                _logger.Information("Media with id '{MediaId}' is not found", mediaId);
+
+                throw new NotFoundException("Media is not found");
+            }
+
+            return media;
+        }
+
         public async Task AddMediaToFavoritesAsync(int userId, int mediaId, CancellationToken cancellationToken = default)
         {
             User user = await _userRepository.GetUserWithFavoritesAsync(u => u.UserId == userId, cancellationToken);
