@@ -246,6 +246,7 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                                     e.preventDefault();
                                     setNewMediaMode(true);
                                 }}
+                                fontSize={"17px"}
                                 sx={{ cursor: "pointer", userSelect: "none", textDecoration: "none", mt: "5px", mb: "5px" }}
                             >
                                 Your media is not in the list?
@@ -279,6 +280,7 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
                                     e.preventDefault();
                                     setNewMediaMode(false);
                                 }}
+                                fontSize={"17px"}
                                 sx={{ cursor: "pointer", userSelect: "none", textDecoration: "none", mt: "-10px", mb: "-5px" }}
                             >
                                 Select media from catalogue
