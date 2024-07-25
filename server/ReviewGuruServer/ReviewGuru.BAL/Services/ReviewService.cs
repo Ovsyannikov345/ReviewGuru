@@ -71,7 +71,33 @@ namespace ReviewGuru.BLL.Services
 
             _logger.Information($"Page {pageNumber} of currrent user review has been returned");
 
-            return await _reviewRepository.GetAllAsync(pageNumber, pageSize, filter, cancellationToken: cancellationToken);
+            return await _reviewRepository.GetAllWithMediaAsync(pageNumber, pageSize, filter, cancellationToken: cancellationToken);
+        }
+
+        public async Task<int> GetCurrentUserReviewsCountAsync(
+        int userId,
+        int pageNumber = Pagination.PageNumber,
+        int pageSize = Pagination.PageSize,
+        string searchText = "",
+        string mediaType = "",
+        int? minRating = null,
+        int? maxRating = null,
+        CancellationToken cancellationToken = default)
+        {
+            Expression<Func<Review, bool>> filter = (review) =>
+                (review.DateOfDeleting == null) &&
+                (review.UserId == userId) &&
+                (string.IsNullOrEmpty(mediaType) || review.Media.MediaType == mediaType) &&
+                (string.IsNullOrEmpty(searchText) ||
+                 review.UserReview.Contains(searchText) ||
+                 review.Media.Name.Contains(searchText) ||
+                 review.Media.Authors.Any(author => (author.LastName + " " + author.FirstName).Contains(searchText))) &&
+                (!minRating.HasValue || review.Rating >= minRating.Value) &&
+                (!maxRating.HasValue || review.Rating <= maxRating.Value);
+
+            _logger.Information($"Page {pageNumber} of currrent user review has been returned");
+
+            return await _reviewRepository.CountAsync(filter, cancellationToken);
         }
 
         public async Task<IEnumerable<Review>> GetAllExceptCurrentUserReviewsAsync(
