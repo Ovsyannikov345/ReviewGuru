@@ -48,7 +48,21 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
     const [authors, setAuthors] = useState([]);
 
     const sortedMedia = useMemo(() => {
-        return mediaCatalogue.sort((a, b) => a.mediaType.localeCompare(b.mediaType));
+        return mediaCatalogue.sort((a, b) => {
+            if (a.mediaType > b.mediaType) {
+                return 1;
+            }
+
+            if (a.mediaType < b.mediaType) {
+                return -1;
+            }
+
+            if (a.name > b.name) {
+                return 1;
+            }
+
+            return -1;
+        });
     }, [mediaCatalogue]);
 
     const availableAuthors = useMemo(() => {
@@ -65,7 +79,7 @@ const ReviewCreationPage = ({ accessToken, refreshToken, setAccessToken, setRefr
 
     useEffect(() => {
         const fetchMediaCatalogue = async () => {
-            const response = await sendRequest("media", "get", {}, {});
+            const response = await sendRequest("media", "get", {}, { pageSize: 2000000000 });
 
             if (!response.ok) {
                 displayError(response.error);
