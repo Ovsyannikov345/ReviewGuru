@@ -18,7 +18,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using ReviewGuru.BLL.Utilities.EmailSender;
 using Npgsql;
 
-
 namespace ReviewGuru.API.Extensions
 {
     public static class ServicesConfiguration
@@ -48,10 +47,10 @@ namespace ReviewGuru.API.Extensions
                 .ConfigureHttpClient(client =>
                 {
                     var apiKey = configuration["APIKey"];
+
                     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
                 });
         }
-
 
         public static void AddAuthenticationBearer(this IServiceCollection services, IConfiguration configuration)
         {
@@ -77,12 +76,7 @@ namespace ReviewGuru.API.Extensions
 
         public static void AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
         {
-            string[]? corsOrigins = configuration.GetSection("Cors:Origins").Get<string[]>();
-
-            if (corsOrigins == null)
-            {
-                throw new InvalidOperationException("Cors origins are not defined");
-            }
+            string[]? corsOrigins = configuration.GetSection("Cors:Origins").Get<string[]>() ?? throw new InvalidOperationException("Cors origins are not defined");
 
             services.AddCors(options =>
             {

@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ReviewGuru.DAL.Migrations
 {
-    /// <inheritdoc />
+#pragma warning disable IDE1006 // Naming Styles
     public partial class nullableLines : Migration
+#pragma warning restore IDE1006 // Naming Styles
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<DateTime>(

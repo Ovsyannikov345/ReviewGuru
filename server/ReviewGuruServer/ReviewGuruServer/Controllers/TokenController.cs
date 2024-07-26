@@ -11,7 +11,6 @@ namespace ReviewGuru.API.Controllers
     {
         private readonly ITokenService _tokenService = tokenService;
 
-
         [HttpPost("refresh")]
         [AllowAnonymous]
         public async Task<IActionResult> RefreshTokensAsync(RefreshTokensDto refreshData, CancellationToken cancellationToken = default)

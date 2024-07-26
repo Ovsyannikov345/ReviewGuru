@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Services
 {
-    public class AuthorService(IAuthorRepository authorRepository, IMapper mapper, ILogger logger) : IAuthorService
+    public class AuthorService(IAuthorRepository authorRepository, ILogger logger) : IAuthorService
     {
         private readonly IAuthorRepository _authorRepository = authorRepository;
 
@@ -26,7 +26,7 @@ namespace ReviewGuru.BLL.Services
             int pageSize = Pagination.MaxPageSize,
             CancellationToken cancellationToken = default)
         {
-            _logger.Information($"Page {pageNumber} of authors has been returned");
+            _logger.Information("Page {PageNumber} of authors has been returned", pageNumber);
 
             return await _authorRepository.GetAllAsync(pageNumber, pageSize, cancellationToken: cancellationToken);
         }

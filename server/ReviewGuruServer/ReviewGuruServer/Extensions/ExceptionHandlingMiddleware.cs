@@ -20,7 +20,7 @@ namespace ReviewGuru.API.Extensions
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception ex)
+        private static async Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
             ExceptionResponse response = ex switch
             {
@@ -34,7 +34,6 @@ namespace ReviewGuru.API.Extensions
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)response.StatusCode;
-
             await context.Response.WriteAsJsonAsync(response);
         }
     }

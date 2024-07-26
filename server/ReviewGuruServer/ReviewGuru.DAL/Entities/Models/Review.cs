@@ -25,8 +25,8 @@ namespace ReviewGuru.DAL.Entities.Models
 
         [Required]
         public DateTime DateOfCreation { get; set; }
-        
-        public DateTime? DateOfLastModification { get; set; } 
+
+        public DateTime? DateOfLastModification { get; set; }
 
         public DateTime? DateOfDeleting { get; set; }
 

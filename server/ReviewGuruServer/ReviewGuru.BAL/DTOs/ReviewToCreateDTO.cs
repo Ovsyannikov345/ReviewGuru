@@ -7,16 +7,25 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.DTOs
 {
+#pragma warning disable S101 // Types should be named in PascalCase
     public record ReviewToCreateDTO
+#pragma warning restore S101 // Types should be named in PascalCase
     {
         public int ReviewId { get; init; }
+
         [JsonIgnore]
         public int UserId { get; set; }
+
         public int Rating { get; init; }
+
         public string UserReview { get; init; } = string.Empty;
+
         public DateTime DateOfCreation { get; private init; } = DateTime.Now;
+
         public DateTime? DateOfLastModification { get; private set; }
+
         public DateTime? DateOfDeleting { get; private init; }
+
         public virtual MediaToCreateDTO MediaToCreateDTO { get; set; } = null!;
     }
 }

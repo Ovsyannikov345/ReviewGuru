@@ -52,17 +52,19 @@ namespace ReviewGuru.BLL.Services
 
             if (user == null)
             {
-                _logger.Warning($"User with login {authData.Login} is not found");
+                _logger.Warning("User with login {0} is not found", authData.Login);
+
                 throw new NotFoundException($"User with login {authData.Login} is not found");
             }
 
             if (!BCrypt.Net.BCrypt.Verify(authData.Password, user.Password))
             {
-                _logger.Warning($"Invalid credentials for user {user.Login}");
+                _logger.Warning("Invalid credentials for user {0}", user.Login);
+
                 throw new UnauthorizedException("Provided credentials are invalid");
             }
 
-            _logger.Information($"User {user.Login} logged in successfully");
+            _logger.Information("User {0} logged in successfully", user.Login);
 
             return await _tokenService.CreateTokensAsync(user, cancellationToken);
         }
@@ -70,7 +72,7 @@ namespace ReviewGuru.BLL.Services
         public async Task LogoutAsync(LogoutDto logoutData, CancellationToken cancellationToken = default)
         {
             await _tokenService.RemoveRefreshTokenAsync(logoutData.RefreshToken, cancellationToken);
-            _logger.Information($"User logged out successfully");
+            _logger.Information("User logged out successfully");
         }
 
         public async Task<TokenDto> RegisterAsync(RegisterDto userData, CancellationToken cancellationToken = default)
@@ -117,7 +119,7 @@ namespace ReviewGuru.BLL.Services
                 throw;
             }
 
-            _logger.Information($"User {createdUser.Login} registered successfully");
+            _logger.Information("User {0} registered successfully", createdUser.Login);
 
             return await _tokenService.CreateTokensAsync(createdUser, cancellationToken);
         }
@@ -143,11 +145,11 @@ namespace ReviewGuru.BLL.Services
             try
             {
                 await _emailSender.SendEmailAsync(user.Email, "Thank you for joining our media review service!", EmailMessages.WelcomeMessage, cancellationToken);
-                _logger.Information($"User {user.Login} verified successfully");
+                _logger.Information("User {0} verified successfully", user.Login);
             }
             catch (InternalServerErrorException ex)
             {
-                _logger.Error($"Error during user verification: {ex.Message}");
+                _logger.Error(ex, "Error during user verification");
             }
         }
 

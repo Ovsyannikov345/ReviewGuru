@@ -47,7 +47,7 @@ namespace ReviewGuru.BLL.Services
                        (media.Name.Contains(searchText) ||
                        media.Authors.Any(author => (author.FirstName + " " + author.LastName).Contains(searchText)));
 
-            _logger.Information($"Page {pageNumber} of media has been returned");
+            _logger.Information("Page {0} of media has been returned", pageNumber);
 
             return await _mediaRepository.GetAllAsync(pageNumber, pageSize, filter, cancellationToken: cancellationToken);
         }
@@ -70,7 +70,7 @@ namespace ReviewGuru.BLL.Services
 
             if (media == null)
             {
-                _logger.Information("Media with id '{MediaId}' is not found", mediaId);
+                _logger.Information("Media with id '{0}' is not found", mediaId);
 
                 throw new NotFoundException("Media is not found");
             }
@@ -80,10 +80,11 @@ namespace ReviewGuru.BLL.Services
 
         public async Task AddMediaToFavoritesAsync(int userId, int mediaId, CancellationToken cancellationToken = default)
         {
-            User user = await _userRepository.GetUserWithFavoritesAsync(u => u.UserId == userId, cancellationToken);
+            User? user = await _userRepository.GetUserWithFavoritesAsync(u => u.UserId == userId, cancellationToken);
+
             if (user == null)
             {
-                _logger.Error($"User with id {userId} was not found");
+                _logger.Error("User with id {0} was not found", userId);
                 throw new NotFoundException($"User with id {userId} was not found");
             }
 
@@ -93,10 +94,11 @@ namespace ReviewGuru.BLL.Services
                 throw new BadRequestException("Media is already in favorites");
             }
 
-            Media media = await _mediaRepository.GetByItemAsync(m => m.MediaId == mediaId, cancellationToken);
+            Media? media = await _mediaRepository.GetByItemAsync(m => m.MediaId == mediaId, cancellationToken);
+
             if (media == null)
             {
-                _logger.Error($"Media with id {mediaId} was not found");
+                _logger.Error("Media with id {0} was not found", mediaId);
                 throw new NotFoundException($"Media with id {mediaId} was not found");
             }
 
@@ -134,9 +136,8 @@ namespace ReviewGuru.BLL.Services
 
         public async Task AddMediaAsync(MediaToCreateYDTO mediaToCreate, CancellationToken cancellationToken = default)
         {
-            var existingMedia = await _mediaRepository.GetByItemAsync(
-                m => m.Name.ToLower() == mediaToCreate.Name.ToLower() &&
-                m.YearOfCreating.Year == DateOnly.FromDateTime(mediaToCreate.YearOfCreating).Year);
+            var existingMedia = await _mediaRepository.GetByItemAsync(m => m.Name.ToLower() == mediaToCreate.Name.ToLower() &&
+                m.YearOfCreating.Year == DateOnly.FromDateTime(mediaToCreate.YearOfCreating).Year, cancellationToken);
 
             if (existingMedia != null)
             {

@@ -11,10 +11,12 @@ namespace ReviewGuruServer
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
             var services = builder.Services;
 
             builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console()
-            .WriteTo.File("debug_log.txt"));
+                                                   .WriteTo.File("debug_log.txt"));
+
             // Add services to the container.
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
@@ -57,7 +59,7 @@ namespace ReviewGuruServer
             app.UseAuthorization();
 
             app.MapControllers()
-              .RequireAuthorization();
+               .RequireAuthorization();
 
             app.Run();
         }

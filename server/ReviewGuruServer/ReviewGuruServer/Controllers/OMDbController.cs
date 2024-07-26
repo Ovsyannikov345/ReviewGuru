@@ -4,7 +4,6 @@ using ReviewGuru.BLL.DTOs;
 using ReviewGuru.BLL.Services;
 using ReviewGuru.BLL.Services.IServices;
 
-
 namespace ReviewGuru.API.Controllers
 {
     [Route("api/[controller]")]
@@ -23,8 +22,8 @@ namespace ReviewGuru.API.Controllers
             int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
 
             await _OMDbService.CreateWithAPIAsync(reviewDTO, userId, cancellationToken: cancellationToken);
+
             return Created();
         }
     }
 }
-

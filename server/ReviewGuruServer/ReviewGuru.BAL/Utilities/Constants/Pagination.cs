@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.Utilities.Constants
 {
-    public class Pagination
+    public static class Pagination
     {
         public const int PageNumber = 1;
 

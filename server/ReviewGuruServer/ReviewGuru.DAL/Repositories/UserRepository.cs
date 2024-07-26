@@ -7,21 +7,18 @@ using System.Linq.Expressions;
 
 namespace ReviewGuru.DAL.Repositories
 {
-    public class UserRepository : GenericRepository<User>, IUserRepository
+    public class UserRepository(ReviewGuruDbContext context, ILogger logger) : GenericRepository<User>(context, logger), IUserRepository
     {
-        private readonly ReviewGuruDbContext _context;
-        private readonly ILogger _logger;
+        private readonly ReviewGuruDbContext _context = context;
 
-        public UserRepository(ReviewGuruDbContext context, ILogger logger) : base(context, logger)
-        {
-            _context = context;
-            _logger = logger;
-        }
+        private readonly ILogger _logger = logger;
 
         public async Task<User?> GetUserWithFavoritesAsync(Expression<Func<User, bool>> filter, CancellationToken cancellationToken = default)
         {
             var user = await _context.Users.Include(u => u.Favorites).ThenInclude(media => media.Authors).FirstOrDefaultAsync(filter, cancellationToken);
-            _logger.Information($"GetUserWithFavoritesAsync called. User: {user}");
+
+            _logger.Information("GetUserWithFavoritesAsync called. User: {0}", user);
+
             return user;
         }
 
@@ -47,7 +44,7 @@ namespace ReviewGuru.DAL.Repositories
                                         .Take(pageSize)
                                         .ToListAsync(cancellationToken);
 
-            _logger.Information($"GetUserFavoritesAsync called. Favorites count: {result.Count}");
+            _logger.Information("GetUserFavoritesAsync called. Favorites count: {0}", result.Count);
 
             return result;
         }
@@ -67,10 +64,10 @@ namespace ReviewGuru.DAL.Repositories
             }
 
             int count = await favorites.CountAsync(cancellationToken);
-            _logger.Information($"GetUserFavoritesCountAsync called. Favorites count: {count}");
+
+            _logger.Information("GetUserFavoritesCountAsync called. Favorites count: {0}", count);
 
             return count;
         }
     }
-
 }

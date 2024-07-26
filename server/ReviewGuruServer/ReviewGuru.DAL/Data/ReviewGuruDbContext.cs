@@ -3,10 +3,8 @@ using ReviewGuru.DAL.Entities.Models;
 
 namespace ReviewGuru.DAL.Data
 {
-    public class ReviewGuruDbContext : DbContext
+    public class ReviewGuruDbContext(DbContextOptions<ReviewGuruDbContext> options) : DbContext(options)
     {
-        public ReviewGuruDbContext(DbContextOptions<ReviewGuruDbContext> options) : base(options) { }
-
         public DbSet<Author> Authors { get; set; }
 
         public DbSet<Media> Media { get; set; }
@@ -25,6 +23,6 @@ namespace ReviewGuru.DAL.Data
                 entity.Property(e => e.MediaType).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(150);
             });
-        }   
+        }
     }
 }

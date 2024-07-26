@@ -27,21 +27,27 @@ namespace ReviewGuru.BLL.Services
         IConfiguration configuration
         ) : IOMDbService
     {
-
         private readonly IReviewRepository _reviewRepository = reviewRepository;
+
         private readonly IMediaRepository _mediaRepository = mediaRepository;
+
         private readonly IAuthorRepository _authorRepository = authorRepository;
+
         private readonly IMapper _mapper = mapper;
+
         private readonly ILogger _logger = logger;
+
         private readonly IConfiguration _configuration = configuration;
 
         public async Task<ReviewDTO> CreateWithAPIAsync(ReviewToCreateAPIDTO reviewAPIDto, int userId, CancellationToken cancellationToken = default)
         {
             var mediaDto = await GetMediaDataFromOmdbAsync(reviewAPIDto.MediaName, reviewAPIDto.YearOfMediaCreation);
+
             if (mediaDto == null)
             {
-                _logger.Error($"Media data could not be retrieved for movie: {reviewAPIDto.MediaName}");
-                throw new Exception($"Media data could not be retrieved for movie: {reviewAPIDto.YearOfMediaCreation}");
+                _logger.Error("Media data could not be retrieved for movie: {0}", reviewAPIDto.MediaName);
+
+                throw new InternalServerErrorException($"Media data could not be retrieved for movie: {reviewAPIDto.YearOfMediaCreation}");
             }
 
             var review = await CreateAndAddReview(reviewAPIDto, userId, mediaDto, cancellationToken);
@@ -60,6 +66,7 @@ namespace ReviewGuru.BLL.Services
             if (existingReview != null)
             {
                 _logger.Error("You cannot create two reviews from the same user for the same entity");
+
                 throw new BadRequestException("You cannot create two reviews from the same user for the same entity");
             }
 
@@ -79,8 +86,8 @@ namespace ReviewGuru.BLL.Services
         private async Task<Media> CheckAndAddMedia(MediaToCreateDTO mediaDto, CancellationToken cancellationToken)
         {
             var existingMedia = await _mediaRepository.GetByItemAsync(m => m.Name.ToLower() == mediaDto.Name.ToLower() &&
-                                                                      m.MediaType.ToLower() == mediaDto.MediaType.ToLower());
-            
+                                                                      m.MediaType.ToLower() == mediaDto.MediaType.ToLower(), cancellationToken);
+
             if (existingMedia != null)
             {
                 _logger.Information("Media already exists");
@@ -95,13 +102,16 @@ namespace ReviewGuru.BLL.Services
 
             foreach (var authorDto in mediaDto.AuthorsToCreateDTO)
             {
-                var existingAuthor = await _authorRepository.GetByItemAsync(a => a.FirstName == authorDto.FirstName && a.LastName == authorDto.LastName);
+                var existingAuthor = await _authorRepository.GetByItemAsync(a => a.FirstName == authorDto.FirstName && a.LastName == authorDto.LastName, cancellationToken);
 
                 if (existingAuthor == null)
                 {
                     _logger.Information("Creating a new author");
+
                     var author = _mapper.Map<Author>(authorDto);
+
                     createdMedia.Authors.Add(author);
+
                     continue;
                 }
 
@@ -116,31 +126,41 @@ namespace ReviewGuru.BLL.Services
             return createdMedia;
         }
 
-        public async Task<MediaToCreateDTO> GetMediaDataFromOmdbAsync(string movieTitle, int? year = null)
+        public async Task<MediaToCreateDTO?> GetMediaDataFromOmdbAsync(string movieTitle, int? year = null)
         {
-            dynamic movieData = await FetchMovieDataFromOmdbAsync(movieTitle, year);
+            dynamic? movieData = await FetchMovieDataFromOmdbAsync(movieTitle, year);
 
             if (movieData == null)
             {
-                _logger.Error($"Failed to get data from OMDb for movie: {movieTitle}");
+                _logger.Error("Failed to get data from OMDb for movie: {0}", movieTitle);
+
                 return null;
             }
 
             return CreateMediaDtoFromMovieData(movieData);
         }
 
-        private async Task<dynamic> FetchMovieDataFromOmdbAsync(string movieTitle, int? year)
+        private async Task<dynamic?> FetchMovieDataFromOmdbAsync(string movieTitle, int? year)
         {
-            using HttpClient httpClient = new HttpClient();
+            using HttpClient httpClient = new();
 
-            string apikey = _configuration["APISettings:APIKey"];
+            string? apikey = _configuration["APISettings:APIKey"];
+
+            if (apikey == null)
+            {
+                _logger.Error("Omdb api key is not defined");
+
+                throw new InternalServerErrorException($"Failed to get data from OMDb for movie: {movieTitle}");
+            }
 
             string url = $"http://www.omdbapi.com/?t={movieTitle}" + (year != 0 ? $"&y={year}" : "") + $"&apikey={apikey}";
+
             HttpResponseMessage response = await httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
             {
                 string json = await response.Content.ReadAsStringAsync();
+
                 return JsonConvert.DeserializeObject(json);
             }
             else
@@ -153,11 +173,11 @@ namespace ReviewGuru.BLL.Services
         {
             var authors = CreateAuthorDtoListFromMovieData(movieData);
 
-            DateTime releaseDate;
-            if (!DateTime.TryParseExact((string)movieData.Released, "dd MMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out releaseDate))
+            if (!DateTime.TryParseExact((string)movieData.Released, "dd MMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime releaseDate))
             {
-                _logger.Error($"Failed to parse release date for movie: {movieData.Title}");
-                throw new Exception($"Failed to parse release date for movie: {movieData.Title}");
+                _logger.Error("Failed to parse release date for movie: {0}", movieData.Title);
+
+                throw new InternalServerErrorException($"Failed to get data from OMDb for movie: {movieData.Title}");
             }
 
             return new MediaToCreateDTO
@@ -181,19 +201,20 @@ namespace ReviewGuru.BLL.Services
             return authors;
         }
 
-        private List<AuthorToCreateDTO> CreateAuthorDtoListFromString(string authorsString)
+        private static List<AuthorToCreateDTO> CreateAuthorDtoListFromString(string authorsString)
         {
             var authors = new List<AuthorToCreateDTO>();
 
             string[] authorsArray = authorsString.Split(", ");
+
             foreach (string author in authorsArray)
             {
                 string[] names = author.Split(" ");
+
                 authors.Add(new AuthorToCreateDTO { FirstName = names[0], LastName = names[1] });
             }
 
             return authors;
         }
-
     }
 }

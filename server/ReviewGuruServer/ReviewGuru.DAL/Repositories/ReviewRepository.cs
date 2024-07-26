@@ -12,17 +12,11 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.DAL.Repositories
 {
-    public class ReviewRepository : GenericRepository<Review>, IReviewRepository
+    public class ReviewRepository(ReviewGuruDbContext context, ILogger logger) : GenericRepository<Review>(context, logger), IReviewRepository
     {
-        private readonly ReviewGuruDbContext _context;
+        private readonly ReviewGuruDbContext _context = context;
 
-        private readonly ILogger _logger;
-
-        public ReviewRepository(ReviewGuruDbContext context, ILogger logger) : base(context, logger)
-        {
-            _context = context;
-            _logger = logger;
-        }
+        private readonly ILogger _logger = logger;
 
         public async Task<IEnumerable<Review>> GetAllWithMediaAsync(int pageNumber,
             int pageSize,
@@ -38,7 +32,7 @@ namespace ReviewGuru.DAL.Repositories
                                       .Take(pageSize)
                                       .ToListAsync(cancellationToken);
 
-            _logger.Information($"GetAllWithMediaAsync called. Entities count: {result.Count}");
+            _logger.Information("GetAllWithMediaAsync called. Entities count: {0}", result.Count);
 
             return result;
         }

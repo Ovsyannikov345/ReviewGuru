@@ -34,10 +34,12 @@ namespace ReviewGuru.BLL.Services
                        (media.Name.Contains(searchText) ||
                        media.Authors.Any(author => (author.FirstName + " " + author.LastName).Contains(searchText)));
 
-            IEnumerable<Media> favorites = await _userRepository.GetUserFavoritesAsync(userId, pageNumber, pageSize, filter, cancellationToken);
+            IEnumerable<Media>? favorites = await _userRepository.GetUserFavoritesAsync(userId, pageNumber, pageSize, filter, cancellationToken);
+
             if (favorites == null)
             {
-                _logger.Error($"User with id {userId} is not found");
+                _logger.Error("User with id {0} is not found", userId);
+
                 throw new NotFoundException($"User with id {userId} is not found");
             }
 

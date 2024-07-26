@@ -22,13 +22,13 @@ namespace ReviewGuru.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetReviewListAsync(
-        int pageNumber = Pagination.PageNumber,
-        int pageSize = Pagination.PageSize,
-        string searchText = "",
-        string mediaType = "",
-        int? minRating = null,
-        int? maxRating = null,
-        CancellationToken cancellationToken = default)
+            int pageNumber = Pagination.PageNumber,
+            int pageSize = Pagination.PageSize,
+            string searchText = "",
+            string mediaType = "",
+            int? minRating = null,
+            int? maxRating = null,
+            CancellationToken cancellationToken = default)
         {
             var reviews = await _reviewService.GetAllAsync(pageNumber, pageSize, searchText, mediaType, minRating, maxRating, cancellationToken: cancellationToken);
 
@@ -41,13 +41,13 @@ namespace ReviewGuru.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetMyReviewsListAsync(
-        int pageNumber = Pagination.PageNumber,
-        int pageSize = Pagination.PageSize,
-        string searchText = "",
-        string mediaType = "",
-        int? minRating = null,
-        int? maxRating = null,
-        CancellationToken cancellationToken = default)
+            int pageNumber = Pagination.PageNumber,
+            int pageSize = Pagination.PageSize,
+            string searchText = "",
+            string mediaType = "",
+            int? minRating = null,
+            int? maxRating = null,
+            CancellationToken cancellationToken = default)
         {
             int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
 
@@ -64,13 +64,13 @@ namespace ReviewGuru.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllExceptMyReviewsListAsync(
-        int pageNumber = Pagination.PageNumber,
-        int pageSize = Pagination.PageSize,
-        string searchText = "",
-        string mediaType = "",
-        int? minRating = null,
-        int? maxRating = null,
-        CancellationToken cancellationToken = default)
+            int pageNumber = Pagination.PageNumber,
+            int pageSize = Pagination.PageSize,
+            string searchText = "",
+            string mediaType = "",
+            int? minRating = null,
+            int? maxRating = null,
+            CancellationToken cancellationToken = default)
         {
             int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
 
@@ -89,6 +89,7 @@ namespace ReviewGuru.API.Controllers
             int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
 
             await _reviewService.CreateAsync(reviewDTO, userId, cancellationToken: cancellationToken);
+
             return Created();
         }
 
@@ -101,6 +102,7 @@ namespace ReviewGuru.API.Controllers
         public async Task<IActionResult> UpdateReviewAsync([FromBody] ReviewDTO reviewToUpdateDTO, CancellationToken cancellationToken = default)
         {
             await _reviewService.UpdateAsync(reviewToUpdateDTO, cancellationToken);
+
             return Ok(reviewToUpdateDTO);
         }
 
@@ -113,9 +115,10 @@ namespace ReviewGuru.API.Controllers
         public async Task<IActionResult> DeleteReviewAsync([FromRoute] int id, CancellationToken cancellationToken = default)
         {
             int userId = int.Parse(HttpContext.User.FindFirst("Id")!.Value);
+
             await _reviewService.DeleteAsync(id, userId, cancellationToken);
+
             return Ok();
         }
     }
-
 }

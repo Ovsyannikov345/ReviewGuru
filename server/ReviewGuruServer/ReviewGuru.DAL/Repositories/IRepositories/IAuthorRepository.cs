@@ -9,6 +9,5 @@ namespace ReviewGuru.DAL.Repositories.IRepositories
 {
     public interface IAuthorRepository : IGenericRepository<Author>
     {
-        
     }
 }

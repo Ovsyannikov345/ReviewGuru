@@ -9,15 +9,24 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.BLL.DTOs
 {
-    public record UserDTO 
+#pragma warning disable S101 // Types should be named in PascalCase
+    public record UserDTO
+#pragma warning restore S101 // Types should be named in PascalCase
     {
         public int UserId { get; init; }
-        public string Login { get;  init; }
-        public string Email { get; init; }
-        public string Password { get; init; }
+
+        public string Login { get; init; } = "";
+
+        public string Email { get; init; } = "";
+
+        public string Password { get; init; } = "";
+
         public DateTime? DateOfBirth { get; init; }
+
         public bool IsVerified { get; set; } = false;
+
         public virtual ICollection<ReviewDTO> ReviewDTO { get; set; } = [];
+
         public virtual ICollection<MediaDTO> FavoriteDTO { get; set; } = [];
     }
 }

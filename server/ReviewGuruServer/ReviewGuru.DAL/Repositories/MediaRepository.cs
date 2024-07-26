@@ -13,17 +13,11 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.DAL.Repositories
 {
-    public class MediaRepository : GenericRepository<Media>, IMediaRepository
+    public class MediaRepository(ReviewGuruDbContext context, ILogger logger) : GenericRepository<Media>(context, logger), IMediaRepository
     {
-        private readonly ReviewGuruDbContext _context;
+        private readonly ReviewGuruDbContext _context = context;
 
-        private readonly ILogger _logger;
-
-        public MediaRepository(ReviewGuruDbContext context, ILogger logger) : base(context, logger)
-        {
-            _context = context;
-            _logger = logger;
-        }
+        private readonly ILogger _logger = logger;
 
         public override async Task<IEnumerable<Media>> GetAllAsync(int pageNumber, int pageSize, Expression<Func<Media, bool>>? filter = null, CancellationToken cancellationToken = default)
         {

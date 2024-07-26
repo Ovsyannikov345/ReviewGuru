@@ -10,8 +10,7 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.DAL.Repositories
 {
-    public class RefreshTokenRepository : GenericRepository<RefreshToken>, IRefreshTokenRepository
+    public class RefreshTokenRepository(ReviewGuruDbContext context, ILogger logger) : GenericRepository<RefreshToken>(context, logger), IRefreshTokenRepository
     {
-        public RefreshTokenRepository(ReviewGuruDbContext context, ILogger logger) : base(context, logger) { }
     }
 }

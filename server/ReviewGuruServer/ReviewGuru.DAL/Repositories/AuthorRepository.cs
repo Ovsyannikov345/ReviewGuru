@@ -10,14 +10,7 @@ using System.Threading.Tasks;
 
 namespace ReviewGuru.DAL.Repositories
 {
-    public class AuthorRepository : GenericRepository<Author>, IAuthorRepository
+    public class AuthorRepository(ReviewGuruDbContext context, ILogger logger) : GenericRepository<Author>(context, logger), IAuthorRepository
     {
-        private readonly ReviewGuruDbContext _context;
-        private readonly ILogger _logger;
-        public AuthorRepository(ReviewGuruDbContext context, ILogger logger) : base(context, logger)
-        {
-            _logger = logger;
-            _context = context;
-        }
     }
 }
